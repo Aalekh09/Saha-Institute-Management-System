@@ -23,6 +23,8 @@ const notification = document.getElementById('notification');
 const notificationMessage = document.getElementById('notificationMessage');
 
 let editingStudentId = null;
+// Declare a global variable to store students
+let allStudents = [];
 
 // Add logout button to header
 const header = document.querySelector('header');
@@ -84,6 +86,8 @@ async function fetchStudents() {
         console.log('Response status:', response.status);
         const students = await response.json();
         console.log('Received students:', students);
+        // Store fetched students in the global variable
+        allStudents = students;
         displayStudents(students);
     } catch (error) {
         console.error('Error fetching students:', error);
@@ -140,6 +144,10 @@ function displayStudents(students) {
                         <i class="fas fa-trash"></i>
                         <span>Delete</span>
                     </button>
+                    <button class="action-btn id-card-btn" data-id="${student.id}" title="View ID Card">
+                        <i class="fas fa-id-card"></i>
+                        <span>ID Card</span>
+                    </button>
                 </div>
             </td>
         `;
@@ -173,6 +181,15 @@ function displayStudents(students) {
                 option.setAttribute('data-phone', student.phoneNumber);
                 studentSelect.innerHTML = '';
                 studentSelect.appendChild(option);
+            });
+        }
+        
+        // ID Card event
+        const idCardBtn = row.querySelector('.id-card-btn');
+        if (idCardBtn) {
+            idCardBtn.addEventListener('click', () => {
+                console.log('ID Card button clicked for student:', student);
+                showIdCard(student.id);
             });
         }
         
@@ -679,7 +696,7 @@ function generateReceipt(payment) {
         <body>
             <div class="receipt">
                 <div class="header">
-                    <h1>Saha Computer Education</h1>
+                    <h1>Saha Institute of Management and Technology</h1>
                     <h2>Payment Receipt</h2>
                 </div>
                 <div class="details">
@@ -896,3 +913,123 @@ document.addEventListener('DOMContentLoaded', () => {
     fetchStudents();
     fetchPayments();
 });
+
+// Add these new functions for ID card functionality
+function showIdCard(studentId) {
+    // Use the global allStudents variable
+    const student = allStudents.find(s => s.id === studentId);
+    
+    if (!student) {
+        console.error('Student not found for ID card:', studentId);
+        showNotification('Student data not found for ID card', true);
+        return;
+    }
+
+    console.log('Found student for ID card:', student);
+
+    // Generate QR code for student
+    const qrData = `Student ID: ${student.id}\nName: ${student.name}\nCourse: ${student.courses}`;
+    const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=${encodeURIComponent(qrData)}`;
+    
+    // Calculate valid till date based on course duration
+    const validTill = calculateValidTillDate(student.courseDuration);
+    
+    // Update ID card content
+    document.getElementById('idCardPhoto').src = student.photoUrl || './uploads/students/default.png';
+    document.getElementById('idCardName').textContent = student.name;
+    document.getElementById('idCardId').textContent = `STU${String(student.id).padStart(4, '0')}`;
+    document.getElementById('idCardCourse').textContent = student.courses;
+    document.getElementById('idCardDuration').textContent = student.courseDuration;
+    document.getElementById('idCardValidTill').textContent = validTill;
+    document.getElementById('idCardQR').src = qrCodeUrl;
+    
+    // Show modal
+    const modal = document.getElementById('idCardModal');
+    modal.style.display = 'block';
+}
+
+function calculateValidTillDate(duration) {
+    const today = new Date();
+    let months = 0;
+    
+    if (duration.includes('Month')) {
+        months = parseInt(duration);
+    } else if (duration.includes('Year')) {
+        months = parseInt(duration) * 12;
+    }
+    
+    const validTill = new Date(today.setMonth(today.getMonth() + months));
+    return validTill.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+}
+
+// Add event listeners for ID card modal
+document.getElementById('closeIdCardModal').addEventListener('click', () => {
+    document.getElementById('idCardModal').style.display = 'none';
+});
+
+document.getElementById('downloadIdCard').addEventListener('click', async () => {
+    const idCard = document.querySelector('.id-card');
+    
+    try {
+        // Use html2canvas to capture the ID card
+        const canvas = await html2canvas(idCard, {
+            scale: 2,
+            useCORS: true,
+            logging: false
+        });
+        
+        // Convert canvas to blob
+        canvas.toBlob((blob) => {
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `student_id_card_${Date.now()}.png`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+        }, 'image/png');
+    } catch (error) {
+        console.error('Error generating ID card:', error);
+        showNotification('Error generating ID card', 'error');
+    }
+});
+
+document.getElementById('shareIdCard').addEventListener('click', async () => {
+    const idCard = document.querySelector('.id-card');
+    
+    try {
+        // Use html2canvas to capture the ID card
+        const canvas = await html2canvas(idCard, {
+            scale: 2,
+            useCORS: true,
+            logging: false
+        });
+        
+        // Convert canvas to blob
+        canvas.toBlob((blob) => {
+            const file = new File([blob], 'student_id_card.png', { type: 'image/png' });
+            
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Student ID Card',
+                    text: 'Check out this student ID card',
+                    files: [file]
+                }).catch(error => {
+                    console.error('Error sharing:', error);
+                    showNotification('Error sharing ID card', 'error');
+                });
+            } else {
+                showNotification('Sharing is not supported on this browser', 'error');
+            }
+        }, 'image/png');
+    } catch (error) {
+        console.error('Error sharing ID card:', error);
+        showNotification('Error sharing ID card', 'error');
+    }
+});
+
+// Add html2canvas library to your HTML file
+const html2canvasScript = document.createElement('script');
+html2canvasScript.src = 'https://html2canvas.hertzen.com/dist/html2canvas.min.js';
+document.head.appendChild(html2canvasScript);
