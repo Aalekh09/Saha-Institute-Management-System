@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Saha Computer Education</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <header>
+        <h1>Saha Computer Education</h1>
+        <p>Welcome, <span id="username"></span></p>
+    </header>
+
+    <div class="main-container">
+        <div class="side-panel">
+            <div class="admin-section">
+                <div class="admin-header">
+                    <img src="./uploads/teachers/d.jpg" alt="Admin" class="admin-avatar">
+                    <div class="admin-info">
+                        <h3>Aalekh</h3>
+                        <span class="admin-role">Administrator</span>
+                    </div>
+                </div>
+                <div class="admin-menu">
+                    <button class="tab-btn" data-tab="teachers">
+                        <i class="fas fa-chalkboard-teacher"></i>
+                        <span>Teachers</span>
+                    </button>
+                </div>
+            </div>
+            <div class="student-section">
+                <h4>Student Management</h4>
+                <button class="tab-btn active" data-tab="list">
+                    <i class="fas fa-list"></i>
+                    <span>List Students</span>
+                </button>
+                <button class="tab-btn" data-tab="add">
+                    <i class="fas fa-user-plus"></i>
+                    <span>Add Student</span>
+                </button>
+                <button class="tab-btn" data-tab="payments">
+                    <i class="fas fa-money-bill"></i>
+                    <span>Payments</span>
+                </button>
+                <a href="enquiry.html" class="tab-btn">
+                    <i class="fas fa-question-circle"></i>
+                    <span>Enquiries</span>
+                </a>
+            </div>
+        </div>
+
+        <div class="content-panel">
+            <!-- List Students Panel -->
+            <div id="list-panel" class="tab-content active">
+                <div class="search-section">
+                    <input type="text" id="searchInput" placeholder="Search students...">
+                </div>
+                <div class="students-section">
+                    <table id="studentsTable">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Father's Name</th>
+                                <th>Mother's Name</th>
+                                <th>Date of Birth</th>
+                                <th>Email</th>
+                                <th>Phone Number</th>
+                                <th>Address</th>
+                                <th>Courses</th>
+                                <th>Duration</th>
+                                <th>Total Fee</th>
+                                <th>Paid</th>
+                                <th>Remaining</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Add Student Panel -->
+            <div id="add-panel" class="tab-content">
+                <div class="add-student-section">
+                    <form id="studentForm">
+                        <input type="hidden" id="studentId">
+                        <div class="form-group">
+                            <label for="name">Name:</label>
+                            <input type="text" id="name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="fatherName">Father's Name:</label>
+                            <input type="text" id="fatherName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="motherName">Mother's Name:</label>
+                            <input type="text" id="motherName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="dob">Date of Birth:</label>
+                            <input type="date" id="dob" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email:</label>
+                            <input type="email" id="email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="phoneNumber">Phone Number:</label>
+                            <input type="tel" id="phoneNumber" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="address">Address:</label>
+                            <input type="text" id="address" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="courses">Courses:</label>
+                            <input type="text" id="courses" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="courseDuration">Course Duration:</label>
+                            <input type="text" id="courseDuration" placeholder="e.g., 3 months" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="totalCourseFee">Total Course Fee:</label>
+                            <input type="number" id="totalCourseFee" min="0" step="0.01" required>
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" id="submitBtn">Add Student</button>
+                            <button type="button" id="cancelEditBtn" style="display: none;">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Payments Panel -->
+            <div id="payments-panel" class="tab-content">
+                <div class="payments-section">
+                    <div class="payment-actions">
+                        <button id="addPaymentBtn" class="action-btn">
+                            <i class="fas fa-plus"></i> Add New Payment
+                        </button>
+                        <div class="payment-search">
+                            <input type="text" id="paymentSearchInput" placeholder="Search payments...">
+                        </div>
+                    </div>
+
+                    <div class="payment-form" style="display: none;">
+                        <h3>Add Payment</h3>
+                        <form id="paymentForm">
+                            <div class="form-group">
+                                <label for="studentSelect">Student:</label>
+                                <select id="studentSelect" required>
+                                    <option value="">Select Student</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="amount">Amount:</label>
+                                <input type="number" id="amount" required min="0" step="0.01">
+                            </div>
+                            <div class="form-group">
+                                <label for="paymentMethod">Payment Method:</label>
+                                <select id="paymentMethod" required>
+                                    <option value="CASH">Cash</option>
+                                    <option value="ONLINE">Online</option>
+                                    <option value="CHEQUE">Cheque</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="description">Description:</label>
+                                <input type="text" id="description" required>
+                            </div>
+                            <div class="form-actions">
+                                <button type="submit">Submit Payment</button>
+                                <button type="button" id="cancelPaymentBtn">Cancel</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="payments-list">
+                        <table id="paymentsTable">
+                            <thead>
+                                <tr>
+                                    <th>Receipt No</th>
+                                    <th>Student</th>
+                                    <th>Amount</th>
+                                    <th>Method</th>
+                                    <th>Date</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="notification" class="notification">
+        <span id="notificationMessage"></span>
+    </div>
+
+    <script src="js/script.js"></script>
+</body>
+</html>

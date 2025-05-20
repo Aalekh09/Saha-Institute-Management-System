@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Saha Computer Education - Enquiries</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <header>
+        <h1>Saha Computer Education</h1>
+        <p>Welcome, <span id="username"></span></p>
+    </header>
+
+    <div class="main-container">
+        <div class="side-panel">
+            <div class="admin-section">
+                <div class="admin-header">
+                    <img src="./uploads/teachers/d.jpg" alt="Admin" class="admin-avatar">
+                    <div class="admin-info">
+                        <h3>Aalekh</h3>
+                        <span class="admin-role">Administrator</span>
+                    </div>
+                </div>
+            </div>
+            <div class="student-section">
+                <h4>Enquiry Management</h4>
+                <button class="tab-btn active" data-tab="enquiry-form">
+                    <i class="fas fa-question-circle"></i>
+                    <span>New Enquiry</span>
+                </button>
+                <button class="tab-btn" data-tab="enquiry-list">
+                    <i class="fas fa-list"></i>
+                    <span>Enquiry List</span>
+                </button>
+                <a href="index.html" class="tab-btn">
+                    <i class="fas fa-home"></i>
+                    <span>Back to Dashboard</span>
+                </a>
+            </div>
+        </div>
+
+        <div class="content-panel">
+            <!-- New Enquiry Panel -->
+            <div id="enquiry-form-panel" class="tab-content active">
+                <div class="section-header">
+                    <h2>New Enquiry</h2>
+                </div>
+                <div class="add-student-section">
+                    <form id="enquiryForm">
+                        <div class="form-group">
+                            <label for="name">Name:</label>
+                            <input type="text" id="name" name="name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="phoneNumber">Phone Number:</label>
+                            <input type="tel" id="phoneNumber" name="phoneNumber" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="course">Course Interested In:</label>
+                            <select id="course" name="course" required>
+                                <option value="">Select Course</option>
+                                <option value="Basic Computer">Basic Computer</option>
+                                <option value="MS Office">MS Office</option>
+                                <option value="Tally">Tally</option>
+                                <option value="DTP">DTP</option>
+                                <option value="Web Development">Web Development</option>
+                                <option value="Programming">Programming</option>
+                                <option value="Digital Marketing">Digital Marketing</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="courseDuration">Preferred Duration:</label>
+                            <select id="courseDuration" name="courseDuration" required>
+                                <option value="">Select Duration</option>
+                                <option value="1 Month">1 Month</option>
+                                <option value="2 Months">2 Months</option>
+                                <option value="3 Months">3 Months</option>
+                                <option value="6 Months">6 Months</option>
+                                <option value="1 Year">1 Year</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="remarks">Remarks:</label>
+                            <textarea id="remarks" name="remarks" rows="3"></textarea>
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Submit Enquiry
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Enquiry List Panel -->
+            <div id="enquiry-list-panel" class="tab-content">
+                <div class="section-header">
+                    <h2>Enquiries List</h2>
+                    <div class="search-section">
+                        <input type="text" id="searchEnquiryInput" placeholder="Search enquiries...">
+                    </div>
+                </div>
+                <div class="students-section">
+                    <table id="enquiriesTable">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Date of Enquiry</th>
+                                <th>Phone Number</th>
+                                <th>Course</th>
+                                <th>Duration</th>
+                                <th>Remarks</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="notification" class="notification">
+        <span id="notificationMessage"></span>
+    </div>
+
+    <script src="js/enquiry.js"></script>
+</body>
+</html> 

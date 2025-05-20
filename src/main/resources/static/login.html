@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Login - Saha Computer Education</title>
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+</head>
+<body class="login-page">
+    <div id="notification" class="notification">
+        <span id="notificationMessage"></span>
+    </div>
+
+    <div class="login-container">
+        <div class="login-header">
+            <h1>Saha Computer Education</h1>
+            <p>Welcome to our learning platform</p>
+        </div>
+        
+        <div class="login-options">
+            <div class="login-option" id="adminOption">
+                <i class="fas fa-user-shield"></i>
+                <h2>Admin Login</h2>
+                <p>Access administrative controls</p>
+            </div>
+            <div class="login-option" id="studentOption">
+                <i class="fas fa-user-graduate"></i>
+                <h2>Student Login</h2>
+                <p>Access your learning materials</p>
+            </div>
+        </div>
+
+        <div class="login-box" id="adminLoginBox" style="display: none;">
+            <div class="login-box-header">
+                <i class="fas fa-user-shield"></i>
+                <h2>Admin Login</h2>
+            </div>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="username">
+                        <i class="fas fa-user"></i>
+                        Username
+                    </label>
+                    <input type="text" id="username" required placeholder="Enter your username" />
+                </div>
+                <div class="form-group">
+                    <label for="password">
+                        <i class="fas fa-lock"></i>
+                        Password
+                    </label>
+                    <input type="password" id="password" required placeholder="Enter your password" />
+                </div>
+                <div class="form-actions">
+                    <button type="submit" id="loginBtn">
+                        <i class="fas fa-sign-in-alt"></i>
+                        Login
+                    </button>
+                </div>
+                <div class="back-to-options">
+                    <button type="button" id="backBtn">
+                        <i class="fas fa-arrow-left"></i>
+                        Back to Options
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <div class="login-box" id="studentLoginBox" style="display: none;">
+            <div class="login-box-header">
+                <i class="fas fa-user-graduate"></i>
+                <h2>Student Login</h2>
+            </div>
+            <form id="studentLoginForm">
+                <div class="form-group">
+                    <label for="studentUsername">
+                        <i class="fas fa-user"></i>
+                        Student ID
+                    </label>
+                    <input type="text" id="studentUsername" required placeholder="Enter your student ID" />
+                </div>
+                <div class="form-group">
+                    <label for="studentPassword">
+                        <i class="fas fa-lock"></i>
+                        Password
+                    </label>
+                    <input type="password" id="studentPassword" required placeholder="Enter your password" />
+                </div>
+                <div class="form-actions">
+                    <button type="submit" id="studentLoginBtn">
+                        <i class="fas fa-sign-in-alt"></i>
+                        Login
+                    </button>
+                </div>
+                <div class="back-to-options">
+                    <button type="button" id="studentBackBtn">
+                        <i class="fas fa-arrow-left"></i>
+                        Back to Options
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="./js/login.js"></script>
+</body>
+</html> 
