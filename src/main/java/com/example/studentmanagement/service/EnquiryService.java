@@ -93,6 +93,14 @@ public class EnquiryService {
             if (!enquiry.isConvertedToStudent()) {
                 throw new IllegalStateException("Enquiry is not converted to student");
             }
+            
+            // Find the most recently created student for this phone number
+            List<com.example.studentmanagement.model.Student> students = studentRepository.findByPhoneNumberOrderByIdDesc(enquiry.getPhoneNumber());
+            if (!students.isEmpty()) {
+                // Delete only the most recently created student
+                studentRepository.deleteById(students.get(0).getId());
+            }
+            
             enquiry.setConvertedToStudent(false);
             return enquiryRepository.save(enquiry);
         }

@@ -50,13 +50,15 @@ function showNotification(message, isError = false) {
 
 // Tab switching functionality
 tabButtons.forEach(button => {
-    button.addEventListener('click', () => {
+    button.addEventListener('click', (e) => {
         const tabId = button.getAttribute('data-tab');
-        
+        if (tabId === 'teachers') {
+            // Let the modal logic handle this
+            return;
+        }
         // Update active tab button
         tabButtons.forEach(btn => btn.classList.remove('active'));
         button.classList.add('active');
-        
         // Show corresponding content
         tabContents.forEach(content => {
             content.classList.remove('active');
@@ -64,14 +66,13 @@ tabButtons.forEach(button => {
                 content.classList.add('active');
             }
         });
-
-        // Special handling for teachers tab
-        if (tabId === 'teachers') {
-            document.getElementById('teachers-section').style.display = 'block';
-            loadTeachers();
-        } else {
-            document.getElementById('teachers-section').style.display = 'none';
-        }
+        // Special handling for teachers tab (should not be needed now)
+        // if (tabId === 'teachers') {
+        //     document.getElementById('teachers-section').style.display = 'block';
+        //     loadTeachers();
+        // } else {
+        //     document.getElementById('teachers-section').style.display = 'none';
+        // }
     });
 });
 
@@ -285,6 +286,42 @@ studentForm.addEventListener('submit', async (e) => {
             resetForm();
             fetchStudents();
             showNotification('Student added successfully!');
+
+            // Check if the form was from an enquiry AND the checkbox is checked
+            const enquiryData = localStorage.getItem('enquiryToStudent');
+            const markConfirmedCheckbox = document.getElementById('markEnquiryConfirmed');
+
+            if (enquiryData && markConfirmedCheckbox && markConfirmedCheckbox.checked) {
+                const enquiry = JSON.parse(enquiryData);
+                try {
+                    const convertResponse = await fetch(`http://localhost:8080/api/enquiries/${enquiry.id}/convert`, {
+                        method: 'POST'
+                    });
+
+                    if (convertResponse.ok) {
+                        console.log(`Enquiry ${enquiry.id} marked as converted successfully.`);
+                        showNotification('Enquiry status updated to Confirmed!', false);
+
+                        if (window.fetchEnquiries) {
+                            window.fetchEnquiries();
+                        } else {
+                            console.warn('fetchEnquiries function not found in this window. Cannot auto-refresh enquiry list.');
+                        }
+                    } else {
+                        const errorText = await convertResponse.text();
+                        console.error(`Failed to mark enquiry ${enquiry.id} as converted:`, errorText);
+                        showNotification(`Failed to update enquiry status: ${errorText || convertResponse.statusText}`, true);
+                    }
+                } catch (error) {
+                    console.error(`Error calling /convert endpoint for enquiry ${enquiry.id}:`, error);
+                    showNotification(`Error calling update enquiry status API: ${error.message}`, true);
+                } finally {
+                     localStorage.removeItem('enquiryToStudent');
+                }
+            } else if (enquiryData) {
+                 // If the form was from an enquiry but the checkbox was NOT checked
+                 localStorage.removeItem('enquiryToStudent');
+            }
         }
     } catch (error) {
         showNotification('Error: ' + error.message, true);
@@ -351,6 +388,49 @@ document.addEventListener('DOMContentLoaded', function() {
     if (document.getElementById('teachersTableBody')) {
         console.log('Loading teachers...');
         loadTeachers();
+    }
+
+    const teachersBtn = document.querySelector('.tab-btn[data-tab="teachers"]');
+    const modal = document.getElementById('maintenanceModal');
+    const closeModal = document.getElementById('closeMaintenanceModal');
+    if (teachersBtn && modal && closeModal) {
+        teachersBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            modal.style.display = 'block';
+        });
+        closeModal.addEventListener('click', function() {
+            modal.style.display = 'none';
+        });
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal) {
+                modal.style.display = 'none';
+            }
+        });
+    }
+
+    // Check if we need to auto-fill the Add Student form from enquiry
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('addStudentFromEnquiry') === '1') {
+        const enquiryData = localStorage.getItem('enquiryToStudent');
+        if (enquiryData) {
+            const enquiry = JSON.parse(enquiryData);
+
+            // Switch to Add Student tab
+            const addTab = document.querySelector('[data-tab="add"]');
+            if (addTab) addTab.click();
+
+            // Fill the form fields
+            document.getElementById('name').value = enquiry.name || '';
+            document.getElementById('phoneNumber').value = enquiry.phoneNumber || '';
+            document.getElementById('courses').value = enquiry.course || '';
+            document.getElementById('courseDuration').value = enquiry.courseDuration || '';
+            // If you have a remarks field in the student form, fill it too
+            if (document.getElementById('remarks')) {
+                document.getElementById('remarks').value = enquiry.remarks || '';
+            }
+
+            // localStorage.removeItem('enquiryToStudent'); // Keep for form submission
+        }
     }
 });
 
@@ -755,63 +835,61 @@ function deleteTeacher(id) {
     }
 }
 
-document.getElementById('teacherForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-    
-    const formData = new FormData();
-    const teacherId = document.getElementById('teacherId').value;
-    
-    const teacher = {
-        name: document.getElementById('teacherName').value,
-        email: document.getElementById('teacherEmail').value,
-        phoneNumber: document.getElementById('teacherPhone').value,
-        address: document.getElementById('teacherAddress').value,
-        qualification: document.getElementById('teacherQualification').value,
-        specialization: document.getElementById('teacherSpecialization').value,
-        joiningDate: document.getElementById('teacherJoiningDate').value,
-        salary: parseFloat(document.getElementById('teacherSalary').value),
-        status: document.getElementById('teacherStatus').value,
-        role: document.getElementById('teacherRole').value
-    };
-    
-    formData.append('teacher', new Blob([JSON.stringify(teacher)], {
-        type: 'application/json'
-    }));
-    
-    const photoFile = document.getElementById('teacherPhoto').files[0];
-    if (photoFile) {
-        formData.append('photo', photoFile);
-    }
-    
-    const url = teacherId ? `/api/teachers/${teacherId}` : '/api/teachers';
-    const method = teacherId ? 'PUT' : 'POST';
-    
-    fetch(url, {
-        method: method,
-        body: formData
-    })
-    .then(response => {
-        if (response.ok) {
-            showNotification(
-                `Teacher ${teacherId ? 'updated' : 'added'} successfully`, 
-                'success'
-            );
-            hideTeacherForm();
-            loadTeachers();
-        } else {
-            throw new Error(`Failed to ${teacherId ? 'update' : 'add'} teacher`);
+const teacherFormEl = document.getElementById('teacherForm');
+if (teacherFormEl) {
+    teacherFormEl.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const formData = new FormData();
+        const teacherId = document.getElementById('teacherId').value;
+        
+        const teacher = {
+            name: document.getElementById('teacherName').value,
+            email: document.getElementById('teacherEmail').value,
+            phoneNumber: document.getElementById('teacherPhone').value,
+            address: document.getElementById('teacherAddress').value,
+            qualification: document.getElementById('teacherQualification').value,
+            specialization: document.getElementById('teacherSpecialization').value,
+            joiningDate: document.getElementById('teacherJoiningDate').value,
+            salary: parseFloat(document.getElementById('teacherSalary').value),
+            status: document.getElementById('teacherStatus').value,
+            role: document.getElementById('teacherRole').value
+        };
+        
+        formData.append('teacher', new Blob([JSON.stringify(teacher)], {
+            type: 'application/json'
+        }));
+        
+        const photoFile = document.getElementById('teacherPhoto').files[0];
+        if (photoFile) {
+            formData.append('photo', photoFile);
         }
-    })
-    .catch(error => {
-        console.error('Error saving teacher:', error);
-        showNotification('Error saving teacher', 'error');
+        
+        const url = teacherId ? `/api/teachers/${teacherId}` : '/api/teachers';
+        const method = teacherId ? 'PUT' : 'POST';
+        
+        fetch(url, {
+            method: method,
+            body: formData
+        })
+        .then(response => {
+            if (response.ok) {
+                showNotification(
+                    `Teacher ${teacherId ? 'updated' : 'added'} successfully`, 
+                    'success'
+                );
+                hideTeacherForm();
+                loadTeachers();
+            } else {
+                throw new Error(`Failed to ${teacherId ? 'update' : 'add'} teacher`);
+            }
+        })
+        .catch(error => {
+            console.error('Error saving teacher:', error);
+            showNotification('Error saving teacher', 'error');
+        });
     });
-});
-
-// Load teachers when the page loads
-document.addEventListener('DOMContentLoaded', function() {
-    loadTeachers();
-});
+}
 
 // Initialize the page
 document.addEventListener('DOMContentLoaded', () => {

@@ -51,6 +51,8 @@ header p {
     max-width: 100%;
     box-sizing: border-box;
     overflow: hidden;
+    text-decoration: none;
+    color: inherit;
 }
 .tab-btn i, a.tab-btn i {
     font-size: 18px;
@@ -1317,4 +1319,70 @@ tr:hover {
     display: inline-block;
     max-width: 180px;
     vertical-align: middle;
+}
+
+a.tab-btn,
+a.tab-btn:visited,
+a.tab-btn:active,
+a.tab-btn:hover,
+a.tab-btn:focus {
+    text-decoration: none !important;
+    color: inherit;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    top: 30px;
+    right: 30px;
+    z-index: 2000;
+    background: rgba(44, 62, 80, 0.15);
+    width: 350px;
+    border-radius: 10px;
+    box-shadow: 0 8px 32px rgba(44,62,80,0.18);
+    animation: slideInTopRight 0.5s;
+}
+
+@keyframes slideInTopRight {
+    from {
+        opacity: 0;
+        transform: translate(100px, -40px);
+    }
+    to {
+        opacity: 1;
+        transform: translate(0, 0);
+    }
+}
+
+.modal-content {
+    background: #fff;
+    padding: 30px 24px 24px 24px;
+    border-radius: 10px;
+    position: relative;
+    box-shadow: 0 2px 8px rgba(44,62,80,0.10);
+}
+
+.close-btn {
+    position: absolute;
+    top: 12px;
+    right: 18px;
+    font-size: 22px;
+    color: #888;
+    cursor: pointer;
+    font-weight: bold;
+    transition: color 0.2s;
+}
+.close-btn:hover {
+    color: #e74c3c;
+}
+.modal-content h2 {
+    margin: 0 0 10px 0;
+    color: #1976d2;
+    font-size: 22px;
+}
+.modal-content p {
+    margin: 0;
+    color: #333;
+    font-size: 15px;
+    line-height: 1.5;
 }

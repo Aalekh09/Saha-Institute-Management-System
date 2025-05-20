@@ -109,7 +109,7 @@ function displayEnquiries(enquiries) {
             <td>${enquiry.remarks || ''}</td>
             <td>
                 <span class="badge ${enquiry.convertedToStudent ? 'bg-success' : 'bg-warning'}">
-                    ${enquiry.convertedToStudent ? 'Converted' : 'Pending'}
+                    ${enquiry.convertedToStudent ? 'Confirmed' : 'Pending'}
                 </span>
             </td>
             <td>
@@ -127,6 +127,11 @@ function displayEnquiries(enquiries) {
                     `}
                 </div>
             </td>
+            <td>
+                ${!enquiry.convertedToStudent ? `
+                    <input type="checkbox" class="convert-checkbox" data-id="${enquiry.id}" title="Mark as Confirmed">
+                ` : ''}
+            </td>
         `;
         
         const convertBtn = row.querySelector('.convert-btn');
@@ -137,6 +142,31 @@ function displayEnquiries(enquiries) {
         const reverseBtn = row.querySelector('.reverse-btn');
         if (reverseBtn) {
             reverseBtn.addEventListener('click', () => reverseConversion(enquiry.id));
+        }
+
+        // Add event listener for the new checkbox
+        const convertCheckbox = row.querySelector('.convert-checkbox');
+        if (convertCheckbox) {
+            convertCheckbox.addEventListener('change', async (e) => {
+                if (e.target.checked) {
+                    try {
+                        const response = await fetch(`${API_URL}/${enquiry.id}/convert`, {
+                            method: 'POST'
+                        });
+                        if (response.ok) {
+                            showNotification('Enquiry marked as Confirmed!');
+                            fetchEnquiries(); // Refresh the list
+                        } else {
+                            const errorText = await response.text();
+                            throw new Error(errorText || 'Failed to mark enquiry as confirmed');
+                        }
+                    } catch (error) {
+                        console.error('Error marking enquiry as confirmed:', error);
+                        showNotification('Error marking enquiry as confirmed: ' + error.message, true);
+                        e.target.checked = false; // Uncheck the box on error
+                    }
+                }
+            });
         }
         
         enquiriesTableBody.appendChild(row);
@@ -189,39 +219,54 @@ enquiryForm.addEventListener('submit', async (e) => {
 // Convert enquiry to student
 async function convertToStudent(id) {
     try {
-        const response = await fetch(`${API_URL}/${id}/convert`, {
-            method: 'POST'
-        });
+        // Get the enquiry data first
+        const response = await fetch(`${API_URL}/${id}`);
+        if (!response.ok) throw new Error('Failed to fetch enquiry data');
+        const enquiry = await response.json();
 
-        if (response.ok) {
-            showNotification('Enquiry converted to student successfully!');
-            // Redirect to students list
-            window.location.href = 'index.html';
-        } else {
-            throw new Error('Failed to convert enquiry');
-        }
+        // Store enquiry data in localStorage
+        localStorage.setItem('enquiryToStudent', JSON.stringify(enquiry));
+
+        // Redirect to main dashboard (index.html) and open Add Student tab
+        window.location.href = 'index.html?addStudentFromEnquiry=1';
     } catch (error) {
-        console.error('Error converting enquiry:', error);
-        showNotification('Error converting enquiry', true);
+        console.error('Error preparing to convert enquiry:', error);
+        showNotification('Error preparing to convert enquiry', true);
     }
 }
 
 // Add reverse conversion function
 async function reverseConversion(id) {
+    if (!confirm('Are you sure you want to reverse this conversion? This will mark the enquiry as pending again.')) {
+        return;
+    }
+
     try {
         const response = await fetch(`${API_URL}/${id}/reverse`, {
-            method: 'POST'
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
         });
 
         if (response.ok) {
             showNotification('Enquiry conversion reversed successfully!');
             fetchEnquiries();
+            // Also refresh the student list in the main window if available
+            if (window.opener && typeof window.opener.fetchStudents === 'function') {
+                window.opener.fetchStudents();
+            } else if (window.parent && typeof window.parent.fetchStudents === 'function') {
+                window.parent.fetchStudents();
+            } else if (window.fetchStudents) {
+                window.fetchStudents();
+            }
         } else {
-            throw new Error('Failed to reverse conversion');
+            const errorText = await response.text();
+            throw new Error(errorText || 'Failed to reverse conversion');
         }
     } catch (error) {
         console.error('Error reversing conversion:', error);
-        showNotification('Error reversing conversion', true);
+        showNotification('Error reversing conversion: ' + error.message, true);
     }
 }
 

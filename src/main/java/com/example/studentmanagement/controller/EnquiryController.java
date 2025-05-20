@@ -56,12 +56,12 @@ public class EnquiryController {
     }
 
     @PostMapping("/{id}/reverse")
-    public ResponseEntity<Enquiry> reverseConversion(@PathVariable Long id) {
+    public ResponseEntity<?> reverseConversion(@PathVariable Long id) {
         try {
             Enquiry reversedEnquiry = enquiryService.reverseConversion(id);
             return ResponseEntity.ok(reversedEnquiry);
         } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
