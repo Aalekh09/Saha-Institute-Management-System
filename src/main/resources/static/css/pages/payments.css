@@ -47,7 +47,7 @@
 
 .search-box {
     position: relative;
-    min-width: 300px;
+    flex-grow: 1;
 }
 
 .search-box input {
@@ -117,6 +117,10 @@
 /* Payment Actions */
 .payment-actions {
     padding: 0 20px 20px;
+    display: flex;
+    gap: 30px;
+    align-items: center;
+    flex-wrap: nowrap;
 }
 
 .action-btn.primary {
