@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student List - Saha Institute</title>
+    <link rel="stylesheet" href="../styles.css?v=1.1">
+    <link rel="stylesheet" href="../css/pages/student-list.css?v=1.1">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="main-container">
+        <div class="content-panel">
+            <div class="panel-header">
+                <div class="panel-title">
+                    <h2><i class="fas fa-users"></i> Student List</h2>
+                    <p class="subtitle">Manage and view all student records</p>
+                </div>
+                <div class="panel-actions">
+                    <div class="search-container">
+                        <div class="search-box">
+                            <i class="fas fa-search"></i>
+                            <input type="text" id="searchInput" placeholder="Search by name, ID, course, phone...">
+                        </div>
+                        <div class="search-filters">
+                            <select id="searchFilter">
+                                <option value="all">All Fields</option>
+                                <option value="name">Name</option>
+                                <option value="id">Student ID</option>
+                                <option value="course">Course</option>
+                                <option value="phone">Phone</option>
+                                <option value="email">Email</option>
+                            </select>
+                            <button class="clear-search" title="Clear Search">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="panel-content">
+                <div class="list-stats">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-user-graduate"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="totalStudentsCount">0</h3>
+                            <p>Total Students</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-money-bill-wave"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="totalFees">₹0</h3>
+                            <p>Total Fees</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="activeStudents">0</h3>
+                            <p>Active Students</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="students-section">
+                    <div class="table-container">
+                        <table id="studentsTable">
+                            <thead>
+                                <tr>
+                                    <th>Student Info</th>
+                                    <th>Contact</th>
+                                    <th>Course Details</th>
+                                    <th>Fee Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="../js/pages/student-list.js"></script>
+</body>
+</html> 

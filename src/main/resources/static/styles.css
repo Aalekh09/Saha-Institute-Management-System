@@ -148,21 +148,6 @@ header p {
     margin-bottom: 20px;
 }
 
-#searchInput {
-    width: 50%;
-    padding: 12px;
-    border-radius: 6px;
-    border: 1px solid #ddd;
-    font-size: 16px;
-    transition: all 0.3s ease;
-}
-
-#searchInput:focus {
-    border-color: #3498db;
-    outline: none;
-    box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
-}
-
 /* Table Styling */
 .students-section {
     background: white;
@@ -1801,102 +1786,27 @@ label[for]:after {
 /* Search Box Styles */
 .search-box {
     position: relative;
-    width: 400px;
-    background: #fff;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    transition: all 0.3s ease;
+    min-width: 300px;
+    flex: 1;
 }
 
-.search-box:focus-within {
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    transform: translateY(-1px);
-}
-
-.search-box i {
-    position: absolute;
-    left: 12px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: #95a5a6;
-    font-size: 16px;
-}
-
+/* Remove duplicate search input styles */
 .search-box input {
-    width: 100%;
-    padding: 12px 40px 12px 40px;
-    border: 1px solid #e0e0e0;
-    border-radius: 8px;
-    font-size: 14px;
+    width: 92%;
+    padding: 12px 15px 12px 4px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 16px;
     transition: all 0.3s ease;
-    background: transparent;
+    background-color: white;
+    color: #2c3e50;
+    box-sizing: border-box;
 }
 
 .search-box input:focus {
-    border-color: #3498db;
+    border-color: #1976d2;
+    box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.1);
     outline: none;
-}
-
-.search-filters {
-    position: absolute;
-    right: 8px;
-    top: 50%;
-    transform: translateY(-50%);
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.search-filters select {
-    padding: 4px 8px;
-    border: 1px solid #e0e0e0;
-    border-radius: 4px;
-    font-size: 12px;
-    color: #2c3e50;
-    background: #f8f9fa;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.search-filters select:focus {
-    border-color: #3498db;
-    outline: none;
-}
-
-.clear-search {
-    background: none;
-    border: none;
-    color: #95a5a6;
-    cursor: pointer;
-    padding: 4px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.3s ease;
-}
-
-.clear-search:hover {
-    background: #f8f9fa;
-    color: #e74c3c;
-}
-
-/* Responsive adjustments for search */
-@media (max-width: 1024px) {
-    .search-box {
-        width: 100%;
-    }
-    
-    .search-filters {
-        position: static;
-        transform: none;
-        margin-top: 8px;
-        justify-content: flex-end;
-    }
-    
-    .search-box input {
-        padding-right: 12px;
-    }
 }
 
 /* Stats Cards */
@@ -2073,7 +1983,7 @@ label[for]:after {
 
 .fee-progress-bar {
     height: 100%;
-    background: #2ecc71;
+    background: #3498db;
     border-radius: 3px;
     transition: width 0.3s ease;
 }
@@ -2096,23 +2006,23 @@ label[for]:after {
 }
 
 .action-btn.edit-btn {
-    background: #3498db;
-    color: white;
+    background: #e3f2fd;
+    color: #1976d2;
 }
 
 .action-btn.payment-btn {
-    background: #2ecc71;
-    color: white;
+    background: #e8f5e9;
+    color: #2e7d32;
 }
 
 .action-btn.delete-btn {
-    background: #e74c3c;
-    color: white;
+    background: #ffebee;
+    color: #c62828;
 }
 
 .action-btn.id-card-btn {
-    background: #9b59b6;
-    color: white;
+    background: #fff3e0;
+    color: #ef6c00;
 }
 
 .action-btn:hover {
@@ -2146,12 +2056,61 @@ label[for]:after {
     .list-stats {
         grid-template-columns: 1fr;
     }
-    
-    .table-container {
-        overflow-x: auto;
+
+    .students-section .action-buttons {
+        flex-wrap: wrap;
     }
-    
-    #studentsTable {
-        min-width: 800px;
+
+    .students-section .action-buttons .action-btn {
+        flex: 1;
+        justify-content: center;
     }
+}
+
+/* Dashboard Styles */
+.main-container h2 {
+    color: #2c3e50;
+    margin-bottom: 1.5rem;
+    font-size: 1.5rem;
+}
+
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.dashboard-card {
+    background: white;
+    border-radius: 8px;
+    padding: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    transition: transform 0.3s ease;
+    cursor: pointer;
+}
+
+.dashboard-card:hover {
+    transform: translateY(-2px);
+}
+
+.dashboard-card .card-icon {
+    font-size: 2rem;
+    color: #3498db;
+}
+
+.dashboard-card .card-title {
+    font-size: 1.1rem;
+    color: #2c3e50;
+    margin: 0;
+}
+
+.content-panel {
+    background: white;
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 }

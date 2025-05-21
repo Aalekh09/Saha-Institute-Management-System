@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payments - Saha Institute</title>
+    <link rel="stylesheet" href="../css/pages/payments.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="main-container">
+        <div class="content-panel">
+            <div class="panel-header">
+                <div class="panel-title">
+                    <h2><i class="fas fa-money-bill-wave"></i> Payment Management</h2>
+                    <p class="subtitle">Record and manage student payments</p>
+                </div>
+                <div class="panel-actions">
+                    <div class="search-container">
+                        <div class="search-box">
+                            <i class="fas fa-search"></i>
+                            <input type="text" id="searchPaymentInput" placeholder="Search by student name, ID, or receipt number...">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel-content">
+                <div class="payment-stats">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-money-check"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="totalPayments">₹0</h3> -->
+                            <p>Total Payments</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-calendar-check"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="todayPayments">₹0</h3>
+                            <p>Today's Payments</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="pendingPayments">0</h3>
+                            <p>Pending Payments</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="payment-actions">
+                    <button class="action-btn primary" onclick="showAddPaymentModal()">
+                        <i class="fas fa-plus"></i>
+                        Add New Payment
+                    </button>
+                </div>
+
+                <div class="payments-section">
+                    <div class="table-container">
+                        <table id="paymentsTable">
+                            <thead>
+                                <tr>
+                                    <th>Receipt No.</th>
+                                    <th>Student Info</th>
+                                    <th>Payment Details</th>
+                                    <th>Amount</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Payment Modal -->
+    <div id="addPaymentModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-plus-circle"></i> Add New Payment</h2>
+                <button class="close-btn" onclick="closeAddPaymentModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="addPaymentForm" class="payment-form">
+                <div class="form-group">
+                    <label for="studentSelect">Select Student *</label>
+                    <select id="studentSelect" required>
+                        <option value="">Choose a student...</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="paymentAmount">Amount (₹) *</label>
+                    <input type="number" id="paymentAmount" min="0" step="0.01" required>
+                </div>
+                <div class="form-group">
+                    <label for="paymentDate">Payment Date *</label>
+                    <input type="date" id="paymentDate" required>
+                </div>
+                <div class="form-group">
+                    <label for="paymentMode">Payment Mode *</label>
+                    <select id="paymentMode" required>
+                        <option value="cash">Cash</option>
+                        <option value="upi">UPI</option>
+                        <option value="bank_transfer">Bank Transfer</option>
+                        <option value="cheque">Cheque</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="paymentNotes">Notes</label>
+                    <textarea id="paymentNotes" rows="3"></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn-primary">
+                        <i class="fas fa-save"></i>
+                        Save Payment
+                    </button>
+                    <button type="button" class="btn-secondary" onclick="closeAddPaymentModal()">
+                        <i class="fas fa-times"></i>
+                        Cancel
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- View Receipt Modal -->
+    <div id="viewReceiptModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-receipt"></i> Payment Receipt</h2>
+                <button class="close-btn" onclick="closeViewReceiptModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="receipt-content">
+                <!-- Receipt content will be dynamically populated -->
+            </div>
+            <div class="modal-actions">
+                <button class="btn-primary" onclick="printReceipt()">
+                    <i class="fas fa-print"></i>
+                    Print Receipt
+                </button>
+                <button class="btn-secondary" onclick="closeViewReceiptModal()">
+                    <i class="fas fa-times"></i>
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/pages/payments.js"></script>
+</body>
+</html> 

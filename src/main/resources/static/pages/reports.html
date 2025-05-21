@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reports - Saha Institute</title>
+    <link rel="stylesheet" href="../css/pages/reports.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="main-container">
+        <div class="content-panel">
+            <div class="panel-header">
+                <div class="panel-title">
+                    <h2><i class="fas fa-chart-bar"></i> Reports & Analytics</h2>
+                    <p class="subtitle">View detailed reports and analytics</p>
+                </div>
+                <div class="panel-actions">
+                    <div class="date-filter">
+                        <select id="reportPeriod">
+                            <option value="today">Today</option>
+                            <option value="week">This Week</option>
+                            <option value="month" selected>This Month</option>
+                            <option value="year">This Year</option>
+                            <option value="custom">Custom Range</option>
+                        </select>
+                        <div id="customDateRange" style="display: none;">
+                            <input type="date" id="startDate">
+                            <input type="date" id="endDate">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel-content">
+                <div class="reports-grid">
+                    <!-- Revenue Overview -->
+                    <div class="report-card">
+                        <div class="report-header">
+                            <h3>Revenue Overview</h3>
+                            <i class="fas fa-money-bill-wave"></i>
+                        </div>
+                        <div class="report-body">
+                            <canvas id="revenueChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Student Statistics -->
+                    <div class="report-card">
+                        <div class="report-header">
+                            <h3>Student Statistics</h3>
+                            <i class="fas fa-user-graduate"></i>
+                        </div>
+                        <div class="report-body">
+                            <canvas id="studentChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Course Distribution -->
+                    <div class="report-card">
+                        <div class="report-header">
+                            <h3>Course Distribution</h3>
+                            <i class="fas fa-book"></i>
+                        </div>
+                        <div class="report-body">
+                            <canvas id="courseChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Payment Methods -->
+                    <div class="report-card">
+                        <div class="report-header">
+                            <h3>Payment Methods</h3>
+                            <i class="fas fa-credit-card"></i>
+                        </div>
+                        <div class="report-body">
+                            <canvas id="paymentMethodChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Detailed Reports -->
+                <div class="detailed-reports">
+                    <div class="report-card full-width">
+                        <div class="report-header">
+                            <h3>Detailed Reports</h3>
+                            <div class="report-actions">
+                                <button class="action-btn" onclick="exportReport('excel')">
+                                    <i class="fas fa-file-excel"></i>
+                                    Export to Excel
+                                </button>
+                                <button class="action-btn" onclick="exportReport('pdf')">
+                                    <i class="fas fa-file-pdf"></i>
+                                    Export to PDF
+                                </button>
+                            </div>
+                        </div>
+                        <div class="report-body">
+                            <div class="report-tabs">
+                                <button class="tab-btn active" data-tab="revenue">Revenue</button>
+                                <button class="tab-btn" data-tab="students">Students</button>
+                                <button class="tab-btn" data-tab="courses">Courses</button>
+                                <button class="tab-btn" data-tab="payments">Payments</button>
+                            </div>
+                            <div class="tab-content active" id="revenue-tab">
+                                <table class="report-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Date</th>
+                                            <th>Total Revenue</th>
+                                            <th>New Students</th>
+                                            <th>Average Payment</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                            <div class="tab-content" id="students-tab">
+                                <table class="report-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Course</th>
+                                            <th>Total Students</th>
+                                            <th>Active Students</th>
+                                            <th>Completion Rate</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                            <div class="tab-content" id="courses-tab">
+                                <table class="report-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Course Name</th>
+                                            <th>Enrollments</th>
+                                            <th>Revenue</th>
+                                            <th>Popularity</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                            <div class="tab-content" id="payments-tab">
+                                <table class="report-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Payment Method</th>
+                                            <th>Count</th>
+                                            <th>Total Amount</th>
+                                            <th>Percentage</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/pages/reports.js"></script>
+</body>
+</html> 

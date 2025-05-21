@@ -71,8 +71,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 localStorage.setItem('username', username);
                 localStorage.setItem('userType', 'admin');
                 
-                // Redirect to main page
-                window.location.href = 'dashboard.html';
+                // Redirect to index.html with add panel
+                window.location.href = 'index.html?panel=add';
             } else {
                 showNotification('Invalid username or password', true);
             }
