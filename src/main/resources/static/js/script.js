@@ -26,7 +26,15 @@ let editingStudentId = null;
 // Declare a global variable to store students
 let allStudents = [];
 
-// Add logout button to header
+// Declare a global variable for the active tab ID
+let activeTabId = 'list'; // Default to list panel
+
+// Add these variables at the top of the file with other global variables
+let enquiriesChart = null;
+let studentGrowthChart = null;
+
+// Add logout button to header (ensure this is only added once if script is loaded on multiple pages)
+// Consider moving this to dashboard.html and index.html separately if header structure differs
 const header = document.querySelector('header');
 const logoutBtn = document.createElement('button');
 logoutBtn.textContent = 'Logout';
@@ -36,7 +44,9 @@ logoutBtn.onclick = () => {
     localStorage.removeItem('username');
     window.location.href = 'login.html';
 };
-header.appendChild(logoutBtn);
+if (header && !header.querySelector('.logout-btn')) { // Prevent adding multiple logout buttons
+    header.appendChild(logoutBtn);
+}
 
 // Show notification function
 function showNotification(message, isError = false) {
@@ -50,32 +60,70 @@ function showNotification(message, isError = false) {
     }, 3000);
 }
 
-// Tab switching functionality
-tabButtons.forEach(button => {
-    button.addEventListener('click', (e) => {
-        const tabId = button.getAttribute('data-tab');
-        if (tabId === 'teachers') {
-            // Let the modal logic handle this
-            return;
+// Function to activate a specific tab
+function activateTab(tabId) {
+    // Update active tab button
+    tabButtons.forEach(btn => {
+        if (btn.getAttribute('data-tab') === tabId) {
+            btn.classList.add('active');
+        } else {
+            btn.classList.remove('active');
         }
-        // Update active tab button
-        tabButtons.forEach(btn => btn.classList.remove('active'));
-        button.classList.add('active');
-        // Show corresponding content
-        tabContents.forEach(content => {
+    });
+    // Show corresponding content
+    tabContents.forEach(content => {
+        if (content) {
             content.classList.remove('active');
             if (content.id === `${tabId}-panel`) {
                 content.classList.add('active');
             }
-        });
-        // Special handling for teachers tab (should not be needed now)
-        // if (tabId === 'teachers') {
-        //     document.getElementById('teachers-section').style.display = 'block';
-        //     loadTeachers();
-        // } else {
-        //     document.getElementById('teachers-section').style.display = 'none';
-        // }
+        }
     });
+    activeTabId = tabId; // Update the active tab ID
+}
+
+// Tab switching functionality (Update event listener)
+tabButtons.forEach(button => {
+    button.addEventListener('click', (e) => {
+        const tabId = button.getAttribute('data-tab');
+        if (tabId === 'teachers') {
+            const modal = document.getElementById('maintenanceModal');
+            if (modal) {
+                modal.style.display = 'block';
+            }
+            return;
+        }
+        activateTab(tabId); // Use the new activateTab function
+    });
+});
+
+// Function to get URL parameter
+function getUrlParameter(name) {
+    name = name.replace(/[[\]]/g, '\\$&');
+    const regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)');
+    const results = regex.exec(window.location.href);
+    if (!results) return null;
+    if (!results[2]) return '';
+    return decodeURIComponent(results[2].replace(/\+/g, ' '));
+}
+
+// On page load, check for panel parameter and activate the corresponding tab
+document.addEventListener('DOMContentLoaded', () => {
+    const panelParam = getUrlParameter('panel');
+    if (panelParam) {
+        activateTab(panelParam);
+    } else {
+        // If no panel parameter is provided, do not activate any tab by default.
+        // The index.html page will appear empty until a panel is selected from the dashboard.
+        // Default to the list panel if no parameter is provided
+        // activateTab(activeTabId);
+    }
+
+    // Initial data fetch based on active tab (if needed)
+    // This logic should ideally be called within the activateTab function
+    // whenever a tab becomes active, not just on DOMContentLoaded.
+    // Example: if (activeTabId === 'list') { fetchStudents(); }
+    // You might need to add similar logic for other tabs when they become active initially
 });
 
 // Fetch and display students
@@ -114,39 +162,69 @@ function displayStudents(students) {
     // Sort students alphabetically by name
     students.sort((a, b) => a.name.localeCompare(b.name));
     
+    // Update stats
+    updateStats(students);
+    
     students.forEach(student => {
         console.log('Creating row for student:', student);
         const row = document.createElement('tr');
+        
+        // Calculate fee progress
+        const totalFee = parseFloat(student.totalCourseFee) || 0;
+        const paidAmount = parseFloat(student.paidAmount) || 0;
+        const progress = totalFee > 0 ? (paidAmount / totalFee) * 100 : 0;
+        
         row.innerHTML = `
-            <td>${toUpperCase(student.name) || ''}</td>
-            <td>${toUpperCase(student.fatherName) || ''}</td>
-            <td>${toUpperCase(student.motherName) || ''}</td>
-            <td>${student.dob || ''}</td>
-            <td>${toUpperCase(student.email) || ''}</td>
-            <td>${student.phoneNumber || ''}</td>
-            <td>${toUpperCase(student.address) || ''}</td>
-            <td>${toUpperCase(student.courses) || ''}</td>
-            <td>${student.courseDuration || ''}</td>
-            <td>₹${formatCurrency(student.totalCourseFee) || '0.00'}</td>
-            <td>₹${formatCurrency(student.paidAmount) || '0.00'}</td>
-            <td>₹${formatCurrency(student.remainingAmount) || '0.00'}</td>
+            <td>
+                <div class="student-info">
+                    <div class="student-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="student-details">
+                        <span class="student-name">${toUpperCase(student.name) || 'N/A'}</span>
+                        <span class="student-id">ID: STU${String(student.id).padStart(4, '0')}</span>
+                    </div>
+                </div>
+            </td>
+            <td>
+                <div class="contact-info">
+                    <div class="contact-item">
+                        <i class="fas fa-phone"></i>
+                        <span>${student.phoneNumber || 'N/A'}</span>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fas fa-envelope"></i>
+                        <span>${toUpperCase(student.email) || 'N/A'}</span>
+                    </div>
+                </div>
+            </td>
+            <td>
+                <div class="course-info">
+                    <span class="course-name">${toUpperCase(student.courses) || 'N/A'}</span>
+                    <span class="course-duration">${student.courseDuration || 'N/A'}</span>
+                </div>
+            </td>
+            <td>
+                <div class="fee-status">
+                    <span class="fee-amount">₹${formatCurrency(paidAmount)} / ₹${formatCurrency(totalFee)}</span>
+                    <div class="fee-progress">
+                        <div class="fee-progress-bar" style="width: ${progress}%"></div>
+                    </div>
+                </div>
+            </td>
             <td>
                 <div class="action-buttons">
                     <button class="action-btn edit-btn" data-id="${student.id}" title="Edit Student">
                         <i class="fas fa-edit"></i>
-                        <span>Edit</span>
                     </button>
                     <button class="action-btn payment-btn" data-id="${student.id}" data-name="${toUpperCase(student.name)}" data-phone="${student.phoneNumber}" title="Add Payment">
                         <i class="fas fa-money-bill"></i>
-                        <span>Payment</span>
                     </button>
                     <button class="action-btn delete-btn" data-id="${student.id}" title="Delete Student">
                         <i class="fas fa-trash"></i>
-                        <span>Delete</span>
                     </button>
                     <button class="action-btn id-card-btn" data-id="${student.id}" title="View ID Card">
                         <i class="fas fa-id-card"></i>
-                        <span>ID Card</span>
                     </button>
                 </div>
             </td>
@@ -195,6 +273,29 @@ function displayStudents(students) {
         
         tbody.appendChild(row);
     });
+}
+
+// Update stats
+function updateStats(students) {
+    // Total Students
+    const totalStudentsCount = document.getElementById('totalStudentsCount');
+    if (totalStudentsCount) {
+        totalStudentsCount.textContent = students.length;
+    }
+    
+    // Total Fees
+    const totalFees = document.getElementById('totalFees');
+    if (totalFees) {
+        const total = students.reduce((sum, student) => sum + (parseFloat(student.totalCourseFee) || 0), 0);
+        totalFees.textContent = `₹${formatCurrency(total)}`;
+    }
+    
+    // Active Students (students with remaining fees > 0)
+    const activeStudents = document.getElementById('activeStudents');
+    if (activeStudents) {
+        const active = students.filter(student => (parseFloat(student.remainingAmount) || 0) > 0).length;
+        activeStudents.textContent = active;
+    }
 }
 
 // Helper function to format currency values
@@ -359,14 +460,83 @@ async function deleteStudent(id) {
     }
 }
 
-// Search filtering
-searchInput.addEventListener('input', () => {
-    fetchStudents();
-});
+// Enhanced search functionality
+function filterStudents(students, searchTerm, filterType) {
+    if (!searchTerm) return students;
+    
+    searchTerm = searchTerm.toLowerCase().trim();
+    
+    return students.filter(student => {
+        switch (filterType) {
+            case 'name':
+                return student.name?.toLowerCase().includes(searchTerm);
+            case 'id':
+                return `stu${String(student.id).padStart(4, '0')}`.includes(searchTerm);
+            case 'course':
+                return student.courses?.toLowerCase().includes(searchTerm);
+            case 'phone':
+                return student.phoneNumber?.includes(searchTerm);
+            case 'email':
+                return student.email?.toLowerCase().includes(searchTerm);
+            case 'all':
+            default:
+                return (
+                    student.name?.toLowerCase().includes(searchTerm) ||
+                    `stu${String(student.id).padStart(4, '0')}`.includes(searchTerm) ||
+                    student.courses?.toLowerCase().includes(searchTerm) ||
+                    student.phoneNumber?.includes(searchTerm) ||
+                    student.email?.toLowerCase().includes(searchTerm)
+                );
+        }
+    });
+}
 
-// Initialize all event listeners and functionality after DOM is loaded
+// Initialize search functionality
+function initializeSearch() {
+    const searchInput = document.getElementById('searchInput');
+    const searchFilter = document.getElementById('searchFilter');
+    const clearSearchBtn = document.querySelector('.clear-search');
+    
+    if (!searchInput || !searchFilter || !clearSearchBtn) return;
+    
+    let searchTimeout;
+    
+    searchInput.addEventListener('input', (e) => {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => {
+            const searchTerm = e.target.value;
+            const filterType = searchFilter.value;
+            const filteredStudents = filterStudents(allStudents, searchTerm, filterType);
+            displayStudents(filteredStudents);
+            
+            // Show/hide clear button
+            clearSearchBtn.style.display = searchTerm ? 'flex' : 'none';
+        }, 300); // Debounce search for better performance
+    });
+    
+    searchFilter.addEventListener('change', () => {
+        const searchTerm = searchInput.value;
+        const filterType = searchFilter.value;
+        const filteredStudents = filterStudents(allStudents, searchTerm, filterType);
+        displayStudents(filteredStudents);
+    });
+    
+    clearSearchBtn.addEventListener('click', () => {
+        searchInput.value = '';
+        clearSearchBtn.style.display = 'none';
+        displayStudents(allStudents);
+    });
+    
+    // Hide clear button initially
+    clearSearchBtn.style.display = 'none';
+}
+
+// Update the DOMContentLoaded event listener
 document.addEventListener('DOMContentLoaded', function() {
     console.log('DOM Content Loaded - Initializing application');
+    
+    // Initialize search functionality
+    initializeSearch();
     
     // Initialize tab buttons
     const tabButtons = document.querySelectorAll('.tab-btn');
@@ -382,18 +552,26 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Show corresponding content
             tabContents.forEach(content => {
-                content.classList.remove('active');
-                if (content.id === `${tabId}-panel`) {
-                    content.classList.add('active');
+                if (content) {
+                    content.classList.remove('active');
+                    if (content.id === `${tabId}-panel`) {
+                        content.classList.add('active');
+                    }
                 }
             });
 
             // Special handling for teachers tab
             if (tabId === 'teachers') {
-                document.getElementById('teachers-section').style.display = 'block';
-                loadTeachers();
+                const teachersSection = document.getElementById('teachers-section');
+                if (teachersSection) {
+                    teachersSection.style.display = 'block';
+                    loadTeachers();
+                }
             } else {
-                document.getElementById('teachers-section').style.display = 'none';
+                const teachersSection = document.getElementById('teachers-section');
+                if (teachersSection) {
+                    teachersSection.style.display = 'none';
+                }
             }
         });
     });
@@ -410,14 +588,17 @@ document.addEventListener('DOMContentLoaded', function() {
     const teachersBtn = document.querySelector('.tab-btn[data-tab="teachers"]');
     const modal = document.getElementById('maintenanceModal');
     const closeModal = document.getElementById('closeMaintenanceModal');
+    
     if (teachersBtn && modal && closeModal) {
         teachersBtn.addEventListener('click', function(e) {
             e.preventDefault();
             modal.style.display = 'block';
         });
+        
         closeModal.addEventListener('click', function() {
             modal.style.display = 'none';
         });
+        
         modal.addEventListener('click', function(e) {
             if (e.target === modal) {
                 modal.style.display = 'none';
@@ -434,19 +615,22 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // Switch to Add Student tab
             const addTab = document.querySelector('[data-tab="add"]');
-            if (addTab) addTab.click();
-
-            // Fill the form fields
-            document.getElementById('name').value = enquiry.name || '';
-            document.getElementById('phoneNumber').value = enquiry.phoneNumber || '';
-            document.getElementById('courses').value = enquiry.course || '';
-            document.getElementById('courseDuration').value = enquiry.courseDuration || '';
-            // If you have a remarks field in the student form, fill it too
-            if (document.getElementById('remarks')) {
-                document.getElementById('remarks').value = enquiry.remarks || '';
+            if (addTab) {
+                addTab.click();
             }
 
-            // localStorage.removeItem('enquiryToStudent'); // Keep for form submission
+            // Fill the form fields
+            const nameInput = document.getElementById('name');
+            const phoneInput = document.getElementById('phoneNumber');
+            const coursesInput = document.getElementById('courses');
+            const durationInput = document.getElementById('courseDuration');
+            const remarksInput = document.getElementById('remarks');
+
+            if (nameInput) nameInput.value = enquiry.name || '';
+            if (phoneInput) phoneInput.value = enquiry.phoneNumber || '';
+            if (coursesInput) coursesInput.value = enquiry.course || '';
+            if (durationInput) durationInput.value = enquiry.courseDuration || '';
+            if (remarksInput) remarksInput.value = enquiry.remarks || '';
         }
     }
 });
@@ -926,22 +1110,16 @@ function showIdCard(studentId) {
     }
 
     console.log('Found student for ID card:', student);
-
-    // Generate QR code for student
-    const qrData = `Student ID: ${student.id}\nName: ${student.name}\nCourse: ${student.courses}`;
-    const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=${encodeURIComponent(qrData)}`;
     
     // Calculate valid till date based on course duration
     const validTill = calculateValidTillDate(student.courseDuration);
     
     // Update ID card content
-    document.getElementById('idCardPhoto').src = student.photoUrl || './uploads/students/default.png';
     document.getElementById('idCardName').textContent = student.name;
     document.getElementById('idCardId').textContent = `STU${String(student.id).padStart(4, '0')}`;
     document.getElementById('idCardCourse').textContent = student.courses;
     document.getElementById('idCardDuration').textContent = student.courseDuration;
     document.getElementById('idCardValidTill').textContent = validTill;
-    document.getElementById('idCardQR').src = qrCodeUrl;
     
     // Show modal
     const modal = document.getElementById('idCardModal');
@@ -1033,3 +1211,278 @@ document.getElementById('shareIdCard').addEventListener('click', async () => {
 const html2canvasScript = document.createElement('script');
 html2canvasScript.src = 'https://html2canvas.hertzen.com/dist/html2canvas.min.js';
 document.head.appendChild(html2canvasScript);
+
+// Reports functionality
+async function loadReports() {
+    try {
+        console.log('Loading reports...');
+        
+        // Fetch enquiries
+        const enquiriesResponse = await fetch('http://localhost:8080/api/enquiries');
+        if (!enquiriesResponse.ok) {
+            throw new Error(`Failed to fetch enquiries: ${enquiriesResponse.status}`);
+        }
+        const enquiries = await enquiriesResponse.json();
+        console.log('Fetched enquiries:', enquiries);
+        
+        // Set current month as default in selector
+        const currentMonth = new Date().getMonth();
+        const monthSelect = document.getElementById('enquiryMonthSelect');
+        if (!monthSelect) {
+            console.error('Month select element not found');
+            return;
+        }
+        monthSelect.value = currentMonth;
+        
+        // Load initial month's data
+        loadMonthEnquiries(enquiries, currentMonth);
+        
+        // Add event listener for month change
+        monthSelect.addEventListener('change', (e) => {
+            loadMonthEnquiries(enquiries, parseInt(e.target.value));
+        });
+        
+        // Get pending enquiries
+        const pendingEnquiries = enquiries.filter(enquiry => 
+            enquiry.status === 'PENDING' || enquiry.status === 'pending'
+        );
+        console.log('Pending enquiries:', pendingEnquiries);
+        
+        // Update pending enquiries count
+        const pendingEnquiriesCount = document.getElementById('pendingEnquiries');
+        if (pendingEnquiriesCount) {
+            pendingEnquiriesCount.textContent = pendingEnquiries.length;
+        }
+        
+        // Update pending enquiries list
+        const pendingEnquiriesList = document.querySelector('#pendingEnquiriesList tbody');
+        if (pendingEnquiriesList) {
+            if (pendingEnquiries.length === 0) {
+                pendingEnquiriesList.innerHTML = `
+                    <tr>
+                        <td colspan="4" style="text-align: center;">No pending enquiries</td>
+                    </tr>
+                `;
+            } else {
+                pendingEnquiriesList.innerHTML = pendingEnquiries.map(enquiry => `
+                    <tr>
+                        <td>${enquiry.name || 'N/A'}</td>
+                        <td>${enquiry.course || 'N/A'}</td>
+                        <td>${enquiry.phoneNumber || 'N/A'}</td>
+                        <td>${enquiry.createdAt ? new Date(enquiry.createdAt).toLocaleDateString() : 'N/A'}</td>
+                    </tr>
+                `).join('');
+            }
+        } else {
+            console.error('Pending enquiries list element not found');
+        }
+        
+        // Fetch students for pending fees
+        const studentsResponse = await fetch(API_URL);
+        if (!studentsResponse.ok) {
+            throw new Error(`Failed to fetch students: ${studentsResponse.status}`);
+        }
+        const students = await studentsResponse.json();
+        console.log('Fetched students:', students);
+        
+        // Calculate total pending fees
+        const totalPendingFees = students.reduce((total, student) => {
+            return total + (parseFloat(student.remainingAmount) || 0);
+        }, 0);
+        
+        const totalPendingFeesElement = document.getElementById('totalPendingFees');
+        if (totalPendingFeesElement) {
+            totalPendingFeesElement.textContent = `₹${totalPendingFees.toFixed(2)}`;
+        }
+        
+        // Update pending fees list
+        const pendingFeesList = document.getElementById('pendingFeesList');
+        if (pendingFeesList) {
+            const studentsWithPendingFees = students
+                .filter(student => (parseFloat(student.remainingAmount) || 0) > 0)
+                .sort((a, b) => (parseFloat(b.remainingAmount) || 0) - (parseFloat(a.remainingAmount) || 0))
+                .slice(0, 5);
+                
+            if (studentsWithPendingFees.length === 0) {
+                pendingFeesList.innerHTML = `
+                    <div class="report-list-item">
+                        <span class="item-name">No pending fees</span>
+                    </div>
+                `;
+            } else {
+                pendingFeesList.innerHTML = studentsWithPendingFees.map(student => `
+                    <div class="report-list-item">
+                        <span class="item-name">${student.name || 'N/A'}</span>
+                        <span class="item-value">₹${(parseFloat(student.remainingAmount) || 0).toFixed(2)}</span>
+                    </div>
+                `).join('');
+            }
+        }
+        
+        // Update total students count
+        const totalStudentsElement = document.getElementById('totalStudents');
+        if (totalStudentsElement) {
+            totalStudentsElement.textContent = students.length;
+        }
+        
+        // Initialize student growth chart
+        initializeStudentGrowthChart(students);
+        
+    } catch (error) {
+        console.error('Error loading reports:', error);
+        showNotification('Error loading reports: ' + error.message, true);
+    }
+}
+
+function loadMonthEnquiries(enquiries, month) {
+    console.log('Loading enquiries for month:', month);
+    const currentYear = new Date().getFullYear();
+    const monthEnquiries = enquiries.filter(enquiry => {
+        const enquiryDate = new Date(enquiry.createdAt);
+        return enquiryDate.getMonth() === month && 
+               enquiryDate.getFullYear() === currentYear;
+    });
+    console.log('Filtered enquiries for month:', monthEnquiries);
+    
+    // Update count
+    const countElement = document.getElementById('currentMonthEnquiries');
+    if (countElement) {
+        countElement.textContent = monthEnquiries.length;
+    }
+    
+    // Update chart
+    initializeEnquiriesChart(monthEnquiries);
+}
+
+function initializeEnquiriesChart(enquiries) {
+    console.log('Initializing enquiries chart with data:', enquiries);
+    const ctx = document.getElementById('enquiriesChart');
+    if (!ctx) {
+        console.error('Enquiries chart canvas not found');
+        return;
+    }
+    
+    // Group enquiries by date
+    const enquiriesByDate = {};
+    enquiries.forEach(enquiry => {
+        if (enquiry.createdAt) {
+            const date = new Date(enquiry.createdAt).toLocaleDateString();
+            enquiriesByDate[date] = (enquiriesByDate[date] || 0) + 1;
+        }
+    });
+    console.log('Enquiries grouped by date:', enquiriesByDate);
+    
+    // Sort dates
+    const sortedDates = Object.keys(enquiriesByDate).sort((a, b) => new Date(a) - new Date(b));
+    
+    // Destroy existing chart if it exists
+    if (enquiriesChart instanceof Chart) {
+        enquiriesChart.destroy();
+    }
+    
+    // Create new chart
+    enquiriesChart = new Chart(ctx.getContext('2d'), {
+        type: 'line',
+        data: {
+            labels: sortedDates,
+            datasets: [{
+                label: 'Enquiries',
+                data: sortedDates.map(date => enquiriesByDate[date]),
+                borderColor: '#1976d2',
+                backgroundColor: 'rgba(25, 118, 210, 0.1)',
+                tension: 0.4,
+                fill: true
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        stepSize: 1
+                    }
+                }
+            }
+        }
+    });
+}
+
+function initializeStudentGrowthChart(students) {
+    console.log('Initializing student growth chart with data:', students);
+    const ctx = document.getElementById('studentGrowthChart');
+    if (!ctx) {
+        console.error('Student growth chart canvas not found');
+        return;
+    }
+    
+    // Group students by month
+    const studentsByMonth = {};
+    students.forEach(student => {
+        if (student.createdAt) {
+            const date = new Date(student.createdAt);
+            const monthYear = `${date.getMonth() + 1}/${date.getFullYear()}`;
+            studentsByMonth[monthYear] = (studentsByMonth[monthYear] || 0) + 1;
+        }
+    });
+    console.log('Students grouped by month:', studentsByMonth);
+    
+    // Sort months chronologically
+    const sortedMonths = Object.keys(studentsByMonth).sort((a, b) => {
+        const [monthA, yearA] = a.split('/');
+        const [monthB, yearB] = b.split('/');
+        return new Date(yearA, monthA - 1) - new Date(yearB, monthB - 1);
+    });
+    
+    // Destroy existing chart if it exists
+    if (studentGrowthChart instanceof Chart) {
+        studentGrowthChart.destroy();
+    }
+    
+    // Create new chart
+    studentGrowthChart = new Chart(ctx.getContext('2d'), {
+        type: 'bar',
+        data: {
+            labels: sortedMonths,
+            datasets: [{
+                label: 'New Students',
+                data: sortedMonths.map(month => studentsByMonth[month]),
+                backgroundColor: '#42a5f5',
+                borderRadius: 5
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        stepSize: 1
+                    }
+                }
+            }
+        }
+    });
+}
+
+// Add event listener for reports tab
+document.querySelector('[data-tab="reports"]').addEventListener('click', () => {
+    loadReports();
+});
+
+// Add Chart.js library
+const chartScript = document.createElement('script');
+chartScript.src = 'https://cdn.jsdelivr.net/npm/chart.js';
+document.head.appendChild(chartScript);

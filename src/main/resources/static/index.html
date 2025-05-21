@@ -44,6 +44,10 @@
                     <i class="fas fa-money-bill"></i>
                     <span>Payments</span>
                 </button>
+                <button class="tab-btn" data-tab="reports">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>Reports</span>
+                </button>
                 <a href="enquiry.html" class="tab-btn">
                     <i class="fas fa-question-circle"></i>
                     <span>Enquiries</span>
@@ -54,45 +58,101 @@
         <div class="content-panel">
             <!-- List Students Panel -->
             <div id="list-panel" class="tab-content active">
-                <div class="search-section">
-                    <input type="text" id="searchInput" placeholder="Search students...">
+                <div class="panel-header">
+                    <div class="panel-title">
+                        <h2><i class="fas fa-users"></i> Student List</h2>
+                        <p class="subtitle">Manage and view all student records</p>
+                    </div>
+                    <div class="panel-actions">
+                        <div class="search-container">
+                            <div class="search-box">
+                                <i class="fas fa-search"></i>
+                                <input type="text" id="searchInput" placeholder="Search by name, ID, course, phone...">
+                            </div>
+                            <div class="search-filters" style="display: none;">
+                                <select id="searchFilter">
+                                    <option value="all">All Fields</option>
+                                    <option value="name">Name</option>
+                                    <option value="id">Student ID</option>
+                                    <option value="course">Course</option>
+                                    <option value="phone">Phone</option>
+                                    <option value="email">Email</option>
+                                </select>
+                                <button class="clear-search" title="Clear Search">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="students-section">
-                    <table id="studentsTable">
-                        <thead>
-                            <tr>
-                                <th>Name</th>
-                                <th>Father's Name</th>
-                                <th>Mother's Name</th>
-                                <th>Date of Birth</th>
-                                <th>Email</th>
-                                <th>Phone Number</th>
-                                <th>Address</th>
-                                <th>Courses</th>
-                                <th>Duration</th>
-                                <th>Total Fee</th>
-                                <th>Paid</th>
-                                <th>Remaining</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody></tbody>
-                    </table>
+                
+                <div class="panel-content">
+                    <div class="list-stats">
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-user-graduate"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3 id="totalStudentsCount">0</h3>
+                                <p>Total Students</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-money-bill-wave"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3 id="totalFees">₹0</h3>
+                                <p>Total Fees</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3 id="activeStudents">0</h3>
+                                <p>Active Students</p>
+                            </div>
+                        </div>
+                    </div>
+    
+                    <div class="students-section">
+                        <div class="table-container">
+                            <table id="studentsTable">
+                                <thead>
+                                    <tr>
+                                        <th>Student Info</th>
+                                        <th>Contact</th>
+                                        <th>Course Details</th>
+                                        <th>Fee Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
             </div>
 
             <!-- Add Student Panel -->
             <div id="add-panel" class="tab-content">
-                <div class="add-student-section">
-                    <div class="form-header">
-                        <h2>Add New Student</h2>
-                        <p class="form-subtitle">Please fill in all required fields marked with *</p>
+                <div class="panel-header">
+                    <div class="panel-title">
+                        <h2><i class="fas fa-user-plus"></i> Add New Student</h2>
+                        <p class="subtitle">Create a new student record with complete information</p>
                     </div>
+                </div>
+                <div class="panel-content">
                     <form id="studentForm" class="professional-form">
                         <input type="hidden" id="studentId">
                         
                         <div class="form-section">
-                            <h3>Personal Information</h3>
+                            <div class="section-header">
+                                <i class="fas fa-user"></i>
+                                <h3>Personal Information</h3>
+                            </div>
                             <div class="form-grid">
                                 <div class="form-group">
                                     <label for="name">Full Name *</label>
@@ -114,7 +174,10 @@
                         </div>
 
                         <div class="form-section">
-                            <h3>Contact Information</h3>
+                            <div class="section-header">
+                                <i class="fas fa-address-card"></i>
+                                <h3>Contact Information</h3>
+                            </div>
                             <div class="form-grid">
                                 <div class="form-group">
                                     <label for="email">Email Address *</label>
@@ -133,7 +196,10 @@
                         </div>
 
                         <div class="form-section">
-                            <h3>Course Information</h3>
+                            <div class="section-header">
+                                <i class="fas fa-graduation-cap"></i>
+                                <h3>Course Information</h3>
+                            </div>
                             <div class="form-grid">
                                 <div class="form-group">
                                     <label for="courses">Course(s) *</label>
@@ -181,63 +247,200 @@
 
             <!-- Payments Panel -->
             <div id="payments-panel" class="tab-content">
-                <div class="payments-section">
-                    <div class="payment-actions">
-                        <button id="addPaymentBtn" class="action-btn">
+                <div class="panel-header">
+                    <div class="panel-title">
+                        <h2><i class="fas fa-money-bill-wave"></i> Payment Management</h2>
+                        <p class="subtitle">Track and manage student payments</p>
+                    </div>
+                    <div class="panel-actions">
+                        <div class="search-container">
+                            <div class="search-box">
+                                <i class="fas fa-search"></i>
+                                <input type="text" id="paymentSearchInput" placeholder="Search payments...">
+                            </div>
+                            <div class="search-filters">
+                                <select id="paymentFilter">
+                                    <option value="all">All Fields</option>
+                                    <option value="student">Student Name</option>
+                                    <option value="amount">Amount</option>
+                                    <option value="date">Date</option>
+                                    <option value="status">Status</option>
+                                </select>
+                                <button class="clear-search" title="Clear Search">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <button id="addPaymentBtn" class="action-btn primary">
                             <i class="fas fa-plus"></i> Add New Payment
                         </button>
-                        <div class="payment-search">
-                            <input type="text" id="paymentSearchInput" placeholder="Search payments...">
-                        </div>
                     </div>
-
+                </div>
+                
+                <div class="panel-content">
                     <div class="payment-form" style="display: none;">
-                        <h3>Add Payment</h3>
+                        <div class="form-header">
+                            <h3><i class="fas fa-plus-circle"></i> Add Payment</h3>
+                        </div>
                         <form id="paymentForm">
-                            <div class="form-group">
-                                <label for="studentSelect">Student:</label>
-                                <select id="studentSelect" required>
-                                    <option value="">Select Student</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="amount">Amount:</label>
-                                <input type="number" id="amount" required min="0" step="0.01">
-                            </div>
-                            <div class="form-group">
-                                <label for="paymentMethod">Payment Method:</label>
-                                <select id="paymentMethod" required>
-                                    <option value="CASH">Cash</option>
-                                    <option value="ONLINE">Online</option>
-                                    <option value="CHEQUE">Cheque</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="description">Description:</label>
-                                <input type="text" id="description" required>
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label for="studentSelect">Student:</label>
+                                    <select id="studentSelect" required>
+                                        <option value="">Select Student</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="amount">Amount:</label>
+                                    <input type="number" id="amount" required min="0" step="0.01">
+                                </div>
+                                <div class="form-group">
+                                    <label for="paymentMethod">Payment Method:</label>
+                                    <select id="paymentMethod" required>
+                                        <option value="CASH">Cash</option>
+                                        <option value="ONLINE">Online</option>
+                                        <option value="CHEQUE">Cheque</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="description">Description:</label>
+                                    <input type="text" id="description" required>
+                                </div>
                             </div>
                             <div class="form-actions">
-                                <button type="submit">Submit Payment</button>
-                                <button type="button" id="cancelPaymentBtn">Cancel</button>
+                                <button type="submit" class="btn-primary">
+                                    <i class="fas fa-save"></i> Submit Payment
+                                </button>
+                                <button type="button" id="cancelPaymentBtn" class="btn-secondary">
+                                    <i class="fas fa-times"></i> Cancel
+                                </button>
                             </div>
                         </form>
                     </div>
 
                     <div class="payments-list">
-                        <table id="paymentsTable">
-                            <thead>
-                                <tr>
-                                    <th>Receipt No</th>
-                                    <th>Student</th>
-                                    <th>Amount</th>
-                                    <th>Method</th>
-                                    <th>Date</th>
-                                    <th>Status</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody></tbody>
-                        </table>
+                        <div class="table-container">
+                            <table id="paymentsTable">
+                                <thead>
+                                    <tr>
+                                        <th>Receipt No</th>
+                                        <th>Student</th>
+                                        <th>Amount</th>
+                                        <th>Method</th>
+                                        <th>Date</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reports Panel -->
+            <div id="reports-panel" class="tab-content">
+                <div class="panel-header">
+                    <div class="panel-title">
+                        <h2><i class="fas fa-chart-bar"></i> Reports & Analytics</h2>
+                        <p class="subtitle">View detailed reports and analytics</p>
+                    </div>
+                </div>
+                
+                <div class="panel-content">
+                    <div class="reports-grid">
+                        <!-- Current Month Enquiries -->
+                        <div class="report-card">
+                            <div class="report-header">
+                                <h3><i class="fas fa-calendar-alt"></i> Enquiries by Month</h3>
+                            </div>
+                            <div class="report-body">
+                                <div class="month-selector">
+                                    <select id="enquiryMonthSelect" class="form-control">
+                                        <option value="0">January</option>
+                                        <option value="1">February</option>
+                                        <option value="2">March</option>
+                                        <option value="3">April</option>
+                                        <option value="4">May</option>
+                                        <option value="5">June</option>
+                                        <option value="6">July</option>
+                                        <option value="7">August</option>
+                                        <option value="8">September</option>
+                                        <option value="9">October</option>
+                                        <option value="10">November</option>
+                                        <option value="11">December</option>
+                                    </select>
+                                </div>
+                                <div class="report-stat">
+                                    <span class="stat-value" id="currentMonthEnquiries">0</span>
+                                    <span class="stat-label">Total Enquiries</span>
+                                </div>
+                                <div class="report-chart">
+                                    <canvas id="enquiriesChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Pending Enquiries -->
+                        <div class="report-card">
+                            <div class="report-header">
+                                <h3><i class="fas fa-clock"></i> Pending Enquiries</h3>
+                            </div>
+                            <div class="report-body">
+                                <div class="report-stat">
+                                    <span class="stat-value" id="pendingEnquiries">0</span>
+                                    <span class="stat-label">Pending</span>
+                                </div>
+                                <div class="report-list" id="pendingEnquiriesList">
+                                    <table class="mini-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Name</th>
+                                                <th>Course</th>
+                                                <th>Phone</th>
+                                                <th>Date</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <!-- Pending enquiries will be listed here -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Pending Fees -->
+                        <div class="report-card">
+                            <div class="report-header">
+                                <h3><i class="fas fa-money-bill-wave"></i> Pending Fees</h3>
+                            </div>
+                            <div class="report-body">
+                                <div class="report-stat">
+                                    <span class="stat-value" id="totalPendingFees">₹0</span>
+                                    <span class="stat-label">Total Pending</span>
+                                </div>
+                                <div class="report-list" id="pendingFeesList">
+                                    <!-- Students with pending fees will be listed here -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Student Growth -->
+                        <div class="report-card">
+                            <div class="report-header">
+                                <h3><i class="fas fa-chart-line"></i> Student Growth</h3>
+                            </div>
+                            <div class="report-body">
+                                <div class="report-stat">
+                                    <span class="stat-value" id="totalStudents">0</span>
+                                    <span class="stat-label">Total Students</span>
+                                </div>
+                                <div class="report-chart">
+                                    <canvas id="studentGrowthChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -261,13 +464,9 @@
             <span class="close-btn" id="closeIdCardModal">&times;</span>
             <div class="id-card">
                 <div class="id-card-header">
-                    <img src="./uploads/logo.png" alt="School Logo" class="school-logo">
                     <h2>Saha Institute of Management and Technology</h2>
                 </div>
                 <div class="id-card-body">
-                    <div class="student-photo">
-                        <img id="idCardPhoto" src="./uploads/students/default.png" alt="Student Photo">
-                    </div>
                     <div class="student-details">
                         <div class="detail-row">
                             <span class="label">Name:</span>
@@ -292,11 +491,7 @@
                     </div>
                 </div>
                 <div class="id-card-footer">
-                    <div class="qr-code">
-                        <img id="idCardQR" src="" alt="QR Code">
-                    </div>
                     <div class="signature">
-                        <img src="./uploads/signature.png" alt="Authorized Signature">
                         <p>Authorized Signature</p>
                     </div>
                 </div>

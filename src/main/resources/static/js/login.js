@@ -72,7 +72,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 localStorage.setItem('userType', 'admin');
                 
                 // Redirect to main page
-                window.location.href = 'index.html';
+                window.location.href = 'dashboard.html';
             } else {
                 showNotification('Invalid username or password', true);
             }
