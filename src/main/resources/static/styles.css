@@ -9,13 +9,15 @@ body {
 header {
     background-color: #2c3e50;
     color: white;
-    padding: 15px 20px;
+    padding: 25px 20px;
     text-align: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
 
 header h1 {
     margin: 0;
-    font-size: 24px;
+    font-size: 28px;
+    font-weight: 600;
 }
 
 header p {
@@ -2030,6 +2032,12 @@ label[for]:after {
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
+.student-name.clickable {
+    cursor: pointer;
+    color: #1976d2;
+    text-decoration: underline;
+}
+
 /* Responsive Design */
 @media (max-width: 1024px) {
     .list-header {
@@ -2113,4 +2121,75 @@ label[for]:after {
     border-radius: 8px;
     padding: 1.5rem;
     box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.profile-section {
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #eee;
+}
+
+.profile-section:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+    margin-bottom: 0;
+}
+
+.profile-section h3 {
+    color: #2c3e50;
+    font-size: 18px;
+    margin-top: 0;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.profile-section p {
+    margin: 8px 0;
+    font-size: 14px;
+    color: #34495e;
+}
+
+.profile-section strong {
+    color: #2c3e50;
+    display: inline-block;
+    min-width: 120px;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+    .list-header {
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .list-actions {
+        width: 100%;
+        flex-direction: column;
+    }
+    
+    .search-box {
+        width: 100%;
+    }
+    
+    .action-btn.primary {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 768px) {
+    .list-stats {
+        grid-template-columns: 1fr;
+    }
+
+    .students-section .action-buttons {
+        flex-wrap: wrap;
+    }
+
+    .students-section .action-buttons .action-btn {
+        flex: 1;
+        justify-content: center;
+    }
 }

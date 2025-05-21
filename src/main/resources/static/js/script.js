@@ -181,7 +181,7 @@ function displayStudents(students) {
                         <i class="fas fa-user"></i>
                     </div>
                     <div class="student-details">
-                        <span class="student-name">${toUpperCase(student.name) || 'N/A'}</span>
+                        <span class="student-name clickable" data-id="${student.id}">${toUpperCase(student.name) || 'N/A'}</span>
                         <span class="student-id">ID: STU${String(student.id).padStart(4, '0')}</span>
                     </div>
                 </div>
@@ -214,6 +214,9 @@ function displayStudents(students) {
             </td>
             <td>
                 <div class="action-buttons">
+                    <button class="action-btn view-profile-btn" data-id="${student.id}" title="View Profile">
+                        <i class="fas fa-user"></i> View Profile
+                    </button>
                     <button class="action-btn edit-btn" data-id="${student.id}" title="Edit Student">
                         <i class="fas fa-edit"></i>
                     </button>
@@ -268,6 +271,22 @@ function displayStudents(students) {
             idCardBtn.addEventListener('click', () => {
                 console.log('ID Card button clicked for student:', student);
                 showIdCard(student.id);
+            });
+        }
+        
+        // View Profile button event
+        const viewProfileBtn = row.querySelector('.view-profile-btn');
+        if (viewProfileBtn) {
+            viewProfileBtn.addEventListener('click', () => {
+                showStudentProfile(student.id);
+            });
+        }
+
+        // Clickable student name event
+        const studentNameSpan = row.querySelector('.student-name.clickable');
+        if (studentNameSpan) {
+            studentNameSpan.addEventListener('click', () => {
+                showStudentProfile(student.id);
             });
         }
         
@@ -1486,3 +1505,67 @@ document.querySelector('[data-tab="reports"]').addEventListener('click', () => {
 const chartScript = document.createElement('script');
 chartScript.src = 'https://cdn.jsdelivr.net/npm/chart.js';
 document.head.appendChild(chartScript);
+
+// Function to display student profile in a modal
+async function showStudentProfile(studentId) {
+    console.log('Showing profile for student ID:', studentId);
+    const student = allStudents.find(s => s.id === studentId);
+    const modal = document.getElementById('studentProfileModal');
+    const profileContent = document.getElementById('studentProfileContent');
+
+    if (!student || !modal || !profileContent) {
+        console.error('Could not find student data or modal elements');
+        showNotification('Error loading student profile', true);
+        return;
+    }
+
+    // Format student details for display
+    profileContent.innerHTML = `
+        <div class="profile-section">
+            <h3><i class="fas fa-user"></i> Personal Information</h3>
+            <p><strong>Name:</strong> ${toUpperCase(student.name) || 'N/A'}</p>
+            <p><strong>Student ID:</strong> STU${String(student.id).padStart(4, '0')}</p>
+            <p><strong>Father's Name:</strong> ${toUpperCase(student.fatherName) || 'N/A'}</p>
+            <p><strong>Mother's Name:</strong> ${toUpperCase(student.motherName) || 'N/A'}</p>
+            <p><strong>Date of Birth:</strong> ${student.dob || 'N/A'}</p>
+        </div>
+
+        <div class="profile-section">
+            <h3><i class="fas fa-address-card"></i> Contact Information</h3>
+            <p><strong>Phone Number:</strong> ${student.phoneNumber || 'N/A'}</p>
+            <p><strong>Email Address:</strong> ${toUpperCase(student.email) || 'N/A'}</p>
+            <p><strong>Address:</strong> ${student.address || 'N/A'}</p>
+        </div>
+
+        <div class="profile-section">
+            <h3><i class="fas fa-graduation-cap"></i> Course Information</h3>
+            <p><strong>Course(s):</strong> ${toUpperCase(student.courses) || 'N/A'}</p>
+            <p><strong>Course Duration:</strong> ${student.courseDuration || 'N/A'}</p>
+            <p><strong>Total Course Fee:</strong> ₹${formatCurrency(student.totalCourseFee) || 'N/A'}</p>
+        </div>
+
+        <div class="profile-section">
+            <h3><i class="fas fa-money-bill-wave"></i> Fee Status</h3>
+            <p><strong>Paid Amount:</strong> ₹${formatCurrency(student.paidAmount) || 'N/A'}</p>
+            <p><strong>Remaining Amount:</strong> ₹${formatCurrency(student.remainingAmount) || 'N/A'}</p>
+            <div class="fee-progress" style="width: 100%; height: 10px; margin-top: 10px;">
+                 <div class="fee-progress-bar" style="width: ${(parseFloat(student.paidAmount) / parseFloat(student.totalCourseFee)) * 100 || 0}%"></div>
+            </div>
+        </div>
+    `;
+
+    modal.style.display = 'block';
+}
+
+// Event listener for closing the student profile modal
+document.getElementById('closeStudentProfileModal').addEventListener('click', () => {
+    document.getElementById('studentProfileModal').style.display = 'none';
+});
+
+// Close modal when clicking outside
+window.addEventListener('click', (event) => {
+    const modal = document.getElementById('studentProfileModal');
+    if (event.target === modal) {
+        modal.style.display = 'none';
+    }
+});
