@@ -19,7 +19,7 @@ const EnquiryForm = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            await axios.post('http://localhost:8080/api/enquiries', formData);
+            await axios.post('http://192.168.0.100:8080/api/enquiries', formData);
             setFormData({
                 name: '',
                 dateOfEnquiry: '',

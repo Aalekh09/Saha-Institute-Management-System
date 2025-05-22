@@ -188,10 +188,15 @@
 }
 
 .table-container {
+    width: 100%;
     overflow-x: auto;
-    background: white;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    -webkit-overflow-scrolling: touch;
+    margin: 20px 0;
+}
+
+.table-container table {
+    min-width: 800px; /* Ensures table doesn't shrink too much */
+    width: 100%;
 }
 
 #studentsTable {
@@ -388,11 +393,128 @@
     }
 
     .table-container {
-        margin: 0 -20px;
-        border-radius: 0;
+        margin: 10px -15px; /* Negative margin to allow full-width scrolling */
+        padding: 0 15px; /* Add padding to maintain alignment */
+    }
+    
+    .table-container table {
+        font-size: 14px; /* Slightly smaller font for mobile */
+    }
+    
+    .table-container th,
+    .table-container td {
+        padding: 8px; /* Reduce padding for mobile */
+        white-space: nowrap; /* Prevent text wrapping */
+    }
+}
+
+/* Mobile Responsive Styles */
+@media screen and (max-width: 768px) {
+    .students-section {
+        padding: 10px;
     }
 
-    #studentsTable {
-        font-size: 13px;
+    .table-container {
+        width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        margin: 0 -10px;
+        padding: 0 10px;
+        position: relative;
+        touch-action: pan-x;
+        overscroll-behavior-x: contain;
+    }
+
+    .table-container table {
+        min-width: 800px;
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+
+    .table-container th,
+    .table-container td {
+        padding: 8px;
+        white-space: nowrap;
+        position: relative;
+    }
+
+    /* Visual indicator for scrollable content */
+    .table-container::after {
+        content: '';
+        position: absolute;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        width: 20px;
+        background: linear-gradient(to right, transparent, rgba(0,0,0,0.05));
+        pointer-events: none;
+        z-index: 1;
+    }
+
+    /* Improve touch targets */
+    .action-buttons {
+        min-width: 120px;
+        display: flex;
+        gap: 5px;
+        flex-wrap: nowrap;
+    }
+
+    .action-btn {
+        min-width: 32px;
+        height: 32px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 6px;
+        font-size: 12px;
+    }
+
+    /* Adjust search container for mobile */
+    .panel-actions .search-container {
+        flex-direction: column;
+        padding: 10px;
+    }
+
+    .panel-actions .search-box {
+        width: 100%;
+        min-width: auto;
+    }
+
+    .panel-actions .search-filters {
+        width: 100%;
+        justify-content: space-between;
+    }
+}
+
+/* Additional optimizations for very small screens */
+@media screen and (max-width: 480px) {
+    .table-container {
+        margin: 0 -5px;
+        padding: 0 5px;
+    }
+
+    .table-container th,
+    .table-container td {
+        padding: 6px;
+    }
+
+    .action-btn {
+        min-width: 28px;
+        height: 28px;
+        padding: 4px;
+        font-size: 11px;
+    }
+
+    .student-info {
+        min-width: 150px;
+    }
+
+    .contact-info {
+        min-width: 120px;
+    }
+
+    .course-info {
+        min-width: 120px;
     }
 } 

@@ -10,7 +10,7 @@ if (username) {
     document.getElementById('username').textContent = username;
 }
 
-const API_URL = 'http://localhost:8080/api/students'; // Adjust as needed
+const API_URL = 'http://192.168.0.100:8080/api/students'; // Adjust as needed
 
 const studentsTableBody = document.querySelector('#studentsTable tbody');
 const studentForm = document.getElementById('studentForm');
@@ -350,7 +350,15 @@ function loadEditStudent(student) {
         cancelEditBtn.style.display = 'inline-block';
 
         // Scroll to the form
-        document.querySelector('.add-student-section').scrollIntoView({ behavior: 'smooth' });
+        // Add a small delay to ensure the element is in the DOM
+        setTimeout(() => {
+            const addStudentSection = document.querySelector('.add-student-section');
+            if (addStudentSection) {
+                addStudentSection.scrollIntoView({ behavior: 'smooth' });
+            } else {
+                console.error('Add student section not found after tab switch');
+            }
+        }, 100); // Adjust delay if needed
         
         showNotification('Edit mode activated. Please update the student details.');
     } catch (error) {
@@ -431,7 +439,7 @@ studentForm.addEventListener('submit', async (e) => {
             if (enquiryData && markConfirmedCheckbox && markConfirmedCheckbox.checked) {
                 const enquiry = JSON.parse(enquiryData);
                 try {
-                    const convertResponse = await fetch(`http://localhost:8080/api/enquiries/${enquiry.id}/convert`, {
+                    const convertResponse = await fetch(`http://192.168.0.100:8080/api/enquiries/${enquiry.id}/convert`, {
                         method: 'POST'
                     });
 
@@ -592,6 +600,14 @@ document.addEventListener('DOMContentLoaded', function() {
                     teachersSection.style.display = 'none';
                 }
             }
+
+            // If the activated tab is the add tab, scroll to the form
+            if (tabId === 'add') {
+                const addStudentSection = document.querySelector('#add-panel .add-student-section');
+                if (addStudentSection) {
+                    addStudentSection.scrollIntoView({ behavior: 'smooth' });
+                }
+            }
         });
     });
 
@@ -655,7 +671,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // Payment related constants
-const PAYMENT_API_URL = 'http://localhost:8080/api/payments';
+const PAYMENT_API_URL = 'http://192.168.0.100:8080/api/payments';
 const paymentForm = document.getElementById('paymentForm');
 const addPaymentBtn = document.getElementById('addPaymentBtn');
 const cancelPaymentBtn = document.getElementById('cancelPaymentBtn');
@@ -899,7 +915,7 @@ function generateReceipt(payment) {
         <body>
             <div class="receipt">
                 <div class="header">
-                    <h1>Saha Institute of Management and Technology</h1>
+                    <h1>Saha Computer Of Mgmt. & Tech</h1>
                     <h2>Payment Receipt</h2>
                 </div>
                 <div class="details">
@@ -1237,7 +1253,7 @@ async function loadReports() {
         console.log('Loading reports...');
         
         // Fetch enquiries
-        const enquiriesResponse = await fetch('http://localhost:8080/api/enquiries');
+        const enquiriesResponse = await fetch('http://192.168.0.100:8080/api/enquiries');
         if (!enquiriesResponse.ok) {
             throw new Error(`Failed to fetch enquiries: ${enquiriesResponse.status}`);
         }

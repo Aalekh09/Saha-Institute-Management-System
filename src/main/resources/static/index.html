@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Saha Institute of Management and Technology</title>
+    <title>Saha Institute of Management & Technology</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
     <header>
-        <h1>Saha Institute of Management and Technology</h1>
+        <h1>Saha Institute of Management & Technology</h1>
         <p>Welcome, <span id="username"></span></p>
     </header>
 
@@ -381,6 +381,7 @@
                                     <span class="stat-label">Pending</span>
                                 </div>
                                 <div class="report-list" id="pendingEnquiriesList">
+                                    <div class="table-container">
                                     <table class="mini-table">
                                         <thead>
                                             <tr>
@@ -394,6 +395,7 @@
                                             <!-- Pending enquiries will be listed here -->
                                         </tbody>
                                     </table>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -461,7 +463,7 @@
             <span class="close-btn" id="closeIdCardModal">&times;</span>
             <div class="id-card">
                 <div class="id-card-header">
-                    <h2>Saha Institute of Management and Technology</h2>
+                    <h2>Saha Institute of Management & Technology</h2>
                 </div>
                 <div class="id-card-body">
                     <div class="student-details">
@@ -500,6 +502,52 @@
                 <button id="shareIdCard" class="btn-secondary">
                     <i class="fas fa-share-alt"></i> Share
                 </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Teachers Panel (Initially Hidden) -->
+    <div id="teachers-panel" class="tab-content">
+        <div class="panel-header">
+            <div class="panel-title">
+                <h2><i class="fas fa-chalkboard-teacher"></i> Teacher Management</h2>
+                <p class="subtitle">Manage and view teacher records</p>
+            </div>
+            <div class="panel-actions">
+                <button id="addTeacherBtn" class="action-btn primary">
+                    <i class="fas fa-user-plus"></i> Add New Teacher
+                </button>
+            </div>
+        </div>
+
+        <div class="panel-content">
+            <div id="teacher-form" class="teacher-form" style="display: none;">
+                <!-- Teacher Form -->
+            </div>
+
+            <div class="teachers-list">
+                <div class="table-container">
+                <table id="teachersTable">
+                    <thead>
+                        <tr>
+                            <th>Photo</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Phone</th>
+                            <th>Qualification</th>
+                            <th>Specialization</th>
+                            <th>Joining Date</th>
+                            <th>Salary</th>
+                            <th>Status</th>
+                            <th>Role</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="teachersTableBody">
+                        <!-- Teacher rows will be loaded here by JavaScript -->
+                    </tbody>
+                </table>
+                </div>
             </div>
         </div>
     </div>

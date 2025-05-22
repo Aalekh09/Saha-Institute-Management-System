@@ -790,7 +790,7 @@ table td:nth-child(9) {
 }
 
 /* Responsive Design */
-@media screen and (max-width: 768px) {
+@media (max-width: 768px) {
     .nav-container {
         flex-direction: column;
         gap: 10px;
@@ -1004,8 +1004,9 @@ table td:nth-child(9) {
 @media (max-width: 768px) {
     .side-panel {
         width: 100%;
-        min-width: 200px;
+        min-width: auto;
         margin-bottom: 20px;
+        padding: 10px;
     }
     
     .admin-header {
@@ -1290,11 +1291,13 @@ tr:hover {
     
     .side-panel {
         width: 100%;
+        min-width: auto;
         margin-bottom: 20px;
+        padding: 10px;
     }
     
     .content-panel {
-        padding: 10px;
+        padding: 15px 10px;
     }
 }
 
@@ -1612,7 +1615,7 @@ label[for]:after {
     }
     
     .id-card-header h2 {
-        font-size: 20px;
+        font-size: 18px;
     }
     
     .detail-row {
@@ -2191,5 +2194,199 @@ label[for]:after {
     .students-section .action-buttons .action-btn {
         flex: 1;
         justify-content: center;
+    }
+}
+
+/* Mobile Responsive Styles */
+@media screen and (max-width: 768px) {
+    /* Header adjustments for mobile */
+    header {
+        padding: 15px 10px;
+        position: relative;
+    }
+
+    header h1 {
+        font-size: 20px;
+        padding-right: 80px; /* Make space for logout button */
+    }
+
+    header p {
+        font-size: 14px;
+    }
+
+    .logout-btn {
+        top: 15px;
+        right: 10px;
+        padding: 6px 12px;
+        font-size: 13px;
+    }
+
+    /* Side panel adjustments */
+    .side-panel {
+        width: 100%;
+        min-width: auto;
+        padding: 10px;
+    }
+
+    .tab-btn, a.tab-btn {
+        padding: 12px 15px;
+        font-size: 14px;
+    }
+
+    /* Content panel adjustments */
+    .content-panel {
+        padding: 15px 10px;
+    }
+
+    /* Form adjustments */
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        font-size: 16px; /* Prevent zoom on iOS */
+    }
+
+    /* Table adjustments */
+    .table-container {
+        width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+        margin: 0 -10px;
+        padding: 0 10px;
+        position: relative;
+        touch-action: pan-x; /* Enable horizontal touch gestures */
+        overscroll-behavior-x: contain; /* Prevent overscroll bounce */
+    }
+
+    .table-container table {
+        min-width: 800px; /* Ensures table doesn't shrink too much */
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+
+    .table-container th,
+    .table-container td {
+        padding: 8px;
+        white-space: nowrap;
+        position: relative; /* For better touch handling */
+    }
+
+    /* Add a visual indicator for scrollable content */
+    .table-container::after {
+        content: '';
+        position: absolute;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        width: 20px;
+        background: linear-gradient(to right, transparent, rgba(0,0,0,0.05));
+        pointer-events: none;
+        z-index: 1;
+    }
+
+    /* Improve touch targets */
+    .action-buttons {
+        min-width: 120px; /* Ensure buttons don't get too small */
+    }
+
+    .action-btn {
+        min-width: 32px; /* Minimum touch target size */
+        height: 32px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    /* Stats cards */
+    .list-stats {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+
+    .stat-card {
+        padding: 15px;
+    }
+
+    .stat-icon {
+        width: 40px;
+        height: 40px;
+        font-size: 20px;
+    }
+
+    .stat-info h3 {
+        font-size: 20px;
+    }
+
+    /* Search box */
+    .search-box {
+        min-width: auto;
+        width: 100%;
+    }
+
+    .search-box input {
+        font-size: 16px;
+        padding: 10px 10px 10px 35px;
+    }
+
+    /* Modal adjustments */
+    .modal {
+        width: 90%;
+        max-width: 350px;
+        top: 20px;
+        right: 20px;
+    }
+
+    .modal-content {
+        padding: 20px 15px;
+    }
+
+    /* ID Card adjustments */
+    .id-card {
+        padding: 15px;
+    }
+
+    .id-card-header h2 {
+        font-size: 18px;
+    }
+
+    .detail-row {
+        font-size: 14px;
+    }
+
+    /* Dashboard cards */
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+
+    .dashboard-card {
+        padding: 15px;
+    }
+
+    .dashboard-card .card-icon {
+        font-size: 24px;
+    }
+
+    .dashboard-card .card-title {
+        font-size: 16px;
+    }
+}
+
+/* Additional optimizations for very small screens */
+@media screen and (max-width: 480px) {
+    .table-container {
+        margin: 0 -5px;
+        padding: 0 5px;
+    }
+
+    .table-container th,
+    .table-container td {
+        padding: 6px;
+    }
+
+    .action-btn {
+        min-width: 28px;
+        height: 28px;
+        padding: 4px;
     }
 }

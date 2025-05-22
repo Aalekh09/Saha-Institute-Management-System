@@ -229,7 +229,7 @@ function viewReceipt(paymentId) {
     receiptContent.innerHTML = `
         <div class="receipt">
             <div class="receipt-header">
-                <h3>Saha Institute of Management and Technology</h3>
+                <h3>Saha Institute of Management & Technology</h3>
                 <p>Payment Receipt</p>
             </div>
             <div class="receipt-body">

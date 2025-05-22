@@ -6,7 +6,7 @@ const EnquiryList = () => {
 
     const fetchEnquiries = async () => {
         try {
-            const response = await axios.get('http://localhost:8080/api/enquiries');
+            const response = await axios.get('http://192.168.0.100:8080/api/enquiries');
             setEnquiries(response.data);
         } catch (error) {
             console.error('Error fetching enquiries:', error);
@@ -19,7 +19,7 @@ const EnquiryList = () => {
 
     const handleConvertToStudent = async (id) => {
         try {
-            await axios.post(`http://localhost:8080/api/enquiries/${id}/convert`);
+            await axios.post(`http://192.168.0.100:8080/api/enquiries/${id}/convert`);
             fetchEnquiries(); // Refresh the list
             alert('Enquiry converted to student successfully!');
         } catch (error) {
