@@ -10,7 +10,7 @@ if (username) {
     document.getElementById('username').textContent = username;
 }
 
-const API_URL = 'http://192.168.0.100:8080/api/enquiries';
+const API_URL = 'http://localhost:4455/api/enquiries';
 
 const enquiryForm = document.getElementById('enquiryForm');
 const enquiriesTableBody = document.querySelector('#enquiriesTable tbody');
