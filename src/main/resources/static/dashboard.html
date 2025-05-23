@@ -3,48 +3,297 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - Saha Institute of Management & Technology</title>
+    <title>Dashboard - Saha Institute</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        @media (max-width: 768px) {
+            .sidebar {
+                position: fixed;
+                top: 0;
+                left: -100%;
+                height: 100vh;
+                z-index: 1000;
+                transition: left 0.3s ease;
+            }
+            .sidebar.show {
+                left: 0;
+            }
+            .sidebar-overlay {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(0, 0, 0, 0.5);
+                z-index: 999;
+            }
+            .sidebar-overlay.show {
+                display: block;
+            }
+        }
+    </style>
 </head>
-<body>
-    <header>
-        <h1>Saha Institute of Management & Technology</h1>
-        <p>Welcome, <span id="username"></span></p>
-        <button id="logoutBtn" class="logout-btn">Logout</button>
+<body class="bg-light">
+    <header class="bg-primary text-white py-3">
+        <div class="container-fluid">
+            <div class="d-flex flex-column align-items-center">
+                <div class="text-center mb-2">
+                    <h1 class="h3 mb-0">Saha Institute of Management & Technology</h1>
+                </div>
+                <div class="d-flex align-items-center">
+                    <p class="mb-0 me-3">Welcome, <span id="username" class="fw-bold"></span></p>
+                    <div id="logoutContainer" class="d-flex align-items-center"></div>
+                </div>
+            </div>
+        </div>
     </header>
 
-    <div class="main-container">
-        <h2>Dashboard</h2>
-        <div class="dashboard-grid">
-            <!-- Panel links will go here -->
-            <a href="index.html?panel=list" class="dashboard-card">
-                <div class="card-icon"><i class="fas fa-list"></i></div>
-                <div class="card-title">List Students</div>
-            </a>
-            <a href="index.html?panel=add" class="dashboard-card">
-                <div class="card-icon"><i class="fas fa-user-plus"></i></div>
-                <div class="card-title">Add Student</div>
-            </a>
-            <a href="index.html?panel=payments" class="dashboard-card">
-                <div class="card-icon"><i class="fas fa-money-bill"></i></div>
-                <div class="card-title">Payments</div>
-            </a>
-            <a href="index.html?panel=reports" class="dashboard-card">
-                <div class="card-icon"><i class="fas fa-chart-bar"></i></div>
-                <div class="card-title">Reports</div>
-            </a>
-            <a href="enquiry.html" class="dashboard-card">
-                <div class="card-icon"><i class="fas fa-question-circle"></i></div>
-                <div class="card-title">Enquiries</div>
-            </a>
-             <a href="index.html?panel=teachers" class="dashboard-card">
-                <div class="card-icon"><i class="fas fa-chalkboard-teacher"></i></div>
-                <div class="card-title">Teachers</div>
-            </a>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-3 col-lg-2 bg-white shadow-sm min-vh-100 py-3 sidebar" id="sidebar">
+                <div class="admin-section mb-4">
+                    <div class="d-flex align-items-center mb-3">
+                        <img src="./uploads/teachers/d.jpg" alt="Admin" class="rounded-circle me-3" style="width: 50px; height: 50px; object-fit: cover;">
+                        <div>
+                            <h5 class="mb-0">Aalekh</h5>
+                            <small class="text-muted">Administrator</small>
+                        </div>
+                    </div>
+                    <div class="list-group">
+                        <button class="list-group-item list-group-item-action d-flex align-items-center" data-tab="teachers">
+                            <i class="fas fa-chalkboard-teacher me-2"></i>
+                            <span>Teachers</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="student-section">
+                    <h6 class="text-muted mb-3">Student Management</h6>
+                    <div class="list-group">
+                        <button onclick="navigateToPanel('list')" class="list-group-item list-group-item-action d-flex align-items-center">
+                            <i class="fas fa-list me-2"></i>
+                            <span>List Students</span>
+                        </button>
+                        <button onclick="navigateToPanel('add')" class="list-group-item list-group-item-action d-flex align-items-center">
+                            <i class="fas fa-user-plus me-2"></i>
+                            <span>Add Student</span>
+                        </button>
+                        <button onclick="navigateToPanel('payments')" class="list-group-item list-group-item-action d-flex align-items-center">
+                            <i class="fas fa-money-bill me-2"></i>
+                            <span>Payments</span>
+                        </button>
+                        <button onclick="navigateToPanel('reports')" class="list-group-item list-group-item-action d-flex align-items-center">
+                            <i class="fas fa-chart-bar me-2"></i>
+                            <span>Reports</span>
+                        </button>
+                        <button onclick="window.location.href='enquiry.html'" class="list-group-item list-group-item-action d-flex align-items-center">
+                            <i class="fas fa-question-circle me-2"></i>
+                            <span>Enquiries</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="col-md-9 col-lg-10 py-4">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <h2 class="h4 mb-1"><i class="fas fa-tachometer-alt me-2"></i>Dashboard</h2>
+                        <p class="text-muted mb-0">Overview of institute statistics</p>
+                    </div>
+                </div>
+
+                <div class="row g-3">
+                    <!-- Quick Stats -->
+                    <div class="col-md-3">
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center">
+                                    <div class="flex-shrink-0">
+                                        <div class="bg-primary bg-opacity-10 p-3 rounded">
+                                            <i class="fas fa-user-graduate text-primary"></i>
+                                        </div>
+                                    </div>
+                                    <div class="flex-grow-1 ms-3">
+                                        <h3 class="mb-0" id="totalStudents">0</h3>
+                                        <p class="text-muted mb-0">Total Students</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center">
+                                    <div class="flex-shrink-0">
+                                        <div class="bg-success bg-opacity-10 p-3 rounded">
+                                            <i class="fas fa-money-bill-wave text-success"></i>
+                                        </div>
+                                    </div>
+                                    <div class="flex-grow-1 ms-3">
+                                        <h3 class="mb-0" id="totalRevenue">₹0</h3>
+                                        <p class="text-muted mb-0">Total Revenue</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center">
+                                    <div class="flex-shrink-0">
+                                        <div class="bg-warning bg-opacity-10 p-3 rounded">
+                                            <i class="fas fa-question-circle text-warning"></i>
+                                        </div>
+                                    </div>
+                                    <div class="flex-grow-1 ms-3">
+                                        <h3 class="mb-0" id="pendingEnquiries">0</h3>
+                                        <p class="text-muted mb-0">Pending Enquiries</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center">
+                                    <div class="flex-shrink-0">
+                                        <div class="bg-info bg-opacity-10 p-3 rounded">
+                                            <i class="fas fa-chalkboard-teacher text-info"></i>
+                                        </div>
+                                    </div>
+                                    <div class="flex-grow-1 ms-3">
+                                        <h3 class="mb-0" id="totalTeachers">0</h3>
+                                        <p class="text-muted mb-0">Total Teachers</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Charts -->
+                    <div class="col-md-6">
+                        <div class="card border-0 shadow-sm h-100">
+                            <div class="card-body">
+                                <h5 class="card-title mb-3">
+                                    <i class="fas fa-chart-line me-2"></i>Student Growth
+                                </h5>
+                                <div style="height: 300px;">
+                                    <canvas id="studentGrowthChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card border-0 shadow-sm h-100">
+                            <div class="card-body">
+                                <h5 class="card-title mb-3">
+                                    <i class="fas fa-chart-pie me-2"></i>Course Distribution
+                                </h5>
+                                <div style="height: 300px;">
+                                    <canvas id="courseDistributionChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recent Activities -->
+                    <div class="col-md-6">
+                        <div class="card border-0 shadow-sm h-100">
+                            <div class="card-body">
+                                <h5 class="card-title mb-3">
+                                    <i class="fas fa-clock me-2"></i>Recent Activities
+                                </h5>
+                                <div class="list-group list-group-flush" id="recentActivities">
+                                    <!-- Activities will be loaded here -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Upcoming Events -->
+                    <div class="col-md-6">
+                        <div class="card border-0 shadow-sm h-100">
+                            <div class="card-body">
+                                <h5 class="card-title mb-3">
+                                    <i class="fas fa-calendar-alt me-2"></i>Upcoming Events
+                                </h5>
+                                <div class="list-group list-group-flush" id="upcomingEvents">
+                                    <!-- Events will be loaded here -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
-    <script src="js/dashboard.js"></script>
+    <!-- Toast Notification -->
+    <div class="toast-container position-fixed bottom-0 end-0 p-3">
+        <div id="notification" class="toast" role="alert">
+            <div class="toast-body" id="notificationMessage"></div>
+        </div>
+    </div>
+
+    <!-- Bootstrap Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Custom JS -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Sidebar toggle functionality
+            const sidebarToggle = document.getElementById('sidebarToggle');
+            const sidebar = document.getElementById('sidebar');
+            const sidebarOverlay = document.getElementById('sidebarOverlay');
+
+            function toggleSidebar() {
+                sidebar.classList.toggle('show');
+                sidebarOverlay.classList.toggle('show');
+            }
+
+            sidebarToggle.addEventListener('click', toggleSidebar);
+            sidebarOverlay.addEventListener('click', toggleSidebar);
+
+            // Logout functionality
+            const logoutBtn = document.getElementById('logoutBtn');
+            logoutBtn.addEventListener('click', function() {
+                localStorage.removeItem('isLoggedIn');
+                localStorage.removeItem('username');
+                window.location.href = 'login.html';
+            });
+
+            // Set username from localStorage
+            const username = localStorage.getItem('username');
+            if (username) {
+                document.getElementById('username').textContent = username;
+            }
+
+            // Teachers panel click handler
+            const teachersBtn = document.querySelector('[data-tab="teachers"]');
+            if (teachersBtn) {
+                teachersBtn.addEventListener('click', function() {
+                    const maintenanceModal = new bootstrap.Modal(document.getElementById('maintenanceModal'));
+                    maintenanceModal.show();
+                });
+            }
+        });
+
+        // Navigation function
+        function navigateToPanel(panel) {
+            window.location.href = `index.html?panel=${panel}`;
+        }
+    </script>
 </body>
 </html> 

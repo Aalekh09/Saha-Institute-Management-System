@@ -28,6 +28,17 @@ const EnquiryList = () => {
         }
     };
 
+    const handleReverseConvert = async (id) => {
+        try {
+            await axios.post(`http://localhost:4455/api/enquiries/${id}/reverse`);
+            fetchEnquiries(); // Refresh the list
+            alert('Enquiry status reverted to Pending!');
+        } catch (error) {
+            console.error('Error reverting enquiry status:', error);
+            alert('Error reverting enquiry status. Please try again.');
+        }
+    };
+
     return (
         <div className="container mt-4">
             <h2>Enquiries List</h2>
@@ -38,6 +49,7 @@ const EnquiryList = () => {
                             <th>Name</th>
                             <th>Date of Enquiry</th>
                             <th>Phone Number</th>
+                            <th>Email ID</th>
                             <th>Remarks</th>
                             <th>Status</th>
                             <th>Action</th>
@@ -49,6 +61,7 @@ const EnquiryList = () => {
                                 <td>{enquiry.name}</td>
                                 <td>{new Date(enquiry.dateOfEnquiry).toLocaleDateString()}</td>
                                 <td>{enquiry.phoneNumber}</td>
+                                <td>{enquiry.email}</td>
                                 <td>{enquiry.remarks}</td>
                                 <td>
                                     {enquiry.convertedToStudent ? (
@@ -58,14 +71,17 @@ const EnquiryList = () => {
                                     )}
                                 </td>
                                 <td>
-                                    {!enquiry.convertedToStudent && (
-                                        <button
-                                            className="btn btn-primary btn-sm"
-                                            onClick={() => handleConvertToStudent(enquiry.id)}
-                                        >
-                                            Convert to Student
-                                        </button>
-                                    )}
+                                    <input
+                                        type="checkbox"
+                                        checked={enquiry.convertedToStudent}
+                                        onChange={() => {
+                                            if (enquiry.convertedToStudent) {
+                                                handleReverseConvert(enquiry.id);
+                                            } else {
+                                                handleConvertToStudent(enquiry.id);
+                                            }
+                                        }}
+                                    />
                                 </td>
                             </tr>
                         ))}

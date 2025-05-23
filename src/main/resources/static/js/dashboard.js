@@ -20,6 +20,7 @@ logoutBtn.onclick = () => {
     localStorage.removeItem('username');
     window.location.href = 'login.html';
 };
-if (header && !header.querySelector('.logout-btn')) { // Prevent adding multiple logout buttons
-    header.appendChild(logoutBtn);
+const logoutContainer = document.getElementById('logoutContainer');
+if (logoutContainer && !logoutContainer.querySelector('.logout-btn')) { // Prevent adding multiple logout buttons
+    logoutContainer.appendChild(logoutBtn);
 } 

@@ -1,5 +1,6 @@
 package com.example.studentmanagement.service;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -8,8 +9,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.studentmanagement.model.Payment;
+import com.example.studentmanagement.model.Student;
 import com.example.studentmanagement.repository.PaymentRepository;
 import com.example.studentmanagement.repository.StudentRepository;
+
+import jakarta.transaction.Transactional;
 
 @Service
 public class PaymentService {
@@ -20,16 +24,43 @@ public class PaymentService {
     @Autowired
     private StudentRepository studentRepository;
 
+    @Transactional
     public Payment createPayment(Payment payment) {
+        // Set the student object from the studentId
+        if (payment.getStudent() == null && payment.getStudentId() != null) {
+            Student student = studentRepository.findById(payment.getStudentId())
+                .orElseThrow(() -> new RuntimeException("Student not found with id: " + payment.getStudentId()));
+            payment.setStudent(student);
+        }
+        
         // Generate receipt number
         payment.setReceiptNumber(generateReceiptNumber(payment));
         payment.setPaymentDate(LocalDateTime.now());
         payment.setStatus("PAID");
-        return paymentRepository.save(payment);
+        
+        // Save the payment first
+        Payment savedPayment = paymentRepository.save(payment);
+        
+        // Update student's paid amount and remaining amount
+        Student student = savedPayment.getStudent();
+        if (student != null) {
+            BigDecimal currentPaidAmount = student.getPaidAmount() != null ? student.getPaidAmount() : BigDecimal.ZERO;
+            BigDecimal paymentAmount = savedPayment.getAmount() != null ? BigDecimal.valueOf(savedPayment.getAmount()) : BigDecimal.ZERO;
+            BigDecimal newPaidAmount = currentPaidAmount.add(paymentAmount);
+            student.setPaidAmount(newPaidAmount);
+            
+            BigDecimal totalCourseFee = student.getTotalCourseFee() != null ? student.getTotalCourseFee() : BigDecimal.ZERO;
+            BigDecimal newRemainingAmount = totalCourseFee.subtract(newPaidAmount);
+            student.setRemainingAmount(newRemainingAmount);
+            
+            studentRepository.save(student); // Save the updated student
+        }
+        
+        return savedPayment;
     }
 
     public List<Payment> getPaymentsByStudentId(Long studentId) {
-        return paymentRepository.findByStudentId(studentId);
+        return paymentRepository.findByStudent_Id(studentId);
     }
 
     public List<Payment> getAllPayments() {

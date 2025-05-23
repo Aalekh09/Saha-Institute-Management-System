@@ -10,84 +10,77 @@ if (username) {
     document.getElementById('username').textContent = username;
 }
 
-const API_URL = 'http://localhost:4455/api/enquiries';
+const API_URL = 'http://localhost:4456/api/enquiries';
 
 const enquiryForm = document.getElementById('enquiryForm');
 const enquiriesTableBody = document.querySelector('#enquiriesTable tbody');
-const tabButtons = document.querySelectorAll('.tab-btn');
-const tabContents = document.querySelectorAll('.tab-content');
+const searchInput = document.getElementById('searchInput');
+const addEnquiryBtn = document.getElementById('addEnquiryBtn');
+const saveEnquiryBtn = document.getElementById('saveEnquiryBtn');
+const enquiryModal = new bootstrap.Modal(document.getElementById('enquiryModal'));
 const notification = document.getElementById('notification');
 const notificationMessage = document.getElementById('notificationMessage');
-const searchEnquiryInput = document.getElementById('searchEnquiryInput');
 
-// Add logout button to header
-const header = document.querySelector('header');
-const logoutBtn = document.createElement('button');
-logoutBtn.textContent = 'Logout';
-logoutBtn.className = 'logout-btn';
-logoutBtn.onclick = () => {
-    localStorage.removeItem('isLoggedIn');
-    localStorage.removeItem('username');
-    window.location.href = 'login.html';
-};
-header.appendChild(logoutBtn);
+// Declare a global variable to store enquiries
+let allEnquiries = [];
 
 // Show notification function
 function showNotification(message, isError = false) {
     notificationMessage.textContent = message;
-    notification.className = 'notification' + (isError ? ' error' : '');
-    notification.classList.add('show');
-    
-    setTimeout(() => {
-        notification.classList.remove('show');
-    }, 3000);
+    notification.className = 'toast' + (isError ? ' bg-danger text-white' : ' bg-success text-white');
+    const bsToast = new bootstrap.Toast(notification);
+    bsToast.show();
 }
 
-// Tab switching functionality
-tabButtons.forEach(button => {
-    button.addEventListener('click', () => {
-        const tabId = button.getAttribute('data-tab');
-        
-        tabButtons.forEach(btn => btn.classList.remove('active'));
-        button.classList.add('active');
-        
-        tabContents.forEach(content => {
-            content.classList.remove('active');
-            if (content.id === `${tabId}-panel`) {
-                content.classList.add('active');
-            }
-        });
+// Format phone number
+function formatPhoneNumber(phoneNumber) {
+    if (!phoneNumber) return 'N/A';
+    // Remove any non-digit characters
+    const cleaned = phoneNumber.replace(/\D/g, '');
+    // Format as XXX-XXX-XXXX
+    const match = cleaned.match(/^(\d{3})(\d{3})(\d{4})$/);
+    if (match) {
+        return `${match[1]}-${match[2]}-${match[3]}`;
+    }
+    return phoneNumber;
+}
 
-        if (tabId === 'enquiry-list') {
-            fetchEnquiries();
-        }
-    });
-});
-
-// Search functionality
-searchEnquiryInput.addEventListener('input', (e) => {
-    const searchTerm = e.target.value.toLowerCase();
-    const rows = enquiriesTableBody.getElementsByTagName('tr');
+// Function to format Indian phone number
+function formatIndianPhoneNumber(input) {
+    if (!input) return 'N/A';
+    // Remove all non-digit characters
+    let number = input.toString().replace(/\D/g, '');
     
-    Array.from(rows).forEach(row => {
-        const name = row.cells[0].textContent.toLowerCase();
-        const phone = row.cells[2].textContent.toLowerCase();
-        const remarks = row.cells[3].textContent.toLowerCase();
-        
-        if (name.includes(searchTerm) || phone.includes(searchTerm) || remarks.includes(searchTerm)) {
-            row.style.display = '';
+    // Limit to 10 digits
+    number = number.substring(0, 10);
+    
+    // Format as XXX-XXX-XXXX
+    if (number.length > 0) {
+        if (number.length <= 3) {
+            return number;
+        } else if (number.length <= 6) {
+            return `${number.substring(0, 3)}-${number.substring(3)}`;
         } else {
-            row.style.display = 'none';
+            return `${number.substring(0, 3)}-${number.substring(3, 6)}-${number.substring(6)}`;
         }
-    });
-});
+    }
+    return 'N/A';
+}
 
 // Fetch and display enquiries
 async function fetchEnquiries() {
     try {
         const response = await fetch(API_URL);
+        if (!response.ok) {
+            throw new Error('Failed to fetch enquiries');
+        }
         const enquiries = await response.json();
+        console.log("Fetched enquiries:", enquiries);
+        // Store fetched enquiries in the global variable
+        allEnquiries = enquiries;
         displayEnquiries(enquiries);
+        updateEnquiryStats(enquiries);
+        initializeEnquirySearch();
     } catch (error) {
         console.error('Error fetching enquiries:', error);
         showNotification('Error fetching enquiries', true);
@@ -96,179 +89,304 @@ async function fetchEnquiries() {
 
 // Display enquiries in table
 function displayEnquiries(enquiries) {
-    enquiriesTableBody.innerHTML = '';
+    const tbody = document.querySelector('#enquiriesTable tbody');
+    if (!tbody) {
+        console.error('Enquiries table body not found');
+        return;
+    }
+    
+    tbody.innerHTML = '';
     
     enquiries.forEach(enquiry => {
         const row = document.createElement('tr');
+        const formattedPhone = formatIndianPhoneNumber(enquiry.phoneNumber);
+        
         row.innerHTML = `
-            <td>${enquiry.name}</td>
-            <td>${new Date(enquiry.dateOfEnquiry).toLocaleDateString()}</td>
-            <td>${enquiry.phoneNumber}</td>
-            <td>${enquiry.course || ''}</td>
-            <td>${enquiry.courseDuration || ''}</td>
-            <td>${enquiry.remarks || ''}</td>
+            <td>${enquiry.name || 'N/A'}</td>
+            <td>${formattedPhone}</td>
+            <td>${enquiry.email || 'N/A'}</td>
+            <td>${enquiry.course || 'N/A'}</td>
+            <td>${enquiry.courseDuration || 'N/A'}</td>
+            <td>${enquiry.createdAt ? new Date(enquiry.createdAt).toLocaleDateString() : 'N/A'}</td>
             <td>
-                <span class="badge ${enquiry.convertedToStudent ? 'bg-success' : 'bg-warning'}">
-                    ${enquiry.convertedToStudent ? 'Confirmed' : 'Pending'}
+                <span class="badge ${enquiry.status === 'CONVERTED' ? 'bg-success' : 'bg-warning'}">
+                    ${enquiry.status || 'PENDING'}
                 </span>
             </td>
             <td>
-                <div class="action-buttons">
-                    ${!enquiry.convertedToStudent ? `
-                        <button class="action-btn convert-btn" data-id="${enquiry.id}" title="Convert to Student">
+                <div class="btn-group">
+                    ${enquiry.status !== 'CONVERTED' ? `
+                        <button class="btn btn-sm btn-success" onclick="convertToStudent(${enquiry.id})">
                             <i class="fas fa-user-plus"></i>
-                            <span>Convert</span>
                         </button>
                     ` : `
-                        <button class="action-btn reverse-btn" data-id="${enquiry.id}" title="Reverse Conversion">
+                        <button class="btn btn-sm btn-warning" onclick="reverseConversion(${enquiry.id})">
                             <i class="fas fa-undo"></i>
-                            <span>Reverse</span>
                         </button>
                     `}
+                    <button class="btn btn-sm btn-danger" onclick="deleteEnquiry(${enquiry.id})">
+                        <i class="fas fa-trash"></i>
+                    </button>
                 </div>
             </td>
-            <td>
-                ${!enquiry.convertedToStudent ? `
-                    <input type="checkbox" class="convert-checkbox" data-id="${enquiry.id}" title="Mark as Confirmed">
-                ` : ''}
-            </td>
         `;
-        
-        const convertBtn = row.querySelector('.convert-btn');
-        if (convertBtn) {
-            convertBtn.addEventListener('click', () => convertToStudent(enquiry.id));
-        }
-        
-        const reverseBtn = row.querySelector('.reverse-btn');
-        if (reverseBtn) {
-            reverseBtn.addEventListener('click', () => reverseConversion(enquiry.id));
-        }
-
-        // Add event listener for the new checkbox
-        const convertCheckbox = row.querySelector('.convert-checkbox');
-        if (convertCheckbox) {
-            convertCheckbox.addEventListener('change', async (e) => {
-                if (e.target.checked) {
-                    try {
-                        const response = await fetch(`${API_URL}/${enquiry.id}/convert`, {
-                            method: 'POST'
-                        });
-                        if (response.ok) {
-                            showNotification('Enquiry marked as Confirmed!');
-                            fetchEnquiries(); // Refresh the list
-                        } else {
-                            const errorText = await response.text();
-                            throw new Error(errorText || 'Failed to mark enquiry as confirmed');
-                        }
-                    } catch (error) {
-                        console.error('Error marking enquiry as confirmed:', error);
-                        showNotification('Error marking enquiry as confirmed: ' + error.message, true);
-                        e.target.checked = false; // Uncheck the box on error
-                    }
-                }
-            });
-        }
-        
-        enquiriesTableBody.appendChild(row);
+        tbody.appendChild(row);
     });
 }
 
-// Handle form submission
-enquiryForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    
-    try {
-        const formData = {
-            name: document.getElementById('name').value,
-            phoneNumber: document.getElementById('phoneNumber').value,
-            course: document.getElementById('course').value,
-            courseDuration: document.getElementById('courseDuration').value,
-            remarks: document.getElementById('remarks').value,
-            dateOfEnquiry: new Date().toISOString().split('T')[0],
-            convertedToStudent: false
-        };
+// Update enquiry statistics
+function updateEnquiryStats(enquiries) {
+    const totalEnquiries = document.getElementById('totalEnquiries');
+    const convertedEnquiries = document.getElementById('convertedEnquiries');
+    const pendingEnquiries = document.getElementById('pendingEnquiries');
 
-        console.log('Submitting enquiry:', formData); // Debug log
+    if (totalEnquiries) totalEnquiries.textContent = enquiries.length;
+    if (convertedEnquiries) {
+        convertedEnquiries.textContent = enquiries.filter(e => e.status === 'CONVERTED').length;
+    }
+    if (pendingEnquiries) {
+        pendingEnquiries.textContent = enquiries.filter(e => e.status !== 'CONVERTED').length;
+    }
+}
+
+// Add new enquiry
+addEnquiryBtn.addEventListener('click', () => {
+    document.getElementById('enquiryForm').reset();
+    document.getElementById('enquiryId').value = '';
+    document.getElementById('enquiryModalTitle').textContent = 'Add New Enquiry';
+    enquiryModal.show();
+});
+
+// Save enquiry
+saveEnquiryBtn.addEventListener('click', async () => {
+    const form = document.getElementById('enquiryForm');
+    if (!form.checkValidity()) {
+        form.classList.add('was-validated');
+        return;
+    }
+
+    try {
+        const nameInput = document.getElementById('name');
+        const phoneNumberInput = document.getElementById('phoneNumber');
+        const emailInput = document.getElementById('email');
+        const courseSelect = document.getElementById('course');
+        const courseDurationSelect = document.getElementById('courseDuration');
+        const remarksTextarea = document.getElementById('remarks');
+        const dateOfEnquiryInput = document.getElementById('dateOfEnquiry');
+
+        // Basic check to ensure elements exist
+        if (!nameInput || !phoneNumberInput || !courseSelect || !courseDurationSelect || !dateOfEnquiryInput) {
+            console.error("One or more required form elements not found!");
+            showNotification("Error: Missing form elements.", true);
+            return;
+        }
+
+        const name = nameInput.value.trim();
+        const phoneNumber = phoneNumberInput.value.replace(/\D/g, ''); // Remove non-digits
+        const email = emailInput ? emailInput.value.trim() : ''; // Email is not required, so check if element exists
+        const course = courseSelect.value;
+        const courseDuration = courseDurationSelect.value;
+        const remarks = remarksTextarea ? remarksTextarea.value.trim() : ''; // Remarks is not required
+
+        // Get date of enquiry, default to today's date if not set
+        let dateOfEnquiry = dateOfEnquiryInput.value;
+        if (!dateOfEnquiry) {
+            const today = new Date();
+            const year = today.getFullYear();
+            const month = String(today.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
+            const day = String(today.getDate()).padStart(2, '0');
+            dateOfEnquiry = `${year}-${month}-${day}`;
+        }
+
+        // Validate required fields (already handled by needs-validation, but good to have a JS check)
+        if (!name || !phoneNumber || !course || !courseDuration || !dateOfEnquiry) {
+             showNotification("Please fill in all required fields.", true);
+             form.classList.add('was-validated');
+             return;
+        }
+
+        const enquiryData = {
+            name: name.toUpperCase(),
+            phoneNumber: phoneNumber,
+            email: email.toUpperCase(),
+            course: course,
+            courseDuration: courseDuration,
+            remarks: remarks.toUpperCase(),
+            status: 'PENDING',
+            dateOfEnquiry: dateOfEnquiry // Include date of enquiry
+        };
 
         const response = await fetch(API_URL, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify(formData)
+            body: JSON.stringify(enquiryData)
         });
 
         if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.message || 'Failed to submit enquiry');
+            throw new Error('Failed to add enquiry');
         }
 
-        const result = await response.json();
-        console.log('Enquiry submitted successfully:', result); // Debug log
+        // Close modal and reset form
+        const modal = bootstrap.Modal.getInstance(document.getElementById('enquiryModal'));
+        modal.hide();
+        form.reset();
+        form.classList.remove('was-validated');
 
-        showNotification('Enquiry submitted successfully!');
-        enquiryForm.reset();
-        // Switch to enquiry list tab
-        document.querySelector('[data-tab="enquiry-list"]').click();
+        // Refresh enquiries list
+        fetchEnquiries();
+
+        showNotification('Enquiry added successfully!');
     } catch (error) {
-        console.error('Error submitting enquiry:', error);
-        showNotification('Error submitting enquiry: ' + error.message, true);
+        console.error('Error adding enquiry:', error);
+        showNotification('Error adding enquiry: ' + error.message, true);
     }
 });
 
 // Convert enquiry to student
 async function convertToStudent(id) {
     try {
-        // Get the enquiry data first
+        // First, get the enquiry details
         const response = await fetch(`${API_URL}/${id}`);
-        if (!response.ok) throw new Error('Failed to fetch enquiry data');
+        if (!response.ok) {
+            throw new Error('Failed to fetch enquiry details');
+        }
         const enquiry = await response.json();
 
-        // Store enquiry data in localStorage
-        localStorage.setItem('enquiryToStudent', JSON.stringify(enquiry));
+        console.log('Fetched enquiry for conversion:', enquiry);
 
-        // Redirect to main dashboard (index.html) and open Add Student tab
-        window.location.href = 'index.html?addStudentFromEnquiry=1';
+        // Store enquiry data in localStorage for pre-filling the add student form
+        localStorage.setItem('enquiryToStudent', JSON.stringify({
+            name: enquiry.name,
+            phoneNumber: enquiry.phoneNumber,
+            courses: enquiry.course,
+            courseDuration: enquiry.courseDuration,
+            remarks: enquiry.remarks
+        }));
+
+        console.log('Enquiry data stored in localStorage:', localStorage.getItem('enquiryToStudent'));
+
+        // Redirect to add student page
+        window.location.href = 'index.html?panel=add';
+
     } catch (error) {
-        console.error('Error preparing to convert enquiry:', error);
-        showNotification('Error preparing to convert enquiry', true);
+        console.error('Error converting enquiry:', error);
+        showNotification('Error converting enquiry', true);
     }
 }
 
-// Add reverse conversion function
+// Reverse conversion
 async function reverseConversion(id) {
-    if (!confirm('Are you sure you want to reverse this conversion? This will mark the enquiry as pending again.')) {
+    if (!confirm('Are you sure you want to reverse this conversion?')) {
         return;
     }
 
     try {
         const response = await fetch(`${API_URL}/${id}/reverse`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            }
+            method: 'POST'
         });
 
-        if (response.ok) {
-            showNotification('Enquiry conversion reversed successfully!');
-            fetchEnquiries();
-            // Also refresh the student list in the main window if available
-            if (window.opener && typeof window.opener.fetchStudents === 'function') {
-                window.opener.fetchStudents();
-            } else if (window.parent && typeof window.parent.fetchStudents === 'function') {
-                window.parent.fetchStudents();
-            } else if (window.fetchStudents) {
-                window.fetchStudents();
-            }
-        } else {
-            const errorText = await response.text();
-            throw new Error(errorText || 'Failed to reverse conversion');
+        if (!response.ok) {
+            throw new Error('Failed to reverse conversion');
         }
+
+        showNotification('Conversion reversed successfully');
+        fetchEnquiries();
     } catch (error) {
         console.error('Error reversing conversion:', error);
-        showNotification('Error reversing conversion: ' + error.message, true);
+        showNotification('Error reversing conversion', true);
     }
 }
 
-// Initial load of enquiries
-fetchEnquiries(); 
+// Delete enquiry
+async function deleteEnquiry(id) {
+    if (!confirm('Are you sure you want to delete this enquiry?')) {
+        return;
+    }
+
+    try {
+        const response = await fetch(`${API_URL}/${id}`, {
+            method: 'DELETE'
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to delete enquiry');
+        }
+
+        showNotification('Enquiry deleted successfully');
+        fetchEnquiries();
+    } catch (error) {
+        console.error('Error deleting enquiry:', error);
+        showNotification('Error deleting enquiry', true);
+    }
+}
+
+// Add event listener for form reset when modal is hidden
+document.getElementById('enquiryModal')?.addEventListener('hidden.bs.modal', () => {
+    const form = document.getElementById('enquiryForm');
+    if (form) {
+        form.reset();
+        form.classList.remove('was-validated');
+    }
+});
+
+// Initial load
+fetchEnquiries();
+
+// Consider moving this to dashboard.html and index.html separately if header structure differs
+const logoutContainer = document.getElementById('logoutContainer');
+if (logoutContainer && !logoutContainer.querySelector('.logout-btn')) { // Prevent adding multiple logout buttons
+    const logoutBtn = document.createElement('button');
+    logoutBtn.textContent = 'Logout';
+    logoutBtn.className = 'logout-btn';
+    logoutBtn.onclick = () => {
+        localStorage.removeItem('isLoggedIn');
+        localStorage.removeItem('username');
+        window.location.replace('login.html');
+    };
+    logoutContainer.appendChild(logoutBtn);
+}
+
+// Function to filter enquiries
+function filterEnquiries(enquiries, searchTerm) {
+    console.log('Filtering enquiries with term:', searchTerm);
+    if (!searchTerm) return enquiries;
+
+    searchTerm = searchTerm.toLowerCase().trim();
+
+    return enquiries.filter(enquiry => {
+        return (
+            enquiry.name?.toLowerCase().includes(searchTerm) ||
+            enquiry.phoneNumber?.includes(searchTerm) ||
+            enquiry.email?.toLowerCase().includes(searchTerm) ||
+            enquiry.course?.toLowerCase().includes(searchTerm) ||
+            enquiry.courseDuration?.toLowerCase().includes(searchTerm) ||
+            enquiry.remarks?.toLowerCase().includes(searchTerm)
+        );
+    });
+}
+
+// Initialize search functionality for enquiries
+function initializeEnquirySearch() {
+    console.log('Initializing enquiry search...');
+    const searchInput = document.getElementById('searchInput');
+
+    if (!searchInput) {
+        console.error('Enquiry search input element not found');
+        return;
+    }
+
+    let searchTimeout;
+
+    searchInput.addEventListener('input', (e) => {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => {
+            const searchTerm = e.target.value;
+            console.log('Enquiry search input:', searchTerm, 'All enquiries:', allEnquiries);
+            const filteredEnquiries = filterEnquiries(allEnquiries, searchTerm);
+            console.log('Filtered enquiries:', filteredEnquiries);
+            displayEnquiries(filteredEnquiries);
+        }, 300); // Debounce search
+    });
+} 
