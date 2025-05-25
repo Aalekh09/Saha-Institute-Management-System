@@ -25,6 +25,9 @@ public class Enquiry {
     @Column(name = "phone_number", nullable = false)
     private String phoneNumber;
 
+    @Column
+    private String email;
+
     @Column(nullable = false)
     private String course;
 
@@ -68,6 +71,14 @@ public class Enquiry {
 
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public String getCourse() {

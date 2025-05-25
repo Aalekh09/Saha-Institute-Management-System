@@ -78,8 +78,31 @@ async function fetchEnquiries() {
         console.log("Fetched enquiries:", enquiries);
         // Store fetched enquiries in the global variable
         allEnquiries = enquiries;
-        displayEnquiries(enquiries);
-        updateEnquiryStats(enquiries);
+
+        // Check localStorage for a saved state and use it if available
+        const savedState = localStorage.getItem('enquiriesState');
+        if (savedState) {
+            try {
+                const parsedState = JSON.parse(savedState);
+                // Simple check to see if the saved state matches the fetched data structure
+                if (Array.isArray(parsedState) && parsedState.length === allEnquiries.length) {
+                     // A more robust check would compare IDs, but this is a start.
+                     // For simplicity, we'll assume if the lengths match, we use the saved state.
+                     // A better approach might involve merging or comparing timestamps.
+                    console.log("Using saved state from localStorage.");
+                    allEnquiries = parsedState;
+                } else {
+                    console.log("Saved state in localStorage does not match fetched data, discarding saved state.");
+                    localStorage.removeItem('enquiriesState');
+                }
+            } catch (e) {
+                console.error("Error parsing localStorage state:", e);
+                localStorage.removeItem('enquiriesState'); // Clear invalid state
+            }
+        }
+
+        displayEnquiries(allEnquiries);
+        updateEnquiryStats(allEnquiries);
         initializeEnquirySearch();
     } catch (error) {
         console.error('Error fetching enquiries:', error);
@@ -100,6 +123,8 @@ function displayEnquiries(enquiries) {
     enquiries.forEach(enquiry => {
         const row = document.createElement('tr');
         const formattedPhone = formatIndianPhoneNumber(enquiry.phoneNumber);
+        const formattedDate = enquiry.dateOfEnquiry ? new Date(enquiry.dateOfEnquiry).toLocaleDateString() : 
+                            (enquiry.createdAt ? new Date(enquiry.createdAt).toLocaleDateString() : 'N/A');
         
         row.innerHTML = `
             <td>${enquiry.name || 'N/A'}</td>
@@ -107,11 +132,18 @@ function displayEnquiries(enquiries) {
             <td>${enquiry.email || 'N/A'}</td>
             <td>${enquiry.course || 'N/A'}</td>
             <td>${enquiry.courseDuration || 'N/A'}</td>
-            <td>${enquiry.createdAt ? new Date(enquiry.createdAt).toLocaleDateString() : 'N/A'}</td>
+            <td>${formattedDate}</td>
             <td>
                 <span class="badge ${enquiry.status === 'CONVERTED' ? 'bg-success' : 'bg-warning'}">
                     ${enquiry.status || 'PENDING'}
                 </span>
+            </td>
+            <td>
+                <input
+                    type="checkbox"
+                    ${enquiry.status === 'CONVERTED' ? 'checked' : ''}
+                    onclick="toggleEnquiryStatus(this, ${enquiry.id})"
+                />
             </td>
             <td>
                 <div class="btn-group">
@@ -132,6 +164,92 @@ function displayEnquiries(enquiries) {
         `;
         tbody.appendChild(row);
     });
+}
+
+// Function to visually toggle enquiry status (client-side only)
+function toggleEnquiryStatus(checkbox, enquiryId) {
+    const row = checkbox.closest('tr');
+    const statusCell = row.cells[6]; // Assuming Status is the 7th column (index 6)
+    const statusBadge = statusCell.querySelector('.badge');
+
+    // Find the enquiry in the allEnquiries array
+    const enquiry = allEnquiries.find(e => e.id === enquiryId);
+
+    if (enquiry) {
+        if (checkbox.checked) {
+            // Mark as Confirmed visually
+            if (statusBadge) {
+                statusBadge.textContent = 'CONVERTED';
+                statusBadge.classList.remove('bg-warning');
+                statusBadge.classList.add('bg-success');
+            }
+            // Update the status in the frontend array
+            enquiry.status = 'CONVERTED';
+            enquiry.convertedToStudent = true;
+
+            // Call the API to mark the enquiry as converted
+            fetch(`http://localhost:4455/api/enquiries/${enquiryId}/convert`, {
+                method: 'POST'
+            }).then(response => {
+                if (!response.ok) {
+                    throw new Error('Failed to mark enquiry as converted');
+                }
+                // Refresh the student list if we're on the students page
+                if (window.fetchStudents) {
+                    window.fetchStudents();
+                }
+            }).catch(error => {
+                console.error('Error marking enquiry as converted:', error);
+                // Revert the checkbox if the API call fails
+                checkbox.checked = false;
+                if (statusBadge) {
+                    statusBadge.textContent = 'PENDING';
+                    statusBadge.classList.remove('bg-success');
+                    statusBadge.classList.add('bg-warning');
+                }
+                enquiry.status = 'PENDING';
+                enquiry.convertedToStudent = false;
+                showNotification('Failed to update enquiry status', true);
+            });
+        } else {
+            // Mark as Pending visually
+            if (statusBadge) {
+                statusBadge.textContent = 'PENDING';
+                statusBadge.classList.remove('bg-success');
+                statusBadge.classList.add('bg-warning');
+            }
+            // Update the status in the frontend array
+            enquiry.status = 'PENDING';
+            enquiry.convertedToStudent = false;
+
+            // Call the API to reverse the conversion
+            fetch(`http://localhost:4455/api/enquiries/${enquiryId}/reverse`, {
+                method: 'POST'
+            }).then(response => {
+                if (!response.ok) {
+                    throw new Error('Failed to reverse enquiry conversion');
+                }
+                // Refresh the student list if we're on the students page
+                if (window.fetchStudents) {
+                    window.fetchStudents();
+                }
+            }).catch(error => {
+                console.error('Error reversing enquiry conversion:', error);
+                // Revert the checkbox if the API call fails
+                checkbox.checked = true;
+                if (statusBadge) {
+                    statusBadge.textContent = 'CONVERTED';
+                    statusBadge.classList.remove('bg-warning');
+                    statusBadge.classList.add('bg-success');
+                }
+                enquiry.status = 'CONVERTED';
+                enquiry.convertedToStudent = true;
+                showNotification('Failed to update enquiry status', true);
+            });
+        }
+        // Save the updated enquiries list to localStorage
+        localStorage.setItem('enquiriesState', JSON.stringify(allEnquiries));
+    }
 }
 
 // Update enquiry statistics
@@ -278,24 +396,67 @@ async function convertToStudent(id) {
 
 // Reverse conversion
 async function reverseConversion(id) {
-    if (!confirm('Are you sure you want to reverse this conversion?')) {
-        return;
-    }
-
     try {
+        // Fetch the latest enquiry data
+        const enquiryResponse = await fetch(`${API_URL}/${id}`);
+        if (!enquiryResponse.ok) {
+            throw new Error('Failed to fetch enquiry details');
+        }
+        const enquiry = await enquiryResponse.json();
+
+        if (!enquiry) {
+            showNotification('Enquiry not found', true);
+            return;
+        }
+
+        if (enquiry.status !== 'CONVERTED') {
+            showNotification('This enquiry is not converted to a student yet', true);
+            return;
+        }
+
+        if (!confirm('Are you sure you want to reverse this conversion? This will remove the student record and cannot be undone.')) {
+            return;
+        }
+
+        // Get the student ID from the enquiry data
+        const studentId = enquiry.studentId;
+        if (!studentId) {
+            throw new Error('No associated student found for this enquiry');
+        }
+
+        // Check if student has any payments
+        const paymentsResponse = await fetch(`http://localhost:4456/api/payments/student/${studentId}`);
+        if (!paymentsResponse.ok) {
+            throw new Error('Failed to check student payments');
+        }
+        const payments = await paymentsResponse.json();
+
+        if (payments && payments.length > 0) {
+            if (!confirm(`This student has ${payments.length} payment record(s). Reversing the conversion will also delete all associated payment records. Do you want to continue?`)) {
+                return;
+            }
+        }
+
         const response = await fetch(`${API_URL}/${id}/reverse`, {
             method: 'POST'
         });
 
         if (!response.ok) {
-            throw new Error('Failed to reverse conversion');
+            const errorData = await response.text();
+            throw new Error(errorData || 'Failed to reverse conversion');
         }
 
+        const updatedEnquiry = await response.json();
         showNotification('Conversion reversed successfully');
         fetchEnquiries();
+        
+        // Refresh the student list if we're on the students page
+        if (window.fetchStudents) {
+            window.fetchStudents();
+        }
     } catch (error) {
         console.error('Error reversing conversion:', error);
-        showNotification('Error reversing conversion', true);
+        showNotification(error.message || 'Error reversing conversion', true);
     }
 }
 

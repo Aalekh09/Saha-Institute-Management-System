@@ -88,22 +88,29 @@ public class EnquiryService {
     @Transactional
     public Enquiry reverseConversion(Long id) {
         Optional<Enquiry> enquiryOpt = enquiryRepository.findById(id);
-        if (enquiryOpt.isPresent()) {
-            Enquiry enquiry = enquiryOpt.get();
-            if (!enquiry.isConvertedToStudent()) {
-                throw new IllegalStateException("Enquiry is not converted to student");
-            }
-            
-            // Find the most recently created student for this phone number
-            List<com.example.studentmanagement.model.Student> students = studentRepository.findByPhoneNumberOrderByIdDesc(enquiry.getPhoneNumber());
-            if (!students.isEmpty()) {
-                // Delete only the most recently created student
-                studentRepository.deleteById(students.get(0).getId());
-            }
-            
-            enquiry.setConvertedToStudent(false);
-            return enquiryRepository.save(enquiry);
+        if (!enquiryOpt.isPresent()) {
+            throw new RuntimeException("Enquiry not found with id: " + id);
         }
-        throw new RuntimeException("Enquiry not found with id: " + id);
+        
+        Enquiry enquiry = enquiryOpt.get();
+        if (!enquiry.isConvertedToStudent()) {
+            throw new IllegalStateException("Enquiry is not converted to student");
+        }
+        
+        // Find the most recently created student for this phone number
+        List<com.example.studentmanagement.model.Student> students = studentRepository.findByPhoneNumberOrderByIdDesc(enquiry.getPhoneNumber());
+        if (students.isEmpty()) {
+            throw new IllegalStateException("No student record found for phone number: " + enquiry.getPhoneNumber());
+        }
+        
+        // Delete only the most recently created student
+        try {
+            studentRepository.deleteById(students.get(0).getId());
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to delete student record: " + e.getMessage());
+        }
+        
+        enquiry.setConvertedToStudent(false);
+        return enquiryRepository.save(enquiry);
     }
 } 
