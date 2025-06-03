@@ -9,6 +9,6 @@ import com.example.studentmanagement.model.Payment;
 
 @Repository
 public interface PaymentRepository extends JpaRepository<Payment, Long> {
-    List<Payment> findByStudent_Id(Long studentId);
+    List<Payment> findByStudentId(Long studentId);
     List<Payment> findByStatus(String status);
 } 

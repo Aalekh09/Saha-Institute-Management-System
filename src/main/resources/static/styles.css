@@ -1861,23 +1861,532 @@ label[for]:after {
     font-size: 14px;
 }
 
-/* Table styles */
-#enquiriesTable thead th {
-    // ... existing code ...
+/* Table Styles */
+.table-container {
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    overflow: hidden;
 }
 
-/* Style for the Mark Confirmed column to make it smaller */
-#enquiriesTable th:nth-child(8),
-#enquiriesTable td:nth-child(8) {
-    width: 80px; /* Adjust width as needed */
-    text-align: center; /* Center the checkbox */
+#studentsTable {
+    width: 100%;
+    border-collapse: collapse;
 }
 
-/* Ensure Actions column doesn't take up excessive space */
-#enquiriesTable th:nth-child(9),
-#enquiriesTable td:nth-child(9) {
-    width: 120px; /* Adjust width as needed for buttons */
-    text-align: center;
+#studentsTable thead {
+    background: #f8f9fa;
 }
 
-/* Existing closing brace for #enquiriesTable thead th if present */
+#studentsTable th {
+    padding: 15px;
+    text-align: left;
+    font-weight: 600;
+    color: #2c3e50;
+    border-bottom: 2px solid #e0e0e0;
+}
+
+#studentsTable td {
+    padding: 15px;
+    border-bottom: 1px solid #e0e0e0;
+    color: #34495e;
+}
+
+#studentsTable tbody tr:hover {
+    background: #f8f9fa;
+}
+
+/* Student Info Column */
+.student-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.student-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #e0e0e0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #7f8c8d;
+}
+
+.student-details {
+    display: flex;
+    flex-direction: column;
+}
+
+.student-name {
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+.student-id {
+    font-size: 12px;
+    color: #7f8c8d;
+}
+
+/* Contact Column */
+.contact-info {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.contact-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #34495e;
+    font-size: 14px;
+}
+
+.contact-item i {
+    color: #95a5a6;
+    width: 16px;
+}
+
+/* Course Details Column */
+.course-info {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.course-name {
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+.course-duration {
+    font-size: 12px;
+    color: #7f8c8d;
+}
+
+/* Fee Status Column */
+.fee-status {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.fee-amount {
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+.fee-progress {
+    width: 100%;
+    height: 6px;
+    background: #e0e0e0;
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.fee-progress-bar {
+    height: 100%;
+    background: #3498db;
+    border-radius: 3px;
+    transition: width 0.3s ease;
+}
+
+/* Actions Column */
+.action-buttons {
+    display: flex;
+    gap: 8px;
+}
+
+.action-btn {
+    padding: 6px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.action-btn.edit-btn {
+    background: #e3f2fd;
+    color: #1976d2;
+}
+
+.action-btn.payment-btn {
+    background: #e8f5e9;
+    color: #2e7d32;
+}
+
+.action-btn.delete-btn {
+    background: #ffebee;
+    color: #c62828;
+}
+
+.action-btn.id-card-btn {
+    background: #fff3e0;
+    color: #ef6c00;
+}
+
+.action-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.student-name.clickable {
+    cursor: pointer;
+    color: #1976d2;
+    text-decoration: underline;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+    .list-header {
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .list-actions {
+        width: 100%;
+        flex-direction: column;
+    }
+    
+    .search-box {
+        width: 100%;
+    }
+    
+    .action-btn.primary {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 768px) {
+    .list-stats {
+        grid-template-columns: 1fr;
+    }
+
+    .students-section .action-buttons {
+        flex-wrap: wrap;
+    }
+
+    .students-section .action-buttons .action-btn {
+        flex: 1;
+        justify-content: center;
+    }
+}
+
+/* Dashboard Styles */
+.main-container h2 {
+    color: #2c3e50;
+    margin-bottom: 1.5rem;
+    font-size: 1.5rem;
+}
+
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.dashboard-card {
+    background: white;
+    border-radius: 8px;
+    padding: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    transition: transform 0.3s ease;
+    cursor: pointer;
+}
+
+.dashboard-card:hover {
+    transform: translateY(-2px);
+}
+
+.dashboard-card .card-icon {
+    font-size: 2rem;
+    color: #3498db;
+}
+
+.dashboard-card .card-title {
+    font-size: 1.1rem;
+    color: #2c3e50;
+    margin: 0;
+}
+
+.content-panel {
+    background: white;
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.profile-section {
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #eee;
+}
+
+.profile-section:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+    margin-bottom: 0;
+}
+
+.profile-section h3 {
+    color: #2c3e50;
+    font-size: 18px;
+    margin-top: 0;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.profile-section p {
+    margin: 8px 0;
+    font-size: 14px;
+    color: #34495e;
+}
+
+.profile-section strong {
+    color: #2c3e50;
+    display: inline-block;
+    min-width: 120px;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+    .list-header {
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .list-actions {
+        width: 100%;
+        flex-direction: column;
+    }
+    
+    .search-box {
+        width: 100%;
+    }
+    
+    .action-btn.primary {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 768px) {
+    .list-stats {
+        grid-template-columns: 1fr;
+    }
+
+    .students-section .action-buttons {
+        flex-wrap: wrap;
+    }
+
+    .students-section .action-buttons .action-btn {
+        flex: 1;
+        justify-content: center;
+    }
+}
+
+/* Mobile Responsive Styles */
+@media screen and (max-width: 768px) {
+    /* Header adjustments for mobile */
+    header {
+        padding: 15px 10px;
+        position: relative;
+    }
+
+    header h1 {
+        font-size: 20px;
+        padding-right: 80px; /* Make space for logout button */
+    }
+
+    header p {
+        font-size: 14px;
+    }
+
+    .logout-btn {
+        top: 15px;
+        right: 10px;
+        padding: 6px 12px;
+        font-size: 13px;
+    }
+
+    /* Side panel adjustments */
+    .side-panel {
+        width: 100%;
+        min-width: auto;
+        padding: 10px;
+    }
+
+    .tab-btn, a.tab-btn {
+        padding: 12px 15px;
+        font-size: 14px;
+    }
+
+    /* Content panel adjustments */
+    .content-panel {
+        padding: 15px 10px;
+    }
+
+    /* Form adjustments */
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        font-size: 16px; /* Prevent zoom on iOS */
+    }
+
+    /* Table adjustments */
+    .table-container {
+        width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+        margin: 0 -10px;
+        padding: 0 10px;
+        position: relative;
+        touch-action: pan-x; /* Enable horizontal touch gestures */
+        overscroll-behavior-x: contain; /* Prevent overscroll bounce */
+    }
+
+    .table-container table {
+        min-width: 800px; /* Ensures table doesn't shrink too much */
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+
+    .table-container th,
+    .table-container td {
+        padding: 8px;
+        white-space: nowrap;
+        position: relative; /* For better touch handling */
+    }
+
+    /* Add a visual indicator for scrollable content */
+    .table-container::after {
+        content: '';
+        position: absolute;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        width: 20px;
+        background: linear-gradient(to right, transparent, rgba(0,0,0,0.05));
+        pointer-events: none;
+        z-index: 1;
+    }
+
+    /* Improve touch targets */
+    .action-buttons {
+        min-width: 120px; /* Ensure buttons don't get too small */
+    }
+
+    .action-btn {
+        min-width: 32px; /* Minimum touch target size */
+        height: 32px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    /* Stats cards */
+    .list-stats {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+
+    .stat-card {
+        padding: 15px;
+    }
+
+    .stat-icon {
+        width: 40px;
+        height: 40px;
+        font-size: 20px;
+    }
+
+    .stat-info h3 {
+        font-size: 20px;
+    }
+
+    /* Search box */
+    .search-box {
+        min-width: auto;
+        width: 100%;
+    }
+
+    .search-box input {
+        font-size: 16px;
+        padding: 10px 10px 10px 35px;
+    }
+
+    /* Modal adjustments */
+    .modal {
+        width: 90%;
+        max-width: 350px;
+        top: 20px;
+        right: 20px;
+    }
+
+    .modal-content {
+        padding: 20px 15px;
+    }
+
+    /* ID Card adjustments */
+    .id-card {
+        padding: 15px;
+    }
+
+    .id-card-header h2 {
+        font-size: 18px;
+    }
+
+    .detail-row {
+        font-size: 14px;
+    }
+
+    /* Dashboard cards */
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+
+    .dashboard-card {
+        padding: 15px;
+    }
+
+    .dashboard-card .card-icon {
+        font-size: 24px;
+    }
+
+    .dashboard-card .card-title {
+        font-size: 16px;
+    }
+}
+
+/* Additional optimizations for very small screens */
+@media screen and (max-width: 480px) {
+    .table-container {
+        margin: 0 -5px;
+        padding: 0 5px;
+    }
+
+    .table-container th,
+    .table-container td {
+        padding: 6px;
+    }
+
+    .action-btn {
+        min-width: 28px;
+        height: 28px;
+        padding: 4px;
+    }
+}

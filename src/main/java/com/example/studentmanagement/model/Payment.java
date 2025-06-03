@@ -9,7 +9,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import jakarta.persistence.Transient;
 
 @Entity
 @Table(name = "payments")
@@ -21,9 +20,6 @@ public class Payment {
     @ManyToOne
     @JoinColumn(name = "student_id", nullable = false)
     private Student student;
-
-    @Transient
-    private Long studentId;
 
     private Double amount;
     private String paymentMethod;
@@ -104,13 +100,5 @@ public class Payment {
 
     public void setReceiptNumber(String receiptNumber) {
         this.receiptNumber = receiptNumber;
-    }
-
-    public Long getStudentId() {
-        return studentId;
-    }
-
-    public void setStudentId(Long studentId) {
-        this.studentId = studentId;
     }
 } 
