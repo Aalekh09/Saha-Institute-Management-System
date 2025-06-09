@@ -4,15 +4,29 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.example.studentmanagement.model.Student;
 import com.example.studentmanagement.repository.StudentRepository;
+import com.example.studentmanagement.repository.PaymentRepository;
+import com.example.studentmanagement.repository.CertificateRepository;
+import com.example.studentmanagement.repository.EnquiryRepository;
+import com.example.studentmanagement.model.Payment;
 
 @Service
 public class StudentService {
 
     @Autowired
     private StudentRepository studentRepository;
+
+    @Autowired
+    private PaymentRepository paymentRepository;
+
+    @Autowired
+    private CertificateRepository certificateRepository;
+
+    @Autowired
+    private EnquiryRepository enquiryRepository;
 
     public List<Student> getAllStudents() {
         return studentRepository.findAll();
@@ -39,8 +53,36 @@ public class StudentService {
         return studentRepository.save(student);
     }
 
+    @Transactional
     public void deleteStudent(Long id) {
-        studentRepository.deleteById(id);
+        try {
+            // First get the student to ensure it exists
+            Student student = getStudentById(id);
+            
+            // Delete all related payments and receipts
+            List<Payment> payments = paymentRepository.findByStudentId(id);
+            for (Payment payment : payments) {
+                paymentRepository.deleteById(payment.getId());
+            }
+            
+            // Delete all related certificates
+            certificateRepository.findByStudent(student).forEach(certificate -> {
+                certificateRepository.deleteById(certificate.getId());
+            });
+            
+            // Delete related enquiries
+            enquiryRepository.findAll().stream()
+                .filter(enquiry -> student.getPhoneNumber().equals(enquiry.getPhoneNumber()))
+                .forEach(enquiry -> {
+                    enquiryRepository.deleteById(enquiry.getId());
+                });
+            
+            // Finally delete the student
+            studentRepository.deleteById(id);
+        } catch (Exception e) {
+            e.printStackTrace(); // Add this for debugging
+            throw new RuntimeException("Error deleting student and related records: " + e.getMessage());
+        }
     }
 
     // Method to update payment information

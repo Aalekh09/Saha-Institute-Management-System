@@ -13,15 +13,17 @@
             <div class="panel-header">
                 <div class="panel-title">
                     <h2><i class="fas fa-money-bill-wave"></i> Payment Management</h2>
-                    <p class="subtitle">Record and manage student payments</p>
+                    <p class="subtitle">Track and manage student payments</p>
                 </div>
-                <div class="panel-actions">
-                    <div class="search-container">
-                        <div class="search-box">
-                            <i class="fas fa-search"></i>
-                            <input type="text" id="searchPaymentInput" placeholder="Search by student name, ID, or receipt number...">
-                        </div>
+                <div class="payment-actions" style="width:100%;display:flex;align-items:center;gap:1rem;background:#f8fafd;padding:1rem 1.5rem;border-radius:8px;box-shadow:0 2px 8px rgba(44,62,80,0.03);margin-top:1rem;">
+                    <div class="search-box" style="flex:1;display:flex;align-items:center;position:relative;">
+                        <i class="fas fa-search" style="position:absolute;left:15px;color:#888;"></i>
+                        <input type="text" id="searchPaymentInput" placeholder="Search payments..." style="width:100%;padding:10px 15px 10px 40px;border:1px solid #ddd;border-radius:6px;font-size:15px;">
                     </div>
+                    <button class="btn-primary" onclick="showAddPaymentModal()">
+                        <i class="fas fa-plus"></i>
+                        Add New Payment
+                    </button>
                 </div>
             </div>
 
@@ -30,9 +32,9 @@
                     <div class="stat-card">
                         <div class="stat-icon">
                             <i class="fas fa-money-check"></i>
-                        </d
+                        </div>
                         <div class="stat-info">
-                            <h3 id="totalPayments">₹0</h3> -->
+                            <h3 id="totalPayments">₹0</h3>
                             <p>Total Payments</p>
                         </div>
                     </div>
@@ -54,13 +56,6 @@
                             <p>Pending Payments</p>
                         </div>
                     </div>
-                </div>
-
-                <div class="payment-actions">
-                    <button class="action-btn primary" onclick="showAddPaymentModal()">
-                        <i class="fas fa-plus"></i>
-                        Add New Payment
-                    </button>
                 </div>
 
                 <div class="payments-section">

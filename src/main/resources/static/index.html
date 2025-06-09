@@ -52,10 +52,21 @@
                     <i class="fas fa-question-circle"></i>
                     <span>Enquiries</span>
                 </a>
-                <a href="certificate.html" class="tab-btn">
+                <a href="#" class="tab-btn" id="certificatesMenuBtn">
                     <i class="fas fa-certificate"></i>
                     <span>Certificates</span>
+                    <i class="fas fa-chevron-down" style="margin-left:auto;"></i>
                 </a>
+                <div id="certificatesSubMenu" style="display:none;flex-direction:column;margin-left:32px;">
+                    <a href="certificate.html" class="tab-btn" id="digitalCertBtn">
+                        <i class="fas fa-desktop"></i>
+                        <span>Digital Certificate</span>
+                    </a>
+                    <a href="hardcopy-certificate.html" class="tab-btn" id="hardcopyCertBtn">
+                        <i class="fas fa-file-alt"></i>
+                        <span>Hardcopy Certificate</span>
+                    </a>
+                </div>
             </div>
         </div>
 
@@ -557,5 +568,20 @@
     </div>
 
     <script src="js/script.js"></script>
+    <script>
+    // Sidebar submenu toggle for Certificates
+    const certMenuBtn = document.getElementById('certificatesMenuBtn');
+    const certSubMenu = document.getElementById('certificatesSubMenu');
+    if (certMenuBtn && certSubMenu) {
+        certMenuBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            certSubMenu.style.display = certSubMenu.style.display === 'flex' ? 'none' : 'flex';
+        });
+        // Optionally, open submenu if on certificate or hardcopy certificate page
+        if (window.location.pathname.includes('certificate.html')) {
+            certSubMenu.style.display = 'flex';
+        }
+    }
+    </script>
 </body>
 </html>

@@ -124,8 +124,8 @@
 }
 
 .action-btn.primary {
-    background: linear-gradient(90deg, #1976d2, #42a5f5);
-    color: white;
+    background: none !important;
+    color: inherit !important;
     padding: 12px 24px;
     border: none;
     border-radius: 6px;
@@ -296,17 +296,27 @@
 
 .btn-primary {
     background: linear-gradient(90deg, #1976d2, #42a5f5);
-    color: white;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    padding: 0.7rem 1.5rem;
+    font-size: 1rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    box-shadow: 0 2px 8px rgba(25,118,210,0.08);
+    transition: background 0.2s;
+    cursor: pointer;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(90deg, #1565c0, #1976d2);
 }
 
 .btn-secondary {
     background-color: #f4f6f8;
     color: #2c3e50;
-}
-
-.btn-primary:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(25, 118, 210, 0.2);
 }
 
 .btn-secondary:hover {

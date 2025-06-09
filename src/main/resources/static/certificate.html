@@ -32,10 +32,21 @@
                     <i class="fas fa-list"></i>
                     <span>Dashboard</span>
                 </button>
-                <button class="tab-btn active" data-tab="certificates">
+                <a href="#" class="tab-btn" id="certificatesMenuBtn">
                     <i class="fas fa-certificate"></i>
                     <span>Certificates</span>
-                </button>
+                    <i class="fas fa-chevron-down" style="margin-left:auto;"></i>
+                </a>
+            </div>
+            <div id="certificatesSubMenu" style="display:none;flex-direction:column;margin-left:32px;">
+                <a href="certificate.html" class="tab-btn active" id="digitalCertBtn">
+                    <i class="fas fa-desktop"></i>
+                    <span>Digital Certificate</span>
+                </a>
+                <a href="hardcopy-certificate.html" class="tab-btn" id="hardcopyCertBtn">
+                    <i class="fas fa-file-alt"></i>
+                    <span>Hardcopy Certificate</span>
+                </a>
             </div>
         </div>
 
@@ -222,5 +233,26 @@
 
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     <script src="js/certificate.js"></script>
+    <script>
+    // Sidebar submenu toggle for Certificates
+    const certMenuBtn = document.getElementById('certificatesMenuBtn');
+    const certSubMenu = document.getElementById('certificatesSubMenu');
+    if (certMenuBtn && certSubMenu) {
+        certMenuBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            certSubMenu.style.display = certSubMenu.style.display === 'flex' ? 'none' : 'flex';
+        });
+        // Open submenu if on certificate or hardcopy certificate page
+        if (window.location.pathname.includes('certificate.html')) {
+            certSubMenu.style.display = 'flex';
+        }
+        // Highlight active submenu item
+        if (window.location.pathname.endsWith('certificate.html')) {
+            document.getElementById('digitalCertBtn').classList.add('active');
+        } else if (window.location.pathname.endsWith('hardcopy-certificate.html')) {
+            document.getElementById('hardcopyCertBtn').classList.add('active');
+        }
+    }
+    </script>
 </body>
 </html> 

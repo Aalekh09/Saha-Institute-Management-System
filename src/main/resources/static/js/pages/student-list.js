@@ -172,24 +172,37 @@ function generateIdCard(id) {
 }
 
 async function deleteStudent(id) {
-    if (confirm('Are you sure you want to delete this student?')) {
+    if (confirm('Are you sure you want to delete this student? This will permanently delete all student data including payments and receipts.')) {
         try {
             const response = await fetch(`/api/students/${id}`, {
-                method: 'DELETE'
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
             });
             
             if (response.ok) {
+                // Remove the student from both arrays
                 students = students.filter(student => student.id !== id);
                 filteredStudents = filteredStudents.filter(student => student.id !== id);
+                
+                // Update the UI
                 updateTable();
                 updateStats();
-                showNotification('Student deleted successfully', 'success');
+                showNotification('Student and all related data deleted successfully', 'success');
+                
+                // Refresh the page after successful deletion
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1000);
             } else {
-                throw new Error('Failed to delete student');
+                const errorData = await response.text();
+                console.error('Delete failed:', errorData);
+                throw new Error(`Failed to delete student: ${errorData}`);
             }
         } catch (error) {
             console.error('Error deleting student:', error);
-            showNotification('Error deleting student', 'error');
+            showNotification('Error deleting student: ' + error.message, 'error');
         }
     }
 }
