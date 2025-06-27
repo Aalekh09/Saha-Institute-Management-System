@@ -6,6 +6,182 @@
     <title>Hardcopy Certificate - Saha Institute of Management & Technology</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- jsPDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <!-- QRCode -->
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
+    <!-- JsBarcode -->
+    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+    body {
+        font-family: 'Inter', sans-serif;
+        background: #f4f7fb;
+    }
+    .card {
+        background: #fff;
+        border-radius: 16px;
+        box-shadow: 0 8px 32px rgba(44,62,80,0.13);
+        padding: 56px 40px 40px 40px;
+        max-width: 1000px;
+        margin: 48px auto 48px auto;
+    }
+    #certificateForm {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 32px 36px;
+        margin-top: 32px;
+    }
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        position: relative;
+        margin-bottom: 10px;
+    }
+    .form-group label {
+        font-size: 14px;
+        color: #34495e;
+        margin-bottom: 6px;
+        font-weight: 500;
+    }
+    .form-group input[type="text"],
+    .form-group input[type="number"],
+    .form-group input[type="date"],
+    .form-group input[type="file"] {
+        padding: 10px 12px;
+        border: 1px solid #d1d5db;
+        border-radius: 6px;
+        font-size: 15px;
+        background: #f9fafb;
+        transition: border 0.2s;
+        margin-bottom: 2px;
+    }
+    .form-group input:focus {
+        border: 1.5px solid #2980ef;
+        outline: none;
+        background: #fff;
+    }
+    .subjects-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 18px;
+        margin-top: 8px;
+    }
+    .subjects-table th, .subjects-table td {
+        border: 1px solid #e1e4e8;
+        padding: 6px 8px;
+        text-align: center;
+        font-size: 14px;
+    }
+    .subjects-table th {
+        background: #f3f6fa;
+        font-weight: 600;
+    }
+    .subject-row input {
+        width: 100%;
+        box-sizing: border-box;
+        padding: 6px 8px;
+        border-radius: 4px;
+        border: 1px solid #d1d5db;
+        background: #f9fafb;
+        font-size: 14px;
+        margin-bottom: 0;
+    }
+    .subject-row button {
+        background: #e74c3c;
+        color: #fff;
+        border: none;
+        border-radius: 4px;
+        padding: 4px 10px;
+        cursor: pointer;
+        font-size: 13px;
+        transition: background 0.2s;
+    }
+    .subject-row button:hover {
+        background: #c0392b;
+    }
+    #addSubjectBtn {
+        background: #3498db;
+        color: #fff;
+        border: none;
+        border-radius: 4px;
+        padding: 7px 18px;
+        font-size: 15px;
+        margin-top: 10px;
+        margin-bottom: 0;
+        cursor: pointer;
+        transition: background 0.2s;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+    #addSubjectBtn:hover {
+        background: #2980b9;
+    }
+    .file-input-wrapper {
+        position: relative;
+        display: flex;
+        align-items: center;
+        margin-bottom: 0;
+    }
+    .file-input-wrapper input[type="file"] {
+        opacity: 0;
+        width: 100%;
+        position: absolute;
+        left: 0;
+        top: 0;
+        height: 100%;
+        cursor: pointer;
+    }
+    .file-input-label {
+        background: #f3f6fa;
+        border: 1px solid #d1d5db;
+        border-radius: 6px;
+        padding: 10px 12px;
+        font-size: 15px;
+        color: #34495e;
+        cursor: pointer;
+        width: 100%;
+        text-align: left;
+        transition: border 0.2s;
+    }
+    .file-input-label:hover {
+        border: 1.5px solid #2980ef;
+    }
+    .full-width {
+        grid-column: 1 / -1;
+        margin-top: 10px;
+    }
+    #certificateForm button[type="submit"] {
+        background: #27ae60;
+        color: #fff;
+        border: none;
+        border-radius: 4px;
+        padding: 12px 0;
+        font-size: 17px;
+        font-weight: 600;
+        cursor: pointer;
+        margin-top: 18px;
+        transition: background 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+    #certificateForm button[type="submit"]:hover {
+        background: #219150;
+    }
+    @media (max-width: 900px) {
+        #certificateForm {
+            grid-template-columns: 1fr;
+        }
+        .card {
+            padding: 24px 8px 24px 8px;
+        }
+    }
+    </style>
 </head>
 <body>
     <header>
@@ -69,12 +245,102 @@
                 </div>
             </div>
             <div class="panel-content">
-                <div class="card" style="background:#fff;border-radius:8px;box-shadow:0 2px 8px rgba(44,62,80,0.05);padding:30px;">
-                    <h3 style="color:#2c3e50;">Hardcopy Certificate Area</h3>
-                    <p style="color:#7b8a8b;">Add your hardcopy certificate design or logic here.</p>
+                <div class="card">
+                    <h3 style="color:#2c3e50; font-weight: 600; font-size: 24px;">Hardcopy Certificate Generator</h3>
+                    <p style="color:#7b8a8b; margin-top: -2px; margin-bottom: 24px;">Fill in the details below to generate a student certificate.</p>
+                    <form id="certificateForm">
+                        <div class="form-group">
+                            <label for="registration">Registration No</label>
+                            <input type="text" id="registration" name="registration" placeholder="Registration No" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="name">Name</label>
+                            <input type="text" id="name" name="name" placeholder="Name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="fathersname">Father's Name</label>
+                            <input type="text" id="fathersname" name="fathersname" placeholder="Father's Name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="mothersname">Mother's Name</label>
+                            <input type="text" id="mothersname" name="mothersname" placeholder="Mother's Name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="dob">Date of Birth</label>
+                            <input type="date" id="dob" name="dob" placeholder="dd-mm-yyyy" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="rollno">Roll No</label>
+                            <input type="text" id="rollno" name="rollno" placeholder="Roll No" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="erollno">Exam Roll No</label>
+                            <input type="text" id="erollno" name="erollno" placeholder="Exam Roll No" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="IssueSession">Issue Session</label>
+                            <input type="text" id="IssueSession" name="IssueSession" placeholder="Issue Session (e.g. 2023-24)" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="duration">Course Duration</label>
+                            <input type="text" id="duration" name="duration" placeholder="Course Duration" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="performance">Performance</label>
+                            <input type="text" id="performance" name="performance" placeholder="Performance" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="certificate">Certificate Name</label>
+                            <input type="text" id="certificate" name="certificate" placeholder="Certificate Name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="Grade">Grade</label>
+                            <input type="text" id="Grade" name="Grade" placeholder="Grade" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="IssueDay">Issue Day</label>
+                            <input type="number" id="IssueDay" name="IssueDay" placeholder="Issue Day (e.g. 12)" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="IssueMonth">Issue Month</label>
+                            <input type="text" id="IssueMonth" name="IssueMonth" placeholder="Issue Month (e.g. May)" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="IssueYear">Issue Year</label>
+                            <input type="number" id="IssueYear" name="IssueYear" placeholder="Issue Year (e.g. 2024)" required>
+                        </div>
+                        <div class="form-group file-input-wrapper">
+                            <label for="photo">Photo</label>
+                            <span class="file-input-label">Choose File</span>
+                            <input type="file" id="photo" name="photo" accept="image/*">
+                        </div>
+                        <div class="full-width">
+                            <label style="font-weight:600;">Subjects (max 6):</label>
+                            <table class="subjects-table" id="subjectsTable">
+                                <thead>
+                                    <tr>
+                                        <th>Subject Name</th>
+                                        <th>Theory</th>
+                                        <th>Practical</th>
+                                        <th>Obtained</th>
+                                        <th>Remove</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="subjectsArea">
+                                    <!-- Subject rows will be added here -->
+                                </tbody>
+                            </table>
+                            <button type="button" id="addSubjectBtn" title="Add Subject" aria-label="Add Subject"><i class="fas fa-plus"></i> Add Subject</button>
+                        </div>
+                        <button type="submit" class="full-width"><i class="fas fa-file-pdf"></i> Generate Certificate PDF</button>
+                    </form>
+                    <canvas id="barcodeCanvas" style="display:none"></canvas>
+                    <canvas id="watermarkCanvas" width="400" height="400" style="display:none"></canvas>
+                    <img id="qrImage" style="display:none">
                 </div>
             </div>
         </div>
     </div>
+    <script src="js/hardcopy-certificate.js" defer></script>
 </body>
 </html> 

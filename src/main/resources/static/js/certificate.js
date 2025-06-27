@@ -4,9 +4,11 @@ document.addEventListener('DOMContentLoaded', function() {
     const studentName = document.getElementById('studentName');
     const courseName = document.getElementById('courseName');
     const certificateType = document.getElementById('certificateType');
+    const marksData = document.getElementById('marksData'); // Get the new marks field
     const previewCertificateBtn = document.getElementById('previewCertificate');
     const downloadCertificateBtn = document.getElementById('downloadCertificate');
     const printCertificateBtn = document.getElementById('printCertificate');
+    const qrCodeElement = document.querySelector('.qr-image'); // Get the QR code image element
 
     // Tab Navigation
     const tabButtons = document.querySelectorAll('.tab-btn');
@@ -125,6 +127,7 @@ document.addEventListener('DOMContentLoaded', function() {
     studentName.addEventListener('input', updatePreview);
     courseName.addEventListener('input', updatePreview);
     certificateType.addEventListener('change', updatePreview);
+    marksData.addEventListener('input', updatePreview); // Update preview on marks input
     // issueDate.addEventListener('change', updatePreview); // Removed
     // validUntil.addEventListener('change', updatePreview); // Removed
     const studentIdInput = document.getElementById('studentIdInput');
@@ -140,6 +143,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 studentId: studentIdInput.value || '[ID]'
             },
             type: certificateType.value || 'Completion',
+            marks: marksData.value || 'N/A'
             // issueDate: issueDate.value || '[Date]', // Removed
             // validUntil: validUntil.value || '[Date]' // Removed
         };
@@ -234,6 +238,28 @@ document.addEventListener('DOMContentLoaded', function() {
         if (courseNameElement) {
             courseNameElement.textContent = data.student.courseName;
             console.log('Updated course name to:', courseNameElement.textContent);
+        }
+
+        // Generate and update QR Code
+        if (qrCodeElement) {
+            const qrDataString = `
+SAHA INSTITUTE CERTIFICATE VERIFICATION
++---------------------------------------
++Student Name: ${data.student.name}
++Student ID: ${data.student.studentId || 'N/A'}
++Course: ${data.student.courseName}
++Certificate Type: ${data.type}
++Marks/Grades:
++${data.marks}
+            `.trim();
+
+            QRCode.toDataURL(qrDataString, { width: 90, margin: 1 }, (err, url) => {
+                if (err) {
+                    console.error('Failed to generate QR Code:', err);
+                    return;
+                }
+                qrCodeElement.src = url;
+            });
         }
 
         // Update dates (removed)
