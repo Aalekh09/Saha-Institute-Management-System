@@ -163,7 +163,7 @@ function displayEnquiries(enquiries) {
     if (enquiries.length === 0) {
         const row = document.createElement('tr');
         row.innerHTML = `
-            <td colspan="11" style="text-align: center; padding: 20px; color: #666;">
+            <td colspan="12" style="text-align: center; padding: 20px; color: #666;">
                 No enquiries found matching the current filters
             </td>
         `;
@@ -180,6 +180,7 @@ function displayEnquiries(enquiries) {
             <td>${enquiry.name}</td>
             <td>${enquiry.fatherName || ''}</td>
             <td>${new Date(enquiry.dateOfEnquiry).toLocaleDateString()}</td>
+            <td>${enquiry.takenBy || 'N/A'}</td>
             <td>${enquiry.phoneNumber}</td>
             <td>${enquiry.course || ''}</td>
             <td>${enquiry.courseDuration || ''}</td>
@@ -307,6 +308,7 @@ enquiryForm.addEventListener('submit', async (e) => {
             courseDuration: document.getElementById('courseDuration').value,
             remarks: document.getElementById('remarks').value,
             dateOfEnquiry: document.getElementById('enquiryDate').value,
+            takenBy: document.getElementById('takenBy').value,
             convertedToStudent: false
         };
 
@@ -492,4 +494,4 @@ document.addEventListener('DOMContentLoaded', () => {
         const today = new Date().toISOString().split('T')[0];
         enquiryDateField.value = today;
     }
-}); 
+});

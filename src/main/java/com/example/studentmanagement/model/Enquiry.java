@@ -40,6 +40,9 @@ public class Enquiry {
     @Column(name = "converted_to_student")
     private boolean convertedToStudent = false;
 
+    @Column(name = "taken_by")
+    private String takenBy;
+
     // Getters and Setters
     public Long getId() {
         return id;
@@ -111,5 +114,13 @@ public class Enquiry {
 
     public void setConvertedToStudent(boolean convertedToStudent) {
         this.convertedToStudent = convertedToStudent;
+    }
+
+    public String getTakenBy() {
+        return takenBy;
+    }
+
+    public void setTakenBy(String takenBy) {
+        this.takenBy = takenBy;
     }
 } 

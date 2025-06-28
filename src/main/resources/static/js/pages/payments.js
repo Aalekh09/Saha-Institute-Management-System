@@ -261,8 +261,7 @@ function printReceipt() {
     const receiptContent = document.querySelector('.receipt-content').innerHTML;
     const printWindow = window.open('', '_blank');
     
-    printWindow.document.write(`
-        <html>
+    printWindow.document.write(`        <html>
             <head>
                 <title>Payment Receipt</title>
                 <style>

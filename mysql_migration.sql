@@ -10,4 +10,10 @@ ALTER TABLE enquiries ADD COLUMN father_name VARCHAR(255) AFTER name;
 -- UPDATE enquiries SET father_name = 'Not Specified' WHERE father_name IS NULL;
 
 -- Verify the column was added
-DESCRIBE enquiries; 
+DESCRIBE enquiries;
+
+-- Add taken_by column to enquiries table
+ALTER TABLE enquiries ADD COLUMN taken_by VARCHAR(255);
+
+-- Update existing records with a default value (optional)
+-- UPDATE enquiries SET taken_by = 'System' WHERE taken_by IS NULL; 
