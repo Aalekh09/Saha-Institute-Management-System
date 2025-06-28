@@ -19,6 +19,9 @@ public class Enquiry {
     @Column(nullable = false)
     private String name;
 
+    @Column(name = "father_name")
+    private String fatherName;
+
     @Column(name = "date_of_enquiry", nullable = false)
     private LocalDate dateOfEnquiry;
 
@@ -52,6 +55,14 @@ public class Enquiry {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getFatherName() {
+        return fatherName;
+    }
+
+    public void setFatherName(String fatherName) {
+        this.fatherName = fatherName;
     }
 
     public LocalDate getDateOfEnquiry() {

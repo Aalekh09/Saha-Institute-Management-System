@@ -36,8 +36,11 @@ const EnquiryList = () => {
                     <thead>
                         <tr>
                             <th>Name</th>
+                            <th>Father's Name</th>
                             <th>Date of Enquiry</th>
                             <th>Phone Number</th>
+                            <th>Course</th>
+                            <th>Duration</th>
                             <th>Remarks</th>
                             <th>Status</th>
                             <th>Action</th>
@@ -47,8 +50,11 @@ const EnquiryList = () => {
                         {enquiries.map((enquiry) => (
                             <tr key={enquiry.id}>
                                 <td>{enquiry.name}</td>
+                                <td>{enquiry.fatherName || ''}</td>
                                 <td>{new Date(enquiry.dateOfEnquiry).toLocaleDateString()}</td>
                                 <td>{enquiry.phoneNumber}</td>
+                                <td>{enquiry.course || ''}</td>
+                                <td>{enquiry.courseDuration || ''}</td>
                                 <td>{enquiry.remarks}</td>
                                 <td>
                                     {enquiry.convertedToStudent ? (

@@ -19,6 +19,13 @@ const tabContents = document.querySelectorAll('.tab-content');
 const notification = document.getElementById('notification');
 const notificationMessage = document.getElementById('notificationMessage');
 const searchEnquiryInput = document.getElementById('searchEnquiryInput');
+const dateFilter = document.getElementById('dateFilter');
+const clearDateFilter = document.getElementById('clearDateFilter');
+const totalEnquiries = document.getElementById('totalEnquiries');
+const filteredEnquiries = document.getElementById('filteredEnquiries');
+
+// Store all enquiries for filtering
+let allEnquiries = [];
 
 // Add logout button to header
 const header = document.querySelector('header');
@@ -64,22 +71,68 @@ tabButtons.forEach(button => {
     });
 });
 
+// Date filter functionality
+if (dateFilter) {
+    dateFilter.addEventListener('change', () => {
+        applyFilters();
+    });
+}
+
+// Clear date filter
+if (clearDateFilter) {
+    clearDateFilter.addEventListener('click', () => {
+        dateFilter.value = '';
+        applyFilters();
+    });
+}
+
+// Apply all filters (date and search)
+function applyFilters() {
+    const selectedDate = dateFilter.value;
+    const searchTerm = searchEnquiryInput.value.toLowerCase();
+    
+    let filteredEnquiries = allEnquiries;
+    
+    // Apply date filter
+    if (selectedDate) {
+        filteredEnquiries = filteredEnquiries.filter(enquiry => {
+            const enquiryDate = new Date(enquiry.dateOfEnquiry).toISOString().split('T')[0];
+            return enquiryDate === selectedDate;
+        });
+    }
+    
+    // Apply search filter
+    if (searchTerm) {
+        filteredEnquiries = filteredEnquiries.filter(enquiry => {
+            const name = enquiry.name.toLowerCase();
+            const fatherName = (enquiry.fatherName || '').toLowerCase();
+            const phone = enquiry.phoneNumber.toLowerCase();
+            const remarks = (enquiry.remarks || '').toLowerCase();
+            
+            return name.includes(searchTerm) || 
+                   fatherName.includes(searchTerm) || 
+                   phone.includes(searchTerm) || 
+                   remarks.includes(searchTerm);
+        });
+    }
+    
+    displayEnquiries(filteredEnquiries);
+    updateStats(allEnquiries.length, filteredEnquiries.length);
+}
+
+// Update stats display
+function updateStats(total, filtered) {
+    if (totalEnquiries) {
+        totalEnquiries.textContent = `Total: ${total}`;
+    }
+    if (filteredEnquiries) {
+        filteredEnquiries.textContent = `Showing: ${filtered}`;
+    }
+}
+
 // Search functionality
 searchEnquiryInput.addEventListener('input', (e) => {
-    const searchTerm = e.target.value.toLowerCase();
-    const rows = enquiriesTableBody.getElementsByTagName('tr');
-    
-    Array.from(rows).forEach(row => {
-        const name = row.cells[0].textContent.toLowerCase();
-        const phone = row.cells[2].textContent.toLowerCase();
-        const remarks = row.cells[3].textContent.toLowerCase();
-        
-        if (name.includes(searchTerm) || phone.includes(searchTerm) || remarks.includes(searchTerm)) {
-            row.style.display = '';
-        } else {
-            row.style.display = 'none';
-        }
-    });
+    applyFilters();
 });
 
 // Fetch and display enquiries
@@ -87,7 +140,8 @@ async function fetchEnquiries() {
     try {
         const response = await fetch(API_URL);
         const enquiries = await response.json();
-        displayEnquiries(enquiries);
+        allEnquiries = enquiries; // Store all enquiries
+        applyFilters(); // Apply current filters
     } catch (error) {
         console.error('Error fetching enquiries:', error);
         showNotification('Error fetching enquiries', true);
@@ -98,10 +152,22 @@ async function fetchEnquiries() {
 function displayEnquiries(enquiries) {
     enquiriesTableBody.innerHTML = '';
     
+    if (enquiries.length === 0) {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td colspan="10" style="text-align: center; padding: 20px; color: #666;">
+                No enquiries found matching the current filters
+            </td>
+        `;
+        enquiriesTableBody.appendChild(row);
+        return;
+    }
+    
     enquiries.forEach(enquiry => {
         const row = document.createElement('tr');
         row.innerHTML = `
             <td>${enquiry.name}</td>
+            <td>${enquiry.fatherName || ''}</td>
             <td>${new Date(enquiry.dateOfEnquiry).toLocaleDateString()}</td>
             <td>${enquiry.phoneNumber}</td>
             <td>${enquiry.course || ''}</td>
@@ -180,6 +246,7 @@ enquiryForm.addEventListener('submit', async (e) => {
     try {
         const formData = {
             name: document.getElementById('name').value,
+            fatherName: document.getElementById('fatherName').value,
             phoneNumber: document.getElementById('phoneNumber').value,
             course: document.getElementById('course').value,
             courseDuration: document.getElementById('courseDuration').value,

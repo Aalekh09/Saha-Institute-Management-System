@@ -656,12 +656,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // Fill the form fields
             const nameInput = document.getElementById('name');
+            const fatherNameInput = document.getElementById('fatherName');
             const phoneInput = document.getElementById('phoneNumber');
             const coursesInput = document.getElementById('courses');
             const durationInput = document.getElementById('courseDuration');
             const remarksInput = document.getElementById('remarks');
 
             if (nameInput) nameInput.value = enquiry.name || '';
+            if (fatherNameInput) fatherNameInput.value = enquiry.fatherName || '';
             if (phoneInput) phoneInput.value = enquiry.phoneNumber || '';
             if (coursesInput) coursesInput.value = enquiry.course || '';
             if (durationInput) durationInput.value = enquiry.courseDuration || '';

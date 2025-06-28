@@ -4,8 +4,11 @@ import axios from 'axios';
 const EnquiryForm = () => {
     const [formData, setFormData] = useState({
         name: '',
+        fatherName: '',
         dateOfEnquiry: '',
         phoneNumber: '',
+        course: '',
+        courseDuration: '',
         remarks: ''
     });
 
@@ -22,8 +25,11 @@ const EnquiryForm = () => {
             await axios.post('http://localhost:4455/api/enquiries', formData);
             setFormData({
                 name: '',
+                fatherName: '',
                 dateOfEnquiry: '',
                 phoneNumber: '',
+                course: '',
+                courseDuration: '',
                 remarks: ''
             });
             alert('Enquiry submitted successfully!');
@@ -45,6 +51,18 @@ const EnquiryForm = () => {
                         id="name"
                         name="name"
                         value={formData.name}
+                        onChange={handleChange}
+                        required
+                    />
+                </div>
+                <div className="mb-3">
+                    <label htmlFor="fatherName" className="form-label">Father's Name</label>
+                    <input
+                        type="text"
+                        className="form-control"
+                        id="fatherName"
+                        name="fatherName"
+                        value={formData.fatherName}
                         onChange={handleChange}
                         required
                     />
@@ -72,6 +90,48 @@ const EnquiryForm = () => {
                         onChange={handleChange}
                         required
                     />
+                </div>
+                <div className="mb-3">
+                    <label htmlFor="course" className="form-label">Course Interested In</label>
+                    <select
+                        className="form-control"
+                        id="course"
+                        name="course"
+                        value={formData.course}
+                        onChange={handleChange}
+                        required
+                    >
+                        <option value="">Select Course</option>
+                        <option value="Basic Computer">Basic Computer</option>
+                        <option value="MS Office">MS Office</option>
+                        <option value="Tally">Tally</option>
+                        <option value="DTP">DTP</option>
+                        <option value="Web Development">Web Development</option>
+                        <option value="Programming">Programming</option>
+                        <option value="Digital Marketing">Digital Marketing</option>
+                        <option value="Spoken English">Spoken English</option>
+                        <option value="AutoCAD">AutoCAD</option>
+                        <option value="DCAA">DCAA</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                <div className="mb-3">
+                    <label htmlFor="courseDuration" className="form-label">Preferred Duration</label>
+                    <select
+                        className="form-control"
+                        id="courseDuration"
+                        name="courseDuration"
+                        value={formData.courseDuration}
+                        onChange={handleChange}
+                        required
+                    >
+                        <option value="">Select Duration</option>
+                        <option value="1 Month">1 Month</option>
+                        <option value="2 Months">2 Months</option>
+                        <option value="3 Months">3 Months</option>
+                        <option value="6 Months">6 Months</option>
+                        <option value="1 Year">1 Year</option>
+                    </select>
                 </div>
                 <div className="mb-3">
                     <label htmlFor="remarks" className="form-label">Remarks</label>
