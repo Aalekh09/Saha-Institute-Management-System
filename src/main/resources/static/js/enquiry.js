@@ -23,6 +23,14 @@ const dateFilter = document.getElementById('dateFilter');
 const clearDateFilter = document.getElementById('clearDateFilter');
 const totalEnquiries = document.getElementById('totalEnquiries');
 const filteredEnquiries = document.getElementById('filteredEnquiries');
+const feedbackModal = document.getElementById('feedbackModal');
+const closeFeedbackModal = document.getElementById('closeFeedbackModal');
+const feedbackLog = document.getElementById('feedbackLog');
+const feedbackForm = document.getElementById('feedbackForm');
+const feedbackDate = document.getElementById('feedbackDate');
+const feedbackTime = document.getElementById('feedbackTime');
+const feedbackText = document.getElementById('feedbackText');
+let currentFeedbackEnquiryId = null;
 
 // Store all enquiries for filtering
 let allEnquiries = [];
@@ -155,7 +163,7 @@ function displayEnquiries(enquiries) {
     if (enquiries.length === 0) {
         const row = document.createElement('tr');
         row.innerHTML = `
-            <td colspan="10" style="text-align: center; padding: 20px; color: #666;">
+            <td colspan="11" style="text-align: center; padding: 20px; color: #666;">
                 No enquiries found matching the current filters
             </td>
         `;
@@ -165,6 +173,19 @@ function displayEnquiries(enquiries) {
     
     enquiries.forEach(enquiry => {
         const row = document.createElement('tr');
+        // Get latest feedback from localStorage
+        const feedbackKey = `enquiryFeedback_${enquiry.id}`;
+        const feedbackEntries = JSON.parse(localStorage.getItem(feedbackKey) || '[]');
+        let latestFeedbackHtml = '<span style="color:#aaa;">No feedback</span>';
+        if (feedbackEntries.length > 0) {
+            const last = feedbackEntries[feedbackEntries.length - 1];
+            latestFeedbackHtml = `
+                <div class="latest-feedback-cell">
+                    <span class="feedback-datetime">${last.date} ${last.time}</span><br>
+                    <span class="feedback-text">${last.feedback.length > 40 ? last.feedback.slice(0, 40) + '…' : last.feedback}</span>
+                </div>
+            `;
+        }
         row.innerHTML = `
             <td>${enquiry.name}</td>
             <td>${enquiry.fatherName || ''}</td>
@@ -177,6 +198,12 @@ function displayEnquiries(enquiries) {
                 <span class="badge ${enquiry.convertedToStudent ? 'bg-success' : 'bg-warning'}">
                     ${enquiry.convertedToStudent ? 'Confirmed' : 'Pending'}
                 </span>
+            </td>
+            <td>
+                ${latestFeedbackHtml}
+                <button class="action-btn feedback-btn" data-id="${enquiry.id}" title="View/Add Feedback" style="margin-top:6px;">
+                    <i class="fas fa-comments"></i>
+                </button>
             </td>
             <td>
                 <div class="action-buttons">
@@ -233,6 +260,12 @@ function displayEnquiries(enquiries) {
                     }
                 }
             });
+        }
+        
+        // Feedback button logic
+        const feedbackBtn = row.querySelector('.feedback-btn');
+        if (feedbackBtn) {
+            feedbackBtn.addEventListener('click', () => openFeedbackModal(enquiry));
         }
         
         enquiriesTableBody.appendChild(row);
@@ -335,6 +368,71 @@ async function reverseConversion(id) {
         console.error('Error reversing conversion:', error);
         showNotification('Error reversing conversion: ' + error.message, true);
     }
+}
+
+function openFeedbackModal(enquiry) {
+    currentFeedbackEnquiryId = enquiry.id;
+    // Load feedback from localStorage
+    const feedbackKey = `enquiryFeedback_${enquiry.id}`;
+    const entries = JSON.parse(localStorage.getItem(feedbackKey) || '[]');
+    renderFeedbackLog(entries);
+    feedbackModal.style.display = 'block';
+    feedbackForm.reset();
+    // Default date/time to now
+    const now = new Date();
+    feedbackDate.value = now.toISOString().split('T')[0];
+    feedbackTime.value = now.toTimeString().slice(0,5);
+}
+
+function renderFeedbackLog(entries) {
+    if (!entries.length) {
+        feedbackLog.innerHTML = '<p style="color:#888;">No feedback entries yet.</p>';
+        return;
+    }
+    feedbackLog.innerHTML = entries.map(e => `
+        <div class="feedback-entry">
+            <span class="feedback-datetime">${e.date} ${e.time}</span>
+            <span class="feedback-text">${e.feedback}</span>
+        </div>
+    `).join('');
+}
+
+if (closeFeedbackModal) {
+    closeFeedbackModal.onclick = () => {
+        feedbackModal.style.display = 'none';
+        currentFeedbackEnquiryId = null;
+    };
+}
+
+window.onclick = function(event) {
+    if (event.target === feedbackModal) {
+        feedbackModal.style.display = 'none';
+        currentFeedbackEnquiryId = null;
+    }
+};
+
+if (feedbackForm) {
+    feedbackForm.onsubmit = function(e) {
+        e.preventDefault();
+        if (!currentFeedbackEnquiryId) return;
+        const entry = {
+            date: feedbackDate.value,
+            time: feedbackTime.value,
+            feedback: feedbackText.value
+        };
+        // Save to localStorage
+        const feedbackKey = `enquiryFeedback_${currentFeedbackEnquiryId}`;
+        const entries = JSON.parse(localStorage.getItem(feedbackKey) || '[]');
+        entries.push(entry);
+        localStorage.setItem(feedbackKey, JSON.stringify(entries));
+        renderFeedbackLog(entries);
+        showNotification('Feedback added!');
+        feedbackForm.reset();
+        // Set date/time to now for next entry
+        const now = new Date();
+        feedbackDate.value = now.toISOString().split('T')[0];
+        feedbackTime.value = now.toTimeString().slice(0,5);
+    };
 }
 
 // Initial load of enquiries

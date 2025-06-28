@@ -138,6 +138,7 @@
                                 <th>Duration</th>
                                 <th>Remarks</th>
                                 <th>Status</th>
+                                <th>Feedback</th>
                                 <th>Actions</th>
                                 <th>Convert</th>
                             </tr>
@@ -151,6 +152,32 @@
 
     <div id="notification" class="notification">
         <span id="notificationMessage"></span>
+    </div>
+
+    <!-- Feedback Modal -->
+    <div id="feedbackModal" class="modal" style="display:none;">
+        <div class="modal-content">
+            <span class="close-btn" id="closeFeedbackModal">&times;</span>
+            <h2>Feedback Log</h2>
+            <div id="feedbackLog"></div>
+            <form id="feedbackForm">
+                <div class="form-group">
+                    <label for="feedbackDate">Date:</label>
+                    <input type="date" id="feedbackDate" required>
+                </div>
+                <div class="form-group">
+                    <label for="feedbackTime">Time:</label>
+                    <input type="time" id="feedbackTime" required>
+                </div>
+                <div class="form-group">
+                    <label for="feedbackText">Feedback:</label>
+                    <textarea id="feedbackText" rows="2" required></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Add Feedback</button>
+                </div>
+            </form>
+        </div>
     </div>
 
     <script src="js/enquiry.js"></script>

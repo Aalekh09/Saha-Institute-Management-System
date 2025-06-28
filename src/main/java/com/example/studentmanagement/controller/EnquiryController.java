@@ -12,11 +12,13 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.studentmanagement.model.Enquiry;
 import com.example.studentmanagement.service.EnquiryService;
+import com.example.studentmanagement.model.FeedbackEntry;
 
 @RestController
 @RequestMapping("/api/enquiries")
@@ -63,6 +65,17 @@ public class EnquiryController {
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
+    }
+
+    @PostMapping("/{id}/feedback")
+    public ResponseEntity<?> addFeedback(@PathVariable Long id, @RequestBody FeedbackEntry feedbackEntry) {
+        return enquiryService.getEnquiryById(id)
+                .map(enquiry -> {
+                    enquiry.getFeedbackEntries().add(feedbackEntry);
+                    enquiryService.saveEnquiry(enquiry);
+                    return ResponseEntity.ok(enquiry);
+                })
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/{id}")
