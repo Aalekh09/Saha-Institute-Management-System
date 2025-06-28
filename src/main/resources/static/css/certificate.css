@@ -273,14 +273,14 @@ th {
 
 .certificate-template {
     background: #fff;
-    border-radius: 0; /* Remove border radius for a sharp edge theme */
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.2); /* Adjust shadow */
-    overflow: hidden;
-    width: 100%;
-    max-width: 700px; /* Adjust max width as needed */
-    margin: 20px auto;
-    height: auto;
-    position: relative;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    height: 100%;
+    overflow-y: auto;
+    /* Ensure crisp rendering for PDF */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 .certificate-theme-border {
@@ -407,7 +407,7 @@ th {
 
 .certificate-footer-professional {
     display: flex;
-    justify-content: space-around;
+    justify-content: center;
     align-items: flex-start;
     width: 100%;
     padding-top: 2rem; /* Adjusted padding */
@@ -456,6 +456,14 @@ th {
     font-size: 0.8rem;
     color: #7f8c8d;
     margin: 0;
+}
+
+.student-id-professional {
+    font-family: 'Crimson Text', serif;
+    font-size: 0.8rem;
+    color: #7f8c8d;
+    margin: 5px 0 0 0;
+    font-weight: 500;
 }
 
 /* Remove Bottom Decorative Section Styles */
@@ -1103,22 +1111,33 @@ th {
 /* Print Styles */
 @media print {
     .certificate-template {
-        padding: 0;
-        box-shadow: none;
+        width: 100% !important;
+        height: 100vh !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        box-shadow: none !important;
+        border: none !important;
+        page-break-after: avoid !important;
+        page-break-inside: avoid !important;
+        background: white !important;
     }
-
-    .certificate-border {
-        border: none;
-        padding: 2rem;
-        background: none;
+    
+    .certificate-theme-border {
+        border: 2px solid #2c3e50 !important;
+        padding: 2rem !important;
+        background: white !important;
+        margin: 0 !important;
     }
-
-    .certificate-preview-panel {
-        display: none;
+    
+    * {
+        -webkit-print-color-adjust: exact !important;
+        color-adjust: exact !important;
     }
-
-    .bg-watermark {
-        opacity: 0.05;
+    
+    body {
+        margin: 0 !important;
+        padding: 0 !important;
+        background: white !important;
     }
 }
 

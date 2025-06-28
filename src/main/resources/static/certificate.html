@@ -287,22 +287,6 @@
 
                                         <div class="form-section">
                                             <div class="section-header">
-                                                <i class="fas fa-award"></i>
-                                                <h3>Marks & Grades</h3>
-                                            </div>
-                                            <div class="form-grid">
-                                                <div class="form-group" style="grid-column: 1 / -1;">
-                                                    <label for="marksData">Marks / Grades</label>
-                                                    <textarea id="marksData" name="marksData" rows="4" placeholder="Enter subject marks or grades, e.g.,
-Math: 85
-Science: 92
-History: 78"></textarea>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div class="form-section">
-                                            <div class="section-header">
                                                 <i class="fas fa-certificate"></i>
                                                 <h3>Certificate Details</h3>
                                             </div>
@@ -367,17 +351,12 @@ History: 78"></textarea>
                                         </div>
 
                                         <div class="certificate-footer-professional">
-                                            <div class="details-section-professional">
-                                                <div class="verification-box">
-                                                    <img src="" alt="QR Code" class="qr-image" style="width: 90px; height: 90px;"/>
-                                                    <p class="verification-text">Scan to Verify</p>
-                                                </div>
-                                            </div>
                                             <div class="signature-section-professional">
-                                                <img src="./uploads/signatures/director.png" alt="Signature" class="signature-image-professional">
+                                                <img src="./uploads/signatures/12210302882s-removebg-preview.png" alt="Signature" class="signature-image-professional">
                                                 <hr class="signature-line-professional">
-                                                <p class="signatory-name-professional">Aalekh Kumar</p>
+                                                <p class="signatory-name-professional">Aalekh</p>
                                                 <p class="signatory-title-professional">Director</p>
+                                                <p class="student-id-professional">Student ID: <span id="certificateStudentId">[Student ID]</span></p>
                                             </div>
                                         </div>
                                     </div>
@@ -391,7 +370,7 @@ History: 78"></textarea>
     </div>
 
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="js/certificate.js"></script>
     <script>
     document.addEventListener('DOMContentLoaded', function() {

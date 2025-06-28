@@ -4,11 +4,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const studentName = document.getElementById('studentName');
     const courseName = document.getElementById('courseName');
     const certificateType = document.getElementById('certificateType');
-    const marksData = document.getElementById('marksData'); // Get the new marks field
     const previewCertificateBtn = document.getElementById('previewCertificate');
     const downloadCertificateBtn = document.getElementById('downloadCertificate');
     const printCertificateBtn = document.getElementById('printCertificate');
-    const qrCodeElement = document.querySelector('.qr-image'); // Get the QR code image element
 
     // Tab Navigation
     const tabButtons = document.querySelectorAll('.tab-btn');
@@ -127,9 +125,6 @@ document.addEventListener('DOMContentLoaded', function() {
     studentName.addEventListener('input', updatePreview);
     courseName.addEventListener('input', updatePreview);
     certificateType.addEventListener('change', updatePreview);
-    marksData.addEventListener('input', updatePreview); // Update preview on marks input
-    // issueDate.addEventListener('change', updatePreview); // Removed
-    // validUntil.addEventListener('change', updatePreview); // Removed
     const studentIdInput = document.getElementById('studentIdInput');
     studentIdInput.addEventListener('input', updatePreview);
 
@@ -142,10 +137,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 courseName: courseName.value || '[Course Name]',
                 studentId: studentIdInput.value || '[ID]'
             },
-            type: certificateType.value || 'Completion',
-            marks: marksData.value || 'N/A'
-            // issueDate: issueDate.value || '[Date]', // Removed
-            // validUntil: validUntil.value || '[Date]' // Removed
+            type: certificateType.value || 'Completion'
         };
      
         updatePreviewContent(data);
@@ -240,33 +232,13 @@ document.addEventListener('DOMContentLoaded', function() {
             console.log('Updated course name to:', courseNameElement.textContent);
         }
 
-        // Generate and update QR Code
-        if (qrCodeElement) {
-            const qrDataString = `
-SAHA INSTITUTE CERTIFICATE VERIFICATION
-+---------------------------------------
-+Student Name: ${data.student.name}
-+Student ID: ${data.student.studentId || 'N/A'}
-+Course: ${data.student.courseName}
-+Certificate Type: ${data.type}
-+Marks/Grades:
-+${data.marks}
-            `.trim();
-
-            QRCode.toDataURL(qrDataString, { width: 90, margin: 1 }, (err, url) => {
-                if (err) {
-                    console.error('Failed to generate QR Code:', err);
-                    return;
-                }
-                qrCodeElement.src = url;
-            });
+        // Update student ID in signature section
+        const certificateStudentIdElement = document.getElementById('certificateStudentId');
+        console.log('Certificate student ID element:', certificateStudentIdElement);
+        if (certificateStudentIdElement) {
+            certificateStudentIdElement.textContent = data.student.studentId || '[Student ID]';
+            console.log('Updated certificate student ID to:', certificateStudentIdElement.textContent);
         }
-
-        // Update dates (removed)
-        // const issueDateElement = document.getElementById('previewIssueDate');
-        // if (issueDateElement) issueDateElement.textContent = '';
-        // const validUntilElement = document.getElementById('previewValidUntilDate');
-        // if (validUntilElement) validUntilElement.textContent = '';
 
         // Update logo (using the new class)
         const logoImg = document.querySelector('.professional-logo');
@@ -288,20 +260,20 @@ SAHA INSTITUTE CERTIFICATE VERIFICATION
         const completionDetailsElement = document.querySelector('.completion-details-professional');
         if (completionDetailsElement) {
              // Removed date from this text
-             completionDetailsElement.textContent = 'with outstanding performance.';
+             completionDetailsElement.textContent = 'has successfully completed the course';
               console.log('Updated completion details to:', completionDetailsElement.textContent);
         }
 
          // Update signatory name and title (assuming static for now or needs input fields)
          const signatoryNameElement = document.querySelector('.signatory-name-professional');
          if(signatoryNameElement) {
-              signatoryNameElement.textContent = '[Signatory Name]'; // Replace with actual data source
+              signatoryNameElement.textContent = 'Aalekh'; // Static signatory name
                console.log('Signatory name element found');
          }
 
          const signatoryTitleElement = document.querySelector('.signatory-title-professional');
           if(signatoryTitleElement) {
-              signatoryTitleElement.textContent = '[Signatory Title]'; // Replace with actual data source
+              signatoryTitleElement.textContent = 'Director'; // Static signatory title
                console.log('Signatory title element found');
          }
 
@@ -341,25 +313,55 @@ SAHA INSTITUTE CERTIFICATE VERIFICATION
         }
 
         try {
-            // Use html2canvas to capture the preview
+            // Show loading notification
+            showNotification('Generating PDF...', 'info');
+
+            // Use html2canvas to capture the preview with high quality
             const canvas = await html2canvas(certificateElement, {
-                scale: 2, // Increase scale for better resolution
+                scale: 3, // Higher scale for better quality
                 useCORS: true,
                 allowTaint: true,
-                logging: true, // Enable logging for debugging html2canvas
-                // scrollY: -window.scrollY // Account for scroll position if needed
+                backgroundColor: '#ffffff',
+                logging: false,
+                width: certificateElement.offsetWidth,
+                height: certificateElement.offsetHeight
             });
-            const imgData = canvas.toDataURL('image/jpeg', 1.0); // Get image data as JPEG
 
-            // Create a link to download the image
-            const link = document.createElement('a');
-            link.href = imgData;
-            link.download = `${studentName.value || 'certificate'}_${certificateType.value || 'completion'}.jpg`; // Dynamic filename
-            link.click();
+            // Get canvas dimensions
+            const imgWidth = 210; // A4 width in mm
+            const pageHeight = 297; // A4 height in mm
+            const imgHeight = (canvas.height * imgWidth) / canvas.width;
+            let heightLeft = imgHeight;
+
+            // Create PDF document
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF('p', 'mm', 'a4');
+            let position = 0;
+
+            // Add image to PDF
+            const imgData = canvas.toDataURL('image/png', 1.0);
+            pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+            heightLeft -= pageHeight;
+
+            // Add new pages if content is longer than one page
+            while (heightLeft >= 0) {
+                position = heightLeft - imgHeight;
+                pdf.addPage();
+                pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+                heightLeft -= pageHeight;
+            }
+
+            // Generate filename
+            const studentNameValue = studentName.value || 'certificate';
+            const certificateTypeValue = certificateType.value || 'completion';
+            const filename = `${studentNameValue}_${certificateTypeValue}_certificate.pdf`;
+
+            // Download the PDF
+            pdf.save(filename);
             
-            showNotification('Certificate downloaded successfully!', 'success');
+            showNotification('Certificate downloaded as PDF successfully!', 'success');
         } catch (error) {
-            console.error('Error downloading certificate as JPG:', error);
+            console.error('Error downloading certificate as PDF:', error);
             showNotification(`Error downloading certificate: ${error.message}`, 'error');
         }
     }
@@ -380,32 +382,61 @@ SAHA INSTITUTE CERTIFICATE VERIFICATION
                     <head>
                         <title>Certificate Print</title>
                         <style>
-                            /* Add necessary print styles here */
-                            body { margin: 0; padding: 0; }
+                            @media print {
+                                body { 
+                                    margin: 0; 
+                                    padding: 0; 
+                                    background: white;
+                                }
+                                .certificate-template {
+                                    width: 100%;
+                                    height: 100vh;
+                                    margin: 0;
+                                    padding: 0;
+                                    box-shadow: none;
+                                    border: none;
+                                    page-break-after: avoid;
+                                    page-break-inside: avoid;
+                                }
+                                .certificate-theme-border {
+                                    border: 2px solid #2c3e50 !important;
+                                    padding: 2rem !important;
+                                    background: white !important;
+                                }
+                                * {
+                                    -webkit-print-color-adjust: exact !important;
+                                    color-adjust: exact !important;
+                                }
+                            }
+                            body { 
+                                margin: 0; 
+                                padding: 0; 
+                                background: white;
+                            }
                             .certificate-template {
                                 width: 100%;
                                 margin: 0;
                                 box-shadow: none;
-                                border: none; /* Remove border for print */
+                                border: none;
                             }
-                            /* Adjust font sizes, margins, etc. for print if needed */
                         </style>
                     </head>
                     <body>
                         <div class="certificate-template"> ${certificateElement.innerHTML} </div>
                         <script>
                             window.onload = function() {
-                                window.print();
-                                window.onafterprint = function() {
-                                    window.close();
-                                };
+                                setTimeout(function() {
+                                    window.print();
+                                    window.onafterprint = function() {
+                                        window.close();
+                                    };
+                                }, 500);
                             };
                         </script>
                     </body>
                 </html>
             `);
-             printWindow.document.close(); // Close the document opened with .write()
-             // printWindow.print(); // This might be called after onload in the new window script
+             printWindow.document.close();
 
              showNotification('Print window opened.', 'info');
 
