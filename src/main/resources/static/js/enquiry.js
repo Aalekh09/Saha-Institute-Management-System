@@ -306,7 +306,7 @@ enquiryForm.addEventListener('submit', async (e) => {
             course: document.getElementById('course').value,
             courseDuration: document.getElementById('courseDuration').value,
             remarks: document.getElementById('remarks').value,
-            dateOfEnquiry: new Date().toISOString().split('T')[0],
+            dateOfEnquiry: document.getElementById('enquiryDate').value,
             convertedToStudent: false
         };
 
@@ -483,4 +483,13 @@ if (feedbackForm) {
 }
 
 // Initial load of enquiries
-fetchEnquiries(); 
+fetchEnquiries();
+
+// Set default date to today for new enquiry form
+document.addEventListener('DOMContentLoaded', () => {
+    const enquiryDateField = document.getElementById('enquiryDate');
+    if (enquiryDateField) {
+        const today = new Date().toISOString().split('T')[0];
+        enquiryDateField.value = today;
+    }
+}); 
