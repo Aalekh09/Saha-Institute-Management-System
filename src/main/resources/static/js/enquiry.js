@@ -173,19 +173,9 @@ function displayEnquiries(enquiries) {
     
     enquiries.forEach(enquiry => {
         const row = document.createElement('tr');
-        // Get latest feedback from localStorage
-        const feedbackKey = `enquiryFeedback_${enquiry.id}`;
-        const feedbackEntries = JSON.parse(localStorage.getItem(feedbackKey) || '[]');
-        let latestFeedbackHtml = '<span style="color:#aaa;">No feedback</span>';
-        if (feedbackEntries.length > 0) {
-            const last = feedbackEntries[feedbackEntries.length - 1];
-            latestFeedbackHtml = `
-                <div class="latest-feedback-cell">
-                    <span class="feedback-datetime">${last.date} ${last.time}</span><br>
-                    <span class="feedback-text">${last.feedback.length > 40 ? last.feedback.slice(0, 40) + '…' : last.feedback}</span>
-                </div>
-            `;
-        }
+        // We'll load the latest feedback asynchronously
+        let latestFeedbackHtml = '<span style="color:#aaa;">Loading...</span>';
+        
         row.innerHTML = `
             <td>${enquiry.name}</td>
             <td>${enquiry.fatherName || ''}</td>
@@ -200,7 +190,9 @@ function displayEnquiries(enquiries) {
                 </span>
             </td>
             <td>
-                ${latestFeedbackHtml}
+                <div class="latest-feedback-cell" id="feedback-${enquiry.id}">
+                    ${latestFeedbackHtml}
+                </div>
                 <button class="action-btn feedback-btn" data-id="${enquiry.id}" title="View/Add Feedback" style="margin-top:6px;">
                     <i class="fas fa-comments"></i>
                 </button>
@@ -226,6 +218,15 @@ function displayEnquiries(enquiries) {
                 ` : ''}
             </td>
         `;
+        
+        // Load latest feedback for this enquiry
+        loadLatestFeedbackForEnquiry(enquiry.id);
+        
+        // Feedback button logic
+        const feedbackBtn = row.querySelector('.feedback-btn');
+        if (feedbackBtn) {
+            feedbackBtn.addEventListener('click', () => openFeedbackModal(enquiry));
+        }
         
         const convertBtn = row.querySelector('.convert-btn');
         if (convertBtn) {
@@ -262,14 +263,35 @@ function displayEnquiries(enquiries) {
             });
         }
         
-        // Feedback button logic
-        const feedbackBtn = row.querySelector('.feedback-btn');
-        if (feedbackBtn) {
-            feedbackBtn.addEventListener('click', () => openFeedbackModal(enquiry));
-        }
-        
         enquiriesTableBody.appendChild(row);
     });
+}
+
+async function loadLatestFeedbackForEnquiry(enquiryId) {
+    try {
+        const response = await fetch(`${API_URL}/${enquiryId}/feedback`);
+        if (response.ok) {
+            const entries = await response.json();
+            const feedbackCell = document.getElementById(`feedback-${enquiryId}`);
+            if (feedbackCell) {
+                if (entries.length > 0) {
+                    const last = entries[0]; // First entry is the latest due to DESC ordering
+                    feedbackCell.innerHTML = `
+                        <span class="feedback-datetime">${last.date} ${last.time}</span><br>
+                        <span class="feedback-text">${last.feedback.length > 40 ? last.feedback.slice(0, 40) + '…' : last.feedback}</span>
+                    `;
+                } else {
+                    feedbackCell.innerHTML = '<span style="color:#aaa;">No feedback</span>';
+                }
+            }
+        }
+    } catch (error) {
+        console.error('Error loading latest feedback:', error);
+        const feedbackCell = document.getElementById(`feedback-${enquiryId}`);
+        if (feedbackCell) {
+            feedbackCell.innerHTML = '<span style="color:#aaa;">Error loading</span>';
+        }
+    }
 }
 
 // Handle form submission
@@ -372,16 +394,29 @@ async function reverseConversion(id) {
 
 function openFeedbackModal(enquiry) {
     currentFeedbackEnquiryId = enquiry.id;
-    // Load feedback from localStorage
-    const feedbackKey = `enquiryFeedback_${enquiry.id}`;
-    const entries = JSON.parse(localStorage.getItem(feedbackKey) || '[]');
-    renderFeedbackLog(entries);
+    // Load feedback from backend API
+    loadFeedbackFromAPI(enquiry.id);
     feedbackModal.style.display = 'block';
     feedbackForm.reset();
     // Default date/time to now
     const now = new Date();
     feedbackDate.value = now.toISOString().split('T')[0];
     feedbackTime.value = now.toTimeString().slice(0,5);
+}
+
+async function loadFeedbackFromAPI(enquiryId) {
+    try {
+        const response = await fetch(`${API_URL}/${enquiryId}/feedback`);
+        if (response.ok) {
+            const entries = await response.json();
+            renderFeedbackLog(entries);
+        } else {
+            renderFeedbackLog([]);
+        }
+    } catch (error) {
+        console.error('Error loading feedback:', error);
+        renderFeedbackLog([]);
+    }
 }
 
 function renderFeedbackLog(entries) {
@@ -412,7 +447,7 @@ window.onclick = function(event) {
 };
 
 if (feedbackForm) {
-    feedbackForm.onsubmit = function(e) {
+    feedbackForm.onsubmit = async function(e) {
         e.preventDefault();
         if (!currentFeedbackEnquiryId) return;
         const entry = {
@@ -420,18 +455,30 @@ if (feedbackForm) {
             time: feedbackTime.value,
             feedback: feedbackText.value
         };
-        // Save to localStorage
-        const feedbackKey = `enquiryFeedback_${currentFeedbackEnquiryId}`;
-        const entries = JSON.parse(localStorage.getItem(feedbackKey) || '[]');
-        entries.push(entry);
-        localStorage.setItem(feedbackKey, JSON.stringify(entries));
-        renderFeedbackLog(entries);
-        showNotification('Feedback added!');
-        feedbackForm.reset();
-        // Set date/time to now for next entry
-        const now = new Date();
-        feedbackDate.value = now.toISOString().split('T')[0];
-        feedbackTime.value = now.toTimeString().slice(0,5);
+        try {
+            const response = await fetch(`${API_URL}/${currentFeedbackEnquiryId}/feedback`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(entry)
+            });
+            if (response.ok) {
+                showNotification('Feedback added!');
+                // Reload feedback from API
+                await loadFeedbackFromAPI(currentFeedbackEnquiryId);
+                // Refresh the enquiry list to show latest feedback
+                fetchEnquiries();
+                feedbackForm.reset();
+                // Set date/time to now for next entry
+                const now = new Date();
+                feedbackDate.value = now.toISOString().split('T')[0];
+                feedbackTime.value = now.toTimeString().slice(0,5);
+            } else {
+                showNotification('Failed to add feedback', true);
+            }
+        } catch (error) {
+            console.error('Error adding feedback:', error);
+            showNotification('Error adding feedback', true);
+        }
     };
 }
 

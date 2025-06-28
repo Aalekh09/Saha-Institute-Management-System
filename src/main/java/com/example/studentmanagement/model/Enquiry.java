@@ -1,8 +1,6 @@
 package com.example.studentmanagement.model;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -10,11 +8,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import jakarta.persistence.ElementCollection;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.Embeddable;
-import jakarta.persistence.Embedded;
-import jakarta.persistence.EmbeddedId;
 
 @Entity
 @Table(name = "enquiries")
@@ -46,9 +39,6 @@ public class Enquiry {
 
     @Column(name = "converted_to_student")
     private boolean convertedToStudent = false;
-
-    @ElementCollection(fetch = FetchType.EAGER)
-    private List<FeedbackEntry> feedbackEntries = new ArrayList<>();
 
     // Getters and Setters
     public Long getId() {
@@ -121,13 +111,5 @@ public class Enquiry {
 
     public void setConvertedToStudent(boolean convertedToStudent) {
         this.convertedToStudent = convertedToStudent;
-    }
-
-    public List<FeedbackEntry> getFeedbackEntries() {
-        return feedbackEntries;
-    }
-
-    public void setFeedbackEntries(List<FeedbackEntry> feedbackEntries) {
-        this.feedbackEntries = feedbackEntries;
     }
 } 

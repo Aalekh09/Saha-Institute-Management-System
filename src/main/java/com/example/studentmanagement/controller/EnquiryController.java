@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.studentmanagement.model.Enquiry;
 import com.example.studentmanagement.service.EnquiryService;
 import com.example.studentmanagement.model.FeedbackEntry;
+import com.example.studentmanagement.repository.FeedbackRepository;
 
 @RestController
 @RequestMapping("/api/enquiries")
@@ -29,6 +30,9 @@ public class EnquiryController {
 
     @Autowired
     private EnquiryService enquiryService;
+    
+    @Autowired
+    private FeedbackRepository feedbackRepository;
 
     @GetMapping
     public List<Enquiry> getAllEnquiries() {
@@ -71,11 +75,17 @@ public class EnquiryController {
     public ResponseEntity<?> addFeedback(@PathVariable Long id, @RequestBody FeedbackEntry feedbackEntry) {
         return enquiryService.getEnquiryById(id)
                 .map(enquiry -> {
-                    enquiry.getFeedbackEntries().add(feedbackEntry);
-                    enquiryService.saveEnquiry(enquiry);
-                    return ResponseEntity.ok(enquiry);
+                    feedbackEntry.setEnquiry(enquiry);
+                    FeedbackEntry savedFeedback = feedbackRepository.save(feedbackEntry);
+                    return ResponseEntity.ok(savedFeedback);
                 })
                 .orElse(ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/{id}/feedback")
+    public ResponseEntity<List<FeedbackEntry>> getFeedback(@PathVariable Long id) {
+        List<FeedbackEntry> feedbackEntries = feedbackRepository.findByEnquiryIdOrderByCreatedAtDesc(id);
+        return ResponseEntity.ok(feedbackEntries);
     }
 
     @DeleteMapping("/{id}")
