@@ -42,14 +42,16 @@ public class StudentService {
         if (student.getPaidAmount() == null) {
             student.setPaidAmount(new java.math.BigDecimal("0.00"));
         }
-        
+        // Set admissionDate if not set
+        if (student.getAdmissionDate() == null) {
+            student.setAdmissionDate(java.time.LocalDate.now());
+        }
         // Calculate remaining amount if total fee is set
         if (student.getTotalCourseFee() != null) {
             student.setRemainingAmount(
                 student.getTotalCourseFee().subtract(student.getPaidAmount())
             );
         }
-        
         return studentRepository.save(student);
     }
 

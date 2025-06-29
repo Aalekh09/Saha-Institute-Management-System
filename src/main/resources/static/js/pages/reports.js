@@ -250,22 +250,26 @@ function exportReport(format) {
 }
 
 // Event Listeners
-reportPeriod.addEventListener('change', () => {
-    customDateRange.style.display = reportPeriod.value === 'custom' ? 'flex' : 'none';
-    fetchReportData();
-});
+// reportPeriod.addEventListener('change', () => {
+//     customDateRange.style.display = reportPeriod.value === 'custom' ? 'flex' : 'none';
+//     fetchReportData();
+// });
 
-startDate.addEventListener('change', fetchReportData);
-endDate.addEventListener('change', fetchReportData);
+// startDate.addEventListener('change', fetchReportData);
+// endDate.addEventListener('change', fetchReportData);
 
-tabButtons.forEach(btn => {
-    btn.addEventListener('click', () => switchTab(btn.dataset.tab));
-});
+// tabButtons.forEach(btn => {
+//     btn.addEventListener('click', () => switchTab(btn.dataset.tab));
+// });
 
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
     initializeCharts();
     fetchReportData();
+    loadStudentAdmissions();
+    loadMonthlyPayments();
+    loadPendingFees();
+    loadEnquirySummary();
 });
 
 // Notification system
@@ -279,4 +283,93 @@ function showNotification(message, type = 'success') {
     setTimeout(() => {
         notification.remove();
     }, 3000);
+}
+
+// Reports.js - Professional Reports Dashboard
+const API_BASE = '/api/reports';
+
+// 1. Monthly Student Admissions
+async function loadStudentAdmissions() {
+    const res = await fetch(`${API_BASE}/monthly-student-admissions`);
+    const data = await res.json();
+    const labels = data.map(row => row.month);
+    const counts = data.map(row => row.count);
+    // Chart
+    renderBarChart('studentAdmissionsChart', labels, counts, 'New Students');
+    // Table
+    const tbody = document.querySelector('#studentAdmissionsTable tbody');
+    tbody.innerHTML = data.map(row => `<tr><td>${row.month}</td><td>${row.count}</td></tr>`).join('');
+}
+
+// 2. Monthly Payments Collected
+async function loadMonthlyPayments() {
+    const res = await fetch(`${API_BASE}/monthly-payments`);
+    const data = await res.json();
+    const labels = data.map(row => row.month);
+    const totals = data.map(row => row.totalPayments);
+    // Chart
+    renderBarChart('monthlyPaymentsChart', labels, totals, 'Total Payments (₹)');
+    // Table
+    const tbody = document.querySelector('#monthlyPaymentsTable tbody');
+    tbody.innerHTML = data.map(row => `<tr><td>${row.month}</td><td>₹${row.totalPayments.toLocaleString('en-IN', {minimumFractionDigits:2})}</td></tr>`).join('');
+}
+
+// 3. Pending Fees
+async function loadPendingFees() {
+    const res = await fetch(`${API_BASE}/pending-fees`);
+    const data = await res.json();
+    const tbody = document.querySelector('#pendingFeesTable tbody');
+    tbody.innerHTML = data.length
+        ? data.map(row => `<tr><td>${row.studentName}</td><td>${row.course}</td><td>₹${row.pendingAmount}</td></tr>`).join('')
+        : '<tr><td colspan="3" style="text-align:center;color:#888;">No pending fees</td></tr>';
+}
+
+// 4. Enquiry Summary
+async function loadEnquirySummary() {
+    const res = await fetch(`${API_BASE}/monthly-enquiries`);
+    const data = await res.json();
+    const tbody = document.querySelector('#enquirySummaryTable tbody');
+    tbody.innerHTML = data.map(row => `<tr><td>${row.month}</td><td>${row.totalEnquiries}</td></tr>`).join('');
+}
+
+// Chart.js Bar Chart Helper
+function renderBarChart(canvasId, labels, data, label) {
+    const canvas = document.getElementById(canvasId);
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (window[canvasId + '_chart']) window[canvasId + '_chart'].destroy();
+    window[canvasId + '_chart'] = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels,
+            datasets: [{
+                label,
+                data,
+                backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 1,
+                borderRadius: 6,
+                maxBarThickness: 32
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { display: false },
+                title: { display: false }
+            },
+            scales: {
+                x: { grid: { display: false } },
+                y: { beginAtZero: true, grid: { color: '#eee' } }
+            }
+        }
+    });
+}
+
+// Excel Export Helper
+function exportTableToExcel(tableId) {
+    const table = document.getElementById(tableId);
+    if (!table) return;
+    const wb = XLSX.utils.table_to_book(table, {sheet: "Report"});
+    XLSX.writeFile(wb, `${tableId}_${new Date().toISOString().slice(0,10)}.xlsx`);
 } 

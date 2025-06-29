@@ -4,164 +4,149 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reports - Saha Institute of Management & Technology</title>
-    <link rel="stylesheet" href="../css/pages/reports.css">
+    <link rel="stylesheet" href="../styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
+    <style>
+        .dashboard-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 2rem; }
+        .report-card { background: #fff; border-radius: 12px; box-shadow: 0 2px 8px rgba(44,62,80,0.06); padding: 2rem 1.5rem; margin-bottom: 2rem; }
+        .report-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; }
+        .report-header h3 { font-size: 1.2rem; font-weight: 700; margin: 0; }
+        .report-body { margin-top: 1rem; }
+        .report-table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+        .report-table th, .report-table td { padding: 8px 10px; border-bottom: 1px solid #f0f0f0; text-align: left; font-size: 15px; }
+        .report-table th { background: #f8fafc; font-weight: 600; }
+        .action-btn { background: #eaf6ff; color: #1976d2; border: none; border-radius: 6px; padding: 6px 14px; font-size: 14px; cursor: pointer; transition: background 0.2s; }
+        .action-btn:hover { background: #d0eaff; }
+        @media (max-width: 900px) { .dashboard-grid { grid-template-columns: 1fr; } }
+    </style>
 </head>
 <body>
+    <header>
+        <h1>Saha Institute of Management & Technology</h1>
+        <p>Welcome, <span id="username"></span></p>
+    </header>
     <div class="main-container">
+        <div class="side-panel">
+            <div class="admin-section">
+                <div class="admin-header">
+                    <img src="../uploads/teachers/d.jpg" alt="Admin" class="admin-avatar">
+                    <div class="admin-info">
+                        <h3>Aalekh</h3>
+                        <span class="admin-role">Administrator</span>
+                    </div>
+                </div>
+                <div class="admin-menu">
+                    <button class="tab-btn" data-tab="teachers">
+                        <i class="fas fa-chalkboard-teacher"></i>
+                        <span>Teachers</span>
+                    </button>
+                </div>
+            </div>
+            <div class="student-section">
+                <h4>Student Management</h4>
+                <a href="../index.html" class="tab-btn">
+                    <i class="fas fa-list"></i>
+                    <span>List Students</span>
+                </a>
+                <a href="../index.html#add-panel" class="tab-btn">
+                    <i class="fas fa-user-plus"></i>
+                    <span>Add Student</span>
+                </a>
+                <a href="../index.html#payments-panel" class="tab-btn">
+                    <i class="fas fa-money-bill"></i>
+                    <span>Payments</span>
+                </a>
+                <a href="reports.html" class="tab-btn active">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>Reports</span>
+                </a>
+                <a href="../enquiry.html" class="tab-btn">
+                    <i class="fas fa-question-circle"></i>
+                    <span>Enquiries</span>
+                </a>
+                <a href="#" class="tab-btn" id="certificatesMenuBtn">
+                    <i class="fas fa-certificate"></i>
+                    <span>Certificates</span>
+                    <i class="fas fa-chevron-down" style="margin-left:auto;"></i>
+                </a>
+                <div id="certificatesSubMenu" style="display:none;flex-direction:column;margin-left:32px;">
+                    <a href="../certificate.html" class="tab-btn" id="digitalCertBtn">
+                        <i class="fas fa-desktop"></i>
+                        <span>Digital Certificate</span>
+                    </a>
+                    <a href="../hardcopy-certificate.html" class="tab-btn" id="hardcopyCertBtn">
+                        <i class="fas fa-file-alt"></i>
+                        <span>Hardcopy Certificate</span>
+                    </a>
+                </div>
+            </div>
+        </div>
         <div class="content-panel">
             <div class="panel-header">
                 <div class="panel-title">
-                    <h2><i class="fas fa-chart-bar"></i> Reports & Analytics</h2>
-                    <p class="subtitle">View detailed reports and analytics</p>
-                </div>
-                <div class="panel-actions">
-                    <div class="date-filter">
-                        <select id="reportPeriod">
-                            <option value="today">Today</option>
-                            <option value="week">This Week</option>
-                            <option value="month" selected>This Month</option>
-                            <option value="year">This Year</option>
-                            <option value="custom">Custom Range</option>
-                        </select>
-                        <div id="customDateRange" style="display: none;">
-                            <input type="date" id="startDate">
-                            <input type="date" id="endDate">
-                        </div>
-                    </div>
+                    <h2><i class="fas fa-chart-bar"></i> Reports Dashboard</h2>
+                    <p class="subtitle">Key statistics and analytics</p>
                 </div>
             </div>
-
-            <div class="panel-content">
-                <div class="reports-grid">
-                    <!-- Revenue Overview -->
-                    <div class="report-card">
-                        <div class="report-header">
-                            <h3>Revenue Overview</h3>
-                            <i class="fas fa-money-bill-wave"></i>
-                        </div>
-                        <div class="report-body">
-                            <canvas id="revenueChart"></canvas>
-                        </div>
+            <div class="dashboard-grid">
+                <!-- Monthly Student Admissions -->
+                <div class="report-card">
+                    <div class="report-header">
+                        <h3>Monthly Student Admissions</h3>
+                        <button class="action-btn" onclick="exportTableToExcel('studentAdmissionsTable')">
+                            <i class="fas fa-file-excel"></i> Excel
+                        </button>
                     </div>
-
-                    <!-- Student Statistics -->
-                    <div class="report-card">
-                        <div class="report-header">
-                            <h3>Student Statistics</h3>
-                            <i class="fas fa-user-graduate"></i>
-                        </div>
-                        <div class="report-body">
-                            <canvas id="studentChart"></canvas>
-                        </div>
-                    </div>
-
-                    <!-- Course Distribution -->
-                    <div class="report-card">
-                        <div class="report-header">
-                            <h3>Course Distribution</h3>
-                            <i class="fas fa-book"></i>
-                        </div>
-                        <div class="report-body">
-                            <canvas id="courseChart"></canvas>
-                        </div>
-                    </div>
-
-                    <!-- Payment Methods -->
-                    <div class="report-card">
-                        <div class="report-header">
-                            <h3>Payment Methods</h3>
-                            <i class="fas fa-credit-card"></i>
-                        </div>
-                        <div class="report-body">
-                            <canvas id="paymentMethodChart"></canvas>
-                        </div>
+                    <div class="report-body">
+                        <canvas id="studentAdmissionsChart" height="120"></canvas>
+                        <table class="report-table" id="studentAdmissionsTable">
+                            <thead>
+                                <tr><th>Month</th><th>New Students</th></tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
                     </div>
                 </div>
-
-                <!-- Detailed Reports -->
-                <div class="detailed-reports">
-                    <div class="report-card full-width">
-                        <div class="report-header">
-                            <h3>Detailed Reports</h3>
-                            <div class="report-actions">
-                                <button class="action-btn" onclick="exportReport('excel')">
-                                    <i class="fas fa-file-excel"></i>
-                                    Export to Excel
-                                </button>
-                                <button class="action-btn" onclick="exportReport('pdf')">
-                                    <i class="fas fa-file-pdf"></i>
-                                    Export to PDF
-                                </button>
-                            </div>
-                        </div>
-                        <div class="report-body">
-                            <div class="report-tabs">
-                                <button class="tab-btn active" data-tab="revenue">Revenue</button>
-                                <button class="tab-btn" data-tab="students">Students</button>
-                                <button class="tab-btn" data-tab="courses">Courses</button>
-                                <button class="tab-btn" data-tab="payments">Payments</button>
-                            </div>
-                            <div class="tab-content active" id="revenue-tab">
-                                <table class="report-table">
-                                    <thead>
-                                        <tr>
-                                            <th>Date</th>
-                                            <th>Total Revenue</th>
-                                            <th>New Students</th>
-                                            <th>Average Payment</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody></tbody>
-                                </table>
-                            </div>
-                            <div class="tab-content" id="students-tab">
-                                <table class="report-table">
-                                    <thead>
-                                        <tr>
-                                            <th>Course</th>
-                                            <th>Total Students</th>
-                                            <th>Active Students</th>
-                                            <th>Completion Rate</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody></tbody>
-                                </table>
-                            </div>
-                            <div class="tab-content" id="courses-tab">
-                                <table class="report-table">
-                                    <thead>
-                                        <tr>
-                                            <th>Course Name</th>
-                                            <th>Enrollments</th>
-                                            <th>Revenue</th>
-                                            <th>Popularity</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody></tbody>
-                                </table>
-                            </div>
-                            <div class="tab-content" id="payments-tab">
-                                <table class="report-table">
-                                    <thead>
-                                        <tr>
-                                            <th>Payment Method</th>
-                                            <th>Count</th>
-                                            <th>Total Amount</th>
-                                            <th>Percentage</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody></tbody>
-                                </table>
-                            </div>
-                        </div>
+                <!-- Monthly Payments Collected -->
+                <div class="report-card">
+                    <div class="report-header">
+                        <h3>Monthly Payments Collected</h3>
+                        <button class="action-btn" onclick="exportTableToExcel('monthlyPaymentsTable')">
+                            <i class="fas fa-file-excel"></i> Excel
+                        </button>
+                    </div>
+                    <div class="report-body">
+                        <canvas id="monthlyPaymentsChart" height="120"></canvas>
+                        <table class="report-table" id="monthlyPaymentsTable">
+                            <thead>
+                                <tr><th>Month</th><th>Total Payments</th></tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+                <!-- Pending Fees -->
+                <div class="report-card">
+                    <div class="report-header">
+                        <h3>Pending Fees</h3>
+                        <button class="action-btn" onclick="exportTableToExcel('pendingFeesTable')">
+                            <i class="fas fa-file-excel"></i> Excel
+                        </button>
+                    </div>
+                    <div class="report-body">
+                        <table class="report-table" id="pendingFeesTable">
+                            <thead>
+                                <tr><th>Student Name</th><th>Course</th><th>Pending Amount</th></tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-
     <script src="../js/pages/reports.js"></script>
 </body>
 </html> 

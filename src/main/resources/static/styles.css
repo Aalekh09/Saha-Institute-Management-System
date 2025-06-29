@@ -1216,10 +1216,11 @@ table td:nth-child(9) {
 /* Status column: very compact */
 #enquiriesTable th:nth-child(9),
 #enquiriesTable td:nth-child(9) {
-    width: 60px;
-    min-width: 50px;
-    max-width: 70px;
+    width: 90px; /* slightly wider for 'Confirmed' */
+    min-width: 80px;
+    max-width: 100px;
     padding: 2px 2px;
+    text-align: center;
 }
 /* Feedback column: wider and professional */
 #enquiriesTable th:nth-child(10),
@@ -1234,25 +1235,23 @@ table td:nth-child(9) {
 /* All other columns: equal width */
 #enquiriesTable th:not(:nth-child(9)):not(:nth-child(10)),
 #enquiriesTable td:not(:nth-child(9)):not(:nth-child(10)) {
-    width: 8%;
+    /* width: 8%; */
     max-width: 120px;
     min-width: 80px;
 }
 /* Status badge: extra compact */
-.status-badge {
-    display: inline-block;
-    min-width: 36px;
-    padding: 1px 6px;
-    font-size: 11px;
+.status-badge, .badge.bg-success, .badge.bg-warning {
+    min-width: 70px;
+    max-width: 90px;
+    padding: 2px 8px;
+    font-size: 13px;
     font-weight: 600;
     border-radius: 10px;
     text-align: center;
     vertical-align: middle;
-    background: #f6e58d;
-    color: #b7950b;
-    letter-spacing: 0.5px;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.03);
-    border: none;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 .status-badge.confirmed {
     background: #d4efdf;
@@ -2799,7 +2798,7 @@ label[for]:after {
 
 #enquiriesTable th:nth-child(9), /* Feedback column */
 #enquiriesTable td:nth-child(9) {
-    width: 320px;
+    /* width: 320px; */
     max-width: 320px;
     min-width: 320px;
 }

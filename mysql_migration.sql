@@ -16,4 +16,7 @@ DESCRIBE enquiries;
 ALTER TABLE enquiries ADD COLUMN taken_by VARCHAR(255);
 
 -- Update existing records with a default value (optional)
--- UPDATE enquiries SET taken_by = 'System' WHERE taken_by IS NULL; 
+-- UPDATE enquiries SET taken_by = 'System' WHERE taken_by IS NULL;
+
+-- Add admission_date column to students table
+ALTER TABLE students ADD COLUMN admission_date DATE; 

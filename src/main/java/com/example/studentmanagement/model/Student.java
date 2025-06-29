@@ -1,6 +1,7 @@
 package com.example.studentmanagement.model;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -28,6 +29,8 @@ public class Student {
     private BigDecimal totalCourseFee;
     private BigDecimal paidAmount;
     private BigDecimal remainingAmount;
+
+    private LocalDate admissionDate;
 
     // Getters and Setters
     public Long getId() {
@@ -132,5 +135,13 @@ public class Student {
 
     public void setRemainingAmount(BigDecimal remainingAmount) {
         this.remainingAmount = remainingAmount;
+    }
+
+    public LocalDate getAdmissionDate() {
+        return admissionDate;
+    }
+
+    public void setAdmissionDate(LocalDate admissionDate) {
+        this.admissionDate = admissionDate;
     }
 } 
