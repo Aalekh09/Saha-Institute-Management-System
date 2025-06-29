@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
+const API_BASE = window.location.protocol + '//' + window.location.hostname + ':4455';
+
 const EnquiryList = () => {
     const [enquiries, setEnquiries] = useState([]);
 
     const fetchEnquiries = async () => {
         try {
-            const response = await axios.get('http://localhost:4455/api/enquiries');
+            const response = await axios.get(`${API_BASE}/api/enquiries`);
             setEnquiries(response.data);
         } catch (error) {
             console.error('Error fetching enquiries:', error);
@@ -19,7 +21,7 @@ const EnquiryList = () => {
 
     const handleConvertToStudent = async (id) => {
         try {
-            await axios.post(`http://localhost:4455/api/enquiries/${id}/convert`);
+            await axios.post(`${API_BASE}/api/enquiries/${id}/convert`);
             fetchEnquiries(); // Refresh the list
             alert('Enquiry converted to student successfully!');
         } catch (error) {

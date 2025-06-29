@@ -10,7 +10,11 @@ if (username) {
     document.getElementById('username').textContent = username;
 }
 
-const API_URL = 'http://localhost:4455/api/students';
+// Dynamic API base URL for cross-device compatibility
+const API_BASE = window.location.protocol + '//' + window.location.hostname + ':4455';
+// Replace all API URLs
+const API_URL = API_BASE + '/api/students';
+const PAYMENT_API_URL = API_BASE + '/api/payments';
 
 const studentsTableBody = document.querySelector('#studentsTable tbody');
 const studentForm = document.getElementById('studentForm');
@@ -439,7 +443,7 @@ studentForm.addEventListener('submit', async (e) => {
             if (enquiryData && markConfirmedCheckbox && markConfirmedCheckbox.checked) {
                 const enquiry = JSON.parse(enquiryData);
                 try {
-                    const convertResponse = await fetch(`http://localhost:4455/api/enquiries/${enquiry.id}/convert`, {
+                    const convertResponse = await fetch(`${API_BASE}/api/enquiries/${enquiry.id}/convert`, {
                         method: 'POST'
                     });
 
@@ -673,7 +677,6 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // Payment related constants
-const PAYMENT_API_URL = 'http://localhost:4455/api/payments';
 const paymentForm = document.getElementById('paymentForm');
 const addPaymentBtn = document.getElementById('addPaymentBtn');
 const cancelPaymentBtn = document.getElementById('cancelPaymentBtn');

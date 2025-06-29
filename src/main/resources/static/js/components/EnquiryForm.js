@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 
+const API_BASE = window.location.protocol + '//' + window.location.hostname + ':4455';
+
 const EnquiryForm = () => {
     const [formData, setFormData] = useState({
         name: '',
@@ -22,7 +24,7 @@ const EnquiryForm = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            await axios.post('http://localhost:4455/api/enquiries', formData);
+            await axios.post(`${API_BASE}/api/enquiries`, formData);
             setFormData({
                 name: '',
                 fatherName: '',

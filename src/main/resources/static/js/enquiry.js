@@ -10,7 +10,9 @@ if (username) {
     document.getElementById('username').textContent = username;
 }
 
-const API_URL = 'http://localhost:4455/api/enquiries';
+// Dynamic API base URL for cross-device compatibility
+const API_BASE = window.location.protocol + '//' + window.location.hostname + ':4455';
+const API_URL = API_BASE + '/api/enquiries';
 
 const enquiryForm = document.getElementById('enquiryForm');
 const enquiriesTableBody = document.querySelector('#enquiriesTable tbody');

@@ -2816,3 +2816,13 @@ label[for]:after {
     white-space: normal;
 }
 /* --- End Enquiry Table Column Widths --- */
+
+#enquiriesTable th:nth-child(8),
+#enquiriesTable td:nth-child(8) {
+    width: 320px;
+    min-width: 250px;
+    max-width: 400px;
+    white-space: normal;
+    word-break: break-word;
+    padding: 8px 8px;
+}
