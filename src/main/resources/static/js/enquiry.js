@@ -186,13 +186,13 @@ function displayEnquiries(enquiries) {
             <td>${enquiry.phoneNumber}</td>
             <td>${enquiry.course || ''}</td>
             <td>${enquiry.courseDuration || ''}</td>
-            <td>${enquiry.remarks || ''}</td>
+            <td class="mobile-hide">${enquiry.remarks || ''}</td>
             <td>
                 <span class="badge ${enquiry.convertedToStudent ? 'bg-success' : 'bg-warning'}">
                     ${enquiry.convertedToStudent ? 'Confirmed' : 'Pending'}
                 </span>
             </td>
-            <td>
+            <td class="mobile-hide">
                 <div class="latest-feedback-cell" id="feedback-${enquiry.id}">
                     ${latestFeedbackHtml}
                 </div>
@@ -200,7 +200,7 @@ function displayEnquiries(enquiries) {
                     <i class="fas fa-comments"></i>
                 </button>
             </td>
-            <td>
+            <td class="mobile-hide">
                 <div class="action-buttons">
                     ${!enquiry.convertedToStudent ? `
                         <button class="action-btn convert-btn" data-id="${enquiry.id}" title="Convert to Student">
@@ -215,7 +215,7 @@ function displayEnquiries(enquiries) {
                     `}
                 </div>
             </td>
-            <td>
+            <td class="mobile-hide">
                 ${!enquiry.convertedToStudent ? `
                     <input type="checkbox" class="convert-checkbox" data-id="${enquiry.id}" title="Mark as Confirmed">
                 ` : ''}

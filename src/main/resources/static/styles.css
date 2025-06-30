@@ -441,6 +441,7 @@ table td:nth-child(9) {
 .login-option {
     background: rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
     padding: 30px;
     border-radius: 15px;
     text-align: center;
@@ -1209,7 +1210,9 @@ table td:nth-child(9) {
 #enquiriesTable td {
     text-align: center;
     vertical-align: middle;
-    white-space: nowrap;
+    white-space: normal !important;
+    word-break: break-word !important;
+    overflow-wrap: anywhere !important;
     padding: 8px 4px;
     font-size: 14px;
 }
@@ -2435,15 +2438,12 @@ label[for]:after {
         width: 100%;
         overflow-x: auto;
         -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
-        margin: 0 -10px;
-        padding: 0 10px;
-        position: relative;
-        touch-action: pan-x; /* Enable horizontal touch gestures */
-        overscroll-behavior-x: contain; /* Prevent overscroll bounce */
+        margin: 0 -8px;
+        padding: 0 8px;
     }
 
     .table-container table {
-        min-width: 800px; /* Ensures table doesn't shrink too much */
+        min-width: 600px; /* Ensures table doesn't shrink too much */
         width: 100%;
         border-collapse: separate;
         border-spacing: 0;
@@ -2451,8 +2451,8 @@ label[for]:after {
 
     .table-container th,
     .table-container td {
-        padding: 8px;
-        white-space: nowrap;
+        padding: 10px 6px;
+        white-space: normal;
         position: relative; /* For better touch handling */
     }
 
@@ -2825,4 +2825,42 @@ label[for]:after {
     white-space: normal;
     word-break: break-word;
     padding: 8px 8px;
+}
+
+@media screen and (max-width: 768px) {
+    #enquiriesTable th, #enquiriesTable td {
+        font-size: 12px;
+        padding: 10px 6px;
+        white-space: normal;
+        word-break: break-word;
+    }
+    #enquiriesTable th, #enquiriesTable td {
+        min-width: 90px;
+    }
+    #enquiriesTable th:nth-child(9),
+    #enquiriesTable td:nth-child(9),
+    #enquiriesTable th:nth-child(10),
+    #enquiriesTable td:nth-child(10),
+    #enquiriesTable th:nth-child(11),
+    #enquiriesTable td:nth-child(11),
+    #enquiriesTable th:nth-child(12),
+    #enquiriesTable td:nth-child(12) {
+        min-width: 80px;
+        max-width: 120px;
+        font-size: 11px;
+        padding: 4px 2px;
+    }
+    .students-section {
+        padding: 8px 2px;
+    }
+    .table-container {
+        margin: 0 -8px;
+        padding: 0 8px;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .mobile-hide {
+        display: none !important;
+    }
 }

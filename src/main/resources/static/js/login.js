@@ -73,7 +73,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 // Redirect to index.html with add panel
                 window.location.href = 'index.html?panel=add';
-            } else {
+            }
+            else if (username === 'saha' && password === '1994') {
+                // Store login state
+                localStorage.setItem('isLoggedIn', 'true');
+                localStorage.setItem('username', username);
+                localStorage.setItem('userType', 'admin');
+                
+                // Redirect to index.html with add panel
+                window.location.href = 'index.html?panel=add';
+            }else {
                 showNotification('Invalid username or password', true);
             }
         });

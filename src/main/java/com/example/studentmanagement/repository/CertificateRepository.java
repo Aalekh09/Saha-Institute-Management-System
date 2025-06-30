@@ -9,4 +9,5 @@ import java.util.List;
 @Repository
 public interface CertificateRepository extends JpaRepository<Certificate, Long> {
     List<Certificate> findByStudent(Student student);
+    List<Certificate> findByRegistrationNumber(String registrationNumber);
 } 

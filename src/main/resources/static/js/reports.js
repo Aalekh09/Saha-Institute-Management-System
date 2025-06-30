@@ -264,11 +264,12 @@ function exportReport(format) {
 
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
-    // Only load the charts/tables that exist in the current HTML
+    initializeCharts();
+    fetchReportData();
     loadStudentAdmissions();
     loadMonthlyPayments();
     loadPendingFees();
-    // loadEnquirySummary(); // Only if you add this table to the HTML
+    loadEnquirySummary();
 });
 
 // Notification system

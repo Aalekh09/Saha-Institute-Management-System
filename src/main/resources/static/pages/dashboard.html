@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Saha Institute</title>
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <header>
+        <h1>Saha Institute of Management & Technology</h1>
+        <p>Welcome, <span id="username"></span></p>
+        <button id="logoutBtn" class="logout-btn">Logout</button>
+    </header>
+
+    <div class="main-container">
+        <h2>Dashboard</h2>
+        <div class="dashboard-grid">
+            <!-- Panel links will go here -->
+            <a href="index.html?panel=list" class="dashboard-card">
+                <div class="card-icon"><i class="fas fa-list"></i></div>
+                <div class="card-title">List Students</div>
+            </a>
+            <a href="index.html?panel=add" class="dashboard-card">
+                <div class="card-icon"><i class="fas fa-user-plus"></i></div>
+                <div class="card-title">Add Student</div>
+            </a>
+            <a href="index.html?panel=payments" class="dashboard-card">
+                <div class="card-icon"><i class="fas fa-money-bill"></i></div>
+                <div class="card-title">Payments</div>
+            </a>
+            <a href="index.html?panel=reports" class="dashboard-card">
+                <div class="card-icon"><i class="fas fa-chart-bar"></i></div>
+                <div class="card-title">Reports</div>
+            </a>
+            <a href="enquiry.html" class="dashboard-card">
+                <div class="card-icon"><i class="fas fa-question-circle"></i></div>
+                <div class="card-title">Enquiries</div>
+            </a>
+             <a href="index.html?panel=teachers" class="dashboard-card">
+                <div class="card-icon"><i class="fas fa-chalkboard-teacher"></i></div>
+                <div class="card-title">Teachers</div>
+            </a>
+        </div>
+    </div>
+
+    <script src="../js/dashboard.js"></script>
+</body>
+</html> 

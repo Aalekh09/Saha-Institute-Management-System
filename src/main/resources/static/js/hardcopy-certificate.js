@@ -3,8 +3,168 @@ function titleCase(str) {
     return str.replace(/\w\S*/g, (txt) => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase());
 }
 
+// Test function to manually show certificate details panel
+function testCertificateDetails() {
+    console.log('Test function called');
+    const testData = {
+        name: 'John Doe',
+        registration: 'REG123456',
+        certificate: 'Computer Science',
+        Grade: 'A+'
+    };
+    
+    console.log('Showing test certificate details with data:', testData);
+    showCertificateDetails(testData, 'TEST-CERT-001');
+}
+
+// Function to show certificate details panel
+function showCertificateDetails(data, certificateId) {
+    console.log('showCertificateDetails called with:', data, certificateId);
+    
+    const detailsPanel = document.getElementById('certificateDetailsPanel');
+    console.log('Details panel element:', detailsPanel);
+    
+    if (!detailsPanel) {
+        console.error('Certificate details panel not found!');
+        return;
+    }
+    
+    // Populate certificate details with only essential information
+    document.getElementById('detailStudentName').textContent = titleCase(data.name);
+    document.getElementById('detailRegistrationNo').textContent = data.registration;
+    document.getElementById('detailIssueDate').textContent = new Date().toLocaleDateString();
+    document.getElementById('detailCertificateId').textContent = certificateId || 'CERT-' + data.registration;
+    document.getElementById('detailCourseName').textContent = titleCase(data.certificate);
+    document.getElementById('detailGrade').textContent = data.Grade;
+    document.getElementById('detailStatus').textContent = 'Issued';
+    
+    console.log('Certificate details populated successfully');
+    
+    // Panel is always visible, no need to show/hide
+    console.log('Certificate details panel updated');
+}
+
+// Function to load existing certificate data
+async function loadExistingCertificates() {
+    try {
+        console.log('Loading existing certificates...');
+        const response = await fetch('/api/certificates');
+        
+        if (response.ok) {
+            const certificates = await response.json();
+            console.log('Loaded certificates:', certificates);
+            
+            if (certificates.length > 0) {
+                // Show the most recent certificate
+                const latestCertificate = certificates[certificates.length - 1];
+                displayCertificateData(latestCertificate);
+            } else {
+                // No certificates found, show empty state
+                displayEmptyCertificateData();
+            }
+        } else {
+            console.error('Failed to load certificates');
+            displayEmptyCertificateData();
+        }
+    } catch (error) {
+        console.error('Error loading certificates:', error);
+        displayEmptyCertificateData();
+    }
+}
+
+// Function to display certificate data in the panel
+function displayCertificateData(certificate) {
+    console.log('Displaying certificate data:', certificate);
+    
+    document.getElementById('detailStudentName').textContent = certificate.student ? certificate.student.name : certificate.registrationNumber || '-';
+    document.getElementById('detailRegistrationNo').textContent = certificate.registrationNumber || '-';
+    document.getElementById('detailIssueDate').textContent = certificate.issueDate ? new Date(certificate.issueDate).toLocaleDateString() : '-';
+    document.getElementById('detailCertificateId').textContent = certificate.id ? 'CERT-' + certificate.id : '-';
+    document.getElementById('detailCourseName').textContent = certificate.type || '-';
+    document.getElementById('detailGrade').textContent = certificate.grade || '-';
+    document.getElementById('detailStatus').textContent = certificate.status || 'Active';
+    
+    // Update status badge
+    const statusElement = document.getElementById('certificateStatus');
+    if (statusElement) {
+        statusElement.textContent = certificate.status || 'Active';
+        statusElement.className = `certificate-status ${certificate.status === 'Issued' ? 'status-issued' : 'status-pending'}`;
+    }
+}
+
+// Function to display empty certificate data
+function displayEmptyCertificateData() {
+    console.log('Displaying empty certificate data');
+    
+    document.getElementById('detailStudentName').textContent = 'No certificates found';
+    document.getElementById('detailRegistrationNo').textContent = '-';
+    document.getElementById('detailIssueDate').textContent = '-';
+    document.getElementById('detailCertificateId').textContent = '-';
+    document.getElementById('detailCourseName').textContent = '-';
+    document.getElementById('detailGrade').textContent = '-';
+    document.getElementById('detailStatus').textContent = 'No Data';
+    
+    // Update status badge
+    const statusElement = document.getElementById('certificateStatus');
+    if (statusElement) {
+        statusElement.textContent = 'No Data';
+        statusElement.className = 'certificate-status status-pending';
+    }
+}
+
+// Function to save certificate to backend
+async function saveCertificateToBackend(data) {
+    try {
+        const certificateData = {
+            type: data.certificate,
+            issueDate: new Date().toISOString().split('T')[0],
+            validUntil: null,
+            remarks: `Course: ${data.certificate}, Duration: ${data.duration}, Grade: ${data.Grade}`,
+            status: "Issued",
+            // Additional fields for hardcopy certificate
+            registrationNumber: data.registration,
+            rollNumber: data.rollno,
+            examRollNumber: data.erollno,
+            courseDuration: data.duration,
+            performance: data.performance,
+            grade: data.Grade,
+            issueSession: data.IssueSession,
+            issueDay: parseInt(data.IssueDay),
+            issueMonth: data.IssueMonth,
+            issueYear: parseInt(data.IssueYear),
+            fathersName: data.fathersname,
+            mothersName: data.mothersname,
+            dateOfBirth: data.dob
+        };
+        
+        const response = await fetch('/api/certificates', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(certificateData)
+        });
+        
+        if (response.ok) {
+            const savedCertificate = await response.json();
+            return savedCertificate.id;
+        } else {
+            console.error('Failed to save certificate to backend');
+            return null;
+        }
+    } catch (error) {
+        console.error('Error saving certificate:', error);
+        return null;
+    }
+}
+
 // Ensure the DOM is fully loaded before running the script
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+    console.log('DOM loaded, initializing certificate page...');
+    
+    // Load existing certificates when page loads
+    await loadExistingCertificates();
+    
     // Add subject rows logic
     const subjectsArea = document.getElementById('subjectsArea');
     const addSubjectBtn = document.getElementById('addSubjectBtn');
@@ -59,9 +219,52 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // Certificate details panel action buttons
+    const viewCertificateBtn = document.getElementById('viewCertificateBtn');
+    const downloadCertificateBtn = document.getElementById('downloadCertificateBtn');
+    const printCertificateBtn = document.getElementById('printCertificateBtn');
+    const editCertificateBtn = document.getElementById('editCertificateBtn');
+
+    if (viewCertificateBtn) {
+        viewCertificateBtn.addEventListener('click', function() {
+            // Open certificate in new window for viewing
+            window.open(`certificate_${document.getElementById('detailRegistrationNo').textContent}.pdf`, '_blank');
+        });
+    }
+
+    if (downloadCertificateBtn) {
+        downloadCertificateBtn.addEventListener('click', function() {
+            // Trigger download of the generated PDF
+            const link = document.createElement('a');
+            link.href = `certificate_${document.getElementById('detailRegistrationNo').textContent}.pdf`;
+            link.download = `certificate_${document.getElementById('detailRegistrationNo').textContent}.pdf`;
+            link.click();
+        });
+    }
+
+    if (printCertificateBtn) {
+        printCertificateBtn.addEventListener('click', function() {
+            // Open print dialog for the certificate
+            const printWindow = window.open(`certificate_${document.getElementById('detailRegistrationNo').textContent}.pdf`, '_blank');
+            printWindow.onload = function() {
+                printWindow.print();
+            };
+        });
+    }
+
+    if (editCertificateBtn) {
+        editCertificateBtn.addEventListener('click', function() {
+            // Hide details panel and show form for editing
+            document.getElementById('certificateDetailsPanel').style.display = 'none';
+            document.getElementById('certificateForm').scrollIntoView({ behavior: 'smooth' });
+        });
+    }
+
     const certificateForm = document.getElementById('certificateForm');
     if (certificateForm) {
+        console.log('Certificate form found and event listener attached');
         certificateForm.onsubmit = async function(e) {
+            console.log('Certificate form submitted');
             e.preventDefault();
             const form = e.target;
             // Gather form data
@@ -69,6 +272,8 @@ document.addEventListener('DOMContentLoaded', () => {
             for (const el of form.elements) {
                 if (el.name && el.type !== 'file') data[el.name] = el.value;
             }
+            console.log('Form data gathered:', data);
+            
             // Gather subjects
             const rows = [];
             for (let i = 0; i < 6; i++) {
@@ -83,6 +288,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
             data.rows = rows;
+            console.log('Subject rows gathered:', rows);
+            
             // Prepare QR data as a formatted string for readability
             const qrDataString = `
 SAHA INSTITUTE CERTIFICATE VERIFICATION
@@ -198,6 +405,21 @@ Grade: ${data.Grade}
             doc.text(` ${titleCase(data.IssueMonth)} ${data.IssueYear}`, 355, 635);
             // Save PDF
             doc.save(`certificate_${data.registration}.pdf`);
+            console.log('PDF saved successfully');
+            
+            // Save certificate to backend and show details panel
+            console.log('Attempting to save certificate to backend...');
+            const certificateId = await saveCertificateToBackend(data);
+            console.log('Certificate saved to backend, ID:', certificateId);
+            
+            console.log('Calling showCertificateDetails...');
+            showCertificateDetails(data, certificateId);
+            console.log('Certificate details panel should now be visible');
+            
+            // Refresh the certificate list to show the new certificate
+            await loadExistingCertificates();
         };
+    } else {
+        console.error('Certificate form not found!');
     }
 }); 
