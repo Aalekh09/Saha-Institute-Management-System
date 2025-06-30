@@ -86,6 +86,10 @@ function updateTable() {
         const actionsCell = document.createElement('td');
         actionsCell.innerHTML = `
             <div class="action-buttons">
+                <button class="action-btn view-profile-btn" onclick="viewStudentProfile(${student.id})">
+                    <i class="fas fa-user"></i>
+                    View Profile
+                </button>
                 <button class="action-btn edit-btn" onclick="editStudent(${student.id})">
                     <i class="fas fa-edit"></i>
                     Edit
@@ -227,5 +231,55 @@ function showNotification(message, type = 'success') {
     }, 3000);
 }
 
+// Add viewStudentProfile function and modal logic
+window.viewStudentProfile = function(id) {
+    const student = students.find(s => s.id === id);
+    if (!student) return;
+    const content = `
+        <div class="id-card-preview">
+            <div class="id-card-logo">
+                <img src="../uploads/institute/logo.png" alt="Institute Logo" />
+            </div>
+            <div class="id-card-header">
+                <div class="id-card-avatar">${student.name.charAt(0).toUpperCase()}</div>
+                <div class="id-card-title">${student.name}</div>
+                <div class="id-card-id">ID: ${student.id}</div>
+            </div>
+            <div class="id-card-body">
+                <div><b>Course:</b> ${student.course}</div>
+                <div><b>Duration:</b> ${student.duration}</div>
+                <div><b>Phone:</b> ${student.phone}</div>
+                <div><b>Email:</b> ${student.email}</div>
+                <div><b>Status:</b> ${student.status}</div>
+                <div><b>Paid:</b> ₹${student.paidAmount} / ₹${student.totalFee}</div>
+            </div>
+            <div class="id-card-signature">
+                <span class="sig-label">Signature</span>
+                <img src="../uploads/signatures/director.png" alt="Director Signature" />
+            </div>
+        </div>
+    `;
+    document.getElementById('studentProfileContent').innerHTML = content;
+    document.getElementById('studentProfileModal').style.display = 'flex';
+}
+
 // Initialize
-document.addEventListener('DOMContentLoaded', fetchStudents); 
+document.addEventListener('DOMContentLoaded', function() {
+    fetchStudents();
+    var closeBtn = document.getElementById('closeProfileModalBtn');
+    if (closeBtn) {
+        closeBtn.onclick = function() {
+            document.getElementById('studentProfileModal').style.display = 'none';
+        };
+    }
+});
+
+// Modal close logic using event delegation
+const studentProfileModal = document.getElementById('studentProfileModal');
+if (studentProfileModal) {
+    studentProfileModal.addEventListener('click', function(e) {
+        if (e.target.classList.contains('close-btn') || e.target === studentProfileModal) {
+            studentProfileModal.style.display = 'none';
+        }
+    });
+} 

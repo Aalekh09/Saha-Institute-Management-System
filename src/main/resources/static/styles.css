@@ -290,7 +290,9 @@ header p {
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    overflow-x: auto;
+    /* overflow-x: auto; */
+    overflow: scroll;
+    height: 50vh;
 }
 
 table {
@@ -2275,592 +2277,134 @@ label[for]:after {
 
 .dashboard-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 1.5rem;
-    margin-bottom: 2rem;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin-top: 2rem;
 }
 
 .dashboard-card {
     background: white;
-    border-radius: 8px;
-    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(44,62,80,0.06);
+    padding: 2rem 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.report-header {
     display: flex;
     align-items: center;
-    gap: 1rem;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-    transition: transform 0.3s ease;
-    cursor: pointer;
+    justify-content: space-between;
+    margin-bottom: 1rem;
 }
 
-.dashboard-card:hover {
-    transform: translateY(-2px);
-}
-
-.dashboard-card .card-icon {
-    font-size: 2rem;
-    color: #3498db;
-}
-
-.dashboard-card .card-title {
-    font-size: 1.1rem;
-    color: #2c3e50;
+.report-header h3 {
+    font-size: 1.2rem;
+    font-weight: 700;
     margin: 0;
 }
 
-.content-panel {
-    background: white;
-    border-radius: 8px;
-    padding: 1.5rem;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+.report-body {
+    margin-top: 1rem;
 }
 
-.profile-section {
-    margin-bottom: 20px;
-    padding-bottom: 15px;
-    border-bottom: 1px solid #eee;
-}
-
-.profile-section:last-child {
-    border-bottom: none;
-    padding-bottom: 0;
-    margin-bottom: 0;
-}
-
-.profile-section h3 {
-    color: #2c3e50;
-    font-size: 18px;
-    margin-top: 0;
-    margin-bottom: 10px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.profile-section p {
-    margin: 8px 0;
-    font-size: 14px;
-    color: #34495e;
-}
-
-.profile-section strong {
-    color: #2c3e50;
-    display: inline-block;
-    min-width: 120px;
-}
-
-/* Responsive Design */
-@media (max-width: 1024px) {
-    .list-header {
-        flex-direction: column;
-        gap: 15px;
-    }
-    
-    .list-actions {
-        width: 100%;
-        flex-direction: column;
-    }
-    
-    .search-box {
-        width: 100%;
-    }
-    
-    .action-btn.primary {
-        width: 100%;
-        justify-content: center;
-    }
-}
-
-@media (max-width: 768px) {
-    .list-stats {
-        grid-template-columns: 1fr;
-    }
-
-    .students-section .action-buttons {
-        flex-wrap: wrap;
-    }
-
-    .students-section .action-buttons .action-btn {
-        flex: 1;
-        justify-content: center;
-    }
-}
-
-/* Mobile Responsive Styles */
-@media screen and (max-width: 768px) {
-    /* Header adjustments for mobile */
-    header {
-        padding: 15px 10px;
-        position: relative;
-    }
-
-    header h1 {
-        font-size: 20px;
-        padding-right: 80px; /* Make space for logout button */
-    }
-
-    header p {
-        font-size: 14px;
-    }
-
-    .logout-btn {
-        top: 15px;
-        right: 10px;
-        padding: 6px 12px;
-        font-size: 13px;
-    }
-
-    /* Side panel adjustments */
-    .side-panel {
-        width: 100%;
-        min-width: auto;
-        padding: 10px;
-    }
-
-    .tab-btn, a.tab-btn {
-        padding: 12px 15px;
-        font-size: 14px;
-    }
-
-    /* Content panel adjustments */
-    .content-panel {
-        padding: 15px 10px;
-    }
-
-    /* Form adjustments */
-    .form-group input,
-    .form-group select,
-    .form-group textarea {
-        font-size: 16px; /* Prevent zoom on iOS */
-    }
-
-    /* Table adjustments */
-    .table-container {
-        width: 100%;
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
-        margin: 0 -8px;
-        padding: 0 8px;
-    }
-
-    .table-container table {
-        min-width: 600px; /* Ensures table doesn't shrink too much */
-        width: 100%;
-        border-collapse: separate;
-        border-spacing: 0;
-    }
-
-    .table-container th,
-    .table-container td {
-        padding: 10px 6px;
-        white-space: normal;
-        position: relative; /* For better touch handling */
-    }
-
-    /* Add a visual indicator for scrollable content */
-    .table-container::after {
-        content: '';
-        position: absolute;
-        right: 0;
-        top: 0;
-        bottom: 0;
-        width: 20px;
-        background: linear-gradient(to right, transparent, rgba(0,0,0,0.05));
-        pointer-events: none;
-        z-index: 1;
-    }
-
-    /* Improve touch targets */
-    .action-buttons {
-        min-width: 120px; /* Ensure buttons don't get too small */
-    }
-
-    .action-btn {
-        min-width: 32px; /* Minimum touch target size */
-        height: 32px;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    /* Stats cards */
-    .list-stats {
-        grid-template-columns: 1fr;
-        gap: 10px;
-    }
-
-    .stat-card {
-        padding: 15px;
-    }
-
-    .stat-icon {
-        width: 40px;
-        height: 40px;
-        font-size: 20px;
-    }
-
-    .stat-info h3 {
-        font-size: 20px;
-    }
-
-    /* Search box */
-    .search-box {
-        min-width: auto;
-        width: 100%;
-    }
-
-    .search-box input {
-        font-size: 16px;
-        padding: 10px 10px 10px 35px;
-    }
-
-    /* Modal adjustments */
-    .modal {
-        width: 90%;
-        max-width: 350px;
-        top: 20px;
-        right: 20px;
-    }
-
-    .modal-content {
-        padding: 20px 15px;
-    }
-
-    /* ID Card adjustments */
-    .id-card {
-        padding: 15px;
-    }
-
-    .id-card-header h2 {
-        font-size: 18px;
-    }
-
-    .detail-row {
-        font-size: 14px;
-    }
-
-    /* Dashboard cards */
-    .dashboard-grid {
-        grid-template-columns: 1fr;
-        gap: 10px;
-    }
-
-    .dashboard-card {
-        padding: 15px;
-    }
-
-    .dashboard-card .card-icon {
-        font-size: 24px;
-    }
-
-    .dashboard-card .card-title {
-        font-size: 16px;
-    }
-}
-
-/* Additional optimizations for very small screens */
-@media screen and (max-width: 480px) {
-    .table-container {
-        margin: 0 -5px;
-        padding: 0 5px;
-    }
-
-    .table-container th,
-    .table-container td {
-        padding: 6px;
-    }
-
-    .action-btn {
-        min-width: 28px;
-        height: 28px;
-        padding: 4px;
-    }
-}
-
-/* --- Professional Filter Bar Styles --- */
-.filter-bar {
-    background: #fff;
-    border-radius: 18px;
-    box-shadow: 0 2px 12px rgba(44,62,80,0.07);
-    padding: 24px 28px 18px 28px;
-    margin-bottom: 18px;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 10px;
-}
-
-.filter-controls {
-    display: flex;
-    align-items: center;
-    gap: 28px;
+.report-table {
     width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
 }
 
-.filter-divider {
-    width: 2px;
-    height: 36px;
-    background: #e3e8ee;
-    border-radius: 2px;
-    margin: 0 18px;
+.report-table th, .report-table td {
+    padding: 8px 10px;
+    border-bottom: 1px solid #f0f0f0;
+    text-align: left;
+    font-size: 15px;
+    white-space: normal;
+    word-break: break-word;
+    overflow-wrap: anywhere;
 }
 
-.date-filter {
-    display: flex;
-    align-items: center;
-    gap: 12px;
+.report-table th {
     background: #f8fafc;
-    padding: 10px 18px;
-    border-radius: 16px;
-    box-shadow: 0 1px 4px rgba(44,62,80,0.04);
-    border: 1px solid #e3e8ee;
-}
-
-.date-filter label {
     font-weight: 600;
+}
+
+.action-btn {
+    background: #eaf6ff;
     color: #1976d2;
-    margin: 0;
-    font-size: 15px;
-    letter-spacing: 0.01em;
-}
-
-.date-filter input[type="date"] {
-    border: 1px solid #d1d5db;
-    border-radius: 8px;
-    padding: 7px 12px;
-    font-size: 15px;
-    background: #fff;
-    color: #333;
-    transition: border-color 0.2s;
-    min-width: 140px;
-}
-
-.date-filter input[type="date"]:focus {
-    border-color: #1976d2;
-    outline: none;
-}
-
-.filter-clear-btn {
-    background: #fff;
-    color: #e74c3c;
-    border: 1px solid #e3e8ee;
-    border-radius: 50%;
-    width: 32px;
-    height: 32px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: background 0.2s, color 0.2s, border 0.2s;
-    font-size: 15px;
-    margin-left: 2px;
-}
-
-.filter-clear-btn:hover {
-    background: #e74c3c;
-    color: #fff;
-    border: 1px solid #e74c3c;
-}
-
-.search-box {
-    display: flex;
-    align-items: center;
-    background: #f8fafc;
-    border-radius: 16px;
-    box-shadow: 0 1px 4px rgba(44,62,80,0.04);
-    border: 1px solid #e3e8ee;
-    padding: 0 12px;
-    min-width: 320px;
-    width: 100%;
-    max-width: 480px;
-}
-
-.search-box input {
     border: none;
-    padding: 12px 0;
-    font-size: 15px;
-    background: transparent;
-    width: 100%;
-    color: #333;
+    border-radius: 6px;
+    padding: 6px 14px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background 0.2s;
 }
 
-.search-box input:focus {
-    outline: none;
-}
-
-.enquiry-stats {
-    display: flex;
-    justify-content: flex-end;
-    gap: 16px;
-    margin-top: 8px;
-    font-size: 15px;
-    color: #666;
-    width: 100%;
-}
-
-.enquiry-stats span {
-    background: #f4f6f8;
-    padding: 5px 14px;
-    border-radius: 15px;
-    font-weight: 600;
-    font-size: 15px;
-}
-
-#totalEnquiries {
-    color: #2c3e50;
-}
-
-#filteredEnquiries {
-    color: #1976d2;
+.action-btn:hover {
+    background: #d0eaff;
 }
 
 @media (max-width: 900px) {
-    .filter-bar {
-        padding: 16px 8px 10px 8px;
+    .dashboard-grid {
+        grid-template-columns: 1fr;
     }
-    .filter-controls {
-        flex-direction: column;
-        align-items: stretch;
-        gap: 12px;
+}
+
+@media screen and (max-width: 600px) {
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
     }
-    .filter-divider {
-        display: none;
+    .report-card {
+        padding: 1rem 0.5rem;
+        margin-bottom: 1rem;
     }
-    .search-box {
-        min-width: 0;
-        max-width: 100%;
-    }
-    .enquiry-stats {
+    .report-header {
         flex-direction: column;
         align-items: flex-start;
-        gap: 4px;
+        gap: 0.5rem;
     }
-}
-
-/* --- End Professional Filter Bar Styles --- */
-
-/* --- Feedback Log Styles --- */
-.feedback-entry {
-    background: #f8fafc;
-    border-radius: 10px;
-    box-shadow: 0 1px 4px rgba(44,62,80,0.06);
-    padding: 12px 16px;
-    margin-bottom: 12px;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    border-left: 4px solid #1976d2;
-    position: relative;
-}
-.feedback-datetime {
-    font-size: 13px;
-    color: #1976d2;
-    font-weight: 600;
-    background: #e3f0fc;
-    border-radius: 6px;
-    padding: 2px 8px;
-    display: inline-block;
-    margin-bottom: 2px;
-}
-.feedback-text {
-    font-size: 15px;
-    color: #333;
-    font-weight: 500;
-    margin-left: 2px;
-    word-break: break-word;
-}
-#feedbackLog {
-    max-height: 260px;
-    overflow-y: auto;
-    margin-bottom: 18px;
-    padding-right: 4px;
-}
-.latest-feedback-cell {
-    background: #e3f0fc;
-    border-radius: 8px;
-    padding: 6px 10px;
-    margin-bottom: 2px;
-    font-size: 14px;
-    color: #1976d2;
-    font-weight: 500;
-    display: block;
-    max-width: 260px;
-    word-break: break-word;
-}
-/* --- End Feedback Log Styles --- */
-
-/* --- Enquiry Table Column Widths --- */
-#enquiriesTable th:nth-child(2), /* Father's Name column */
-#enquiriesTable td:nth-child(2) {
-    width: 120px;
-    max-width: 120px;
-    min-width: 120px;
-}
-
-#enquiriesTable th:nth-child(9), /* Feedback column */
-#enquiriesTable td:nth-child(9) {
-    /* width: 320px; */
-    max-width: 320px;
-    min-width: 320px;
-}
-
-/* Ensure text wrapping in feedback column */
-#enquiriesTable td:nth-child(9) {
-    word-wrap: break-word;
-    white-space: normal;
-}
-
-/* Make father's name text smaller if needed */
-#enquiriesTable td:nth-child(2) {
-    font-size: 13px;
-    word-wrap: break-word;
-    white-space: normal;
-}
-/* --- End Enquiry Table Column Widths --- */
-
-#enquiriesTable th:nth-child(8),
-#enquiriesTable td:nth-child(8) {
-    width: 320px;
-    min-width: 250px;
-    max-width: 400px;
-    white-space: normal;
-    word-break: break-word;
-    padding: 8px 8px;
-}
-
-@media screen and (max-width: 768px) {
-    #enquiriesTable th, #enquiriesTable td {
+    .report-header h3 {
+        font-size: 1rem;
+    }
+    .report-table {
+        font-size: 13px;
+    }
+    .report-table th, .report-table td {
         font-size: 12px;
-        padding: 10px 6px;
-        white-space: normal;
-        word-break: break-word;
+        padding: 6px 4px;
     }
-    #enquiriesTable th, #enquiriesTable td {
-        min-width: 90px;
-    }
-    #enquiriesTable th:nth-child(9),
-    #enquiriesTable td:nth-child(9),
-    #enquiriesTable th:nth-child(10),
-    #enquiriesTable td:nth-child(10),
-    #enquiriesTable th:nth-child(11),
-    #enquiriesTable td:nth-child(11),
-    #enquiriesTable th:nth-child(12),
-    #enquiriesTable td:nth-child(12) {
-        min-width: 80px;
-        max-width: 120px;
-        font-size: 11px;
-        padding: 4px 2px;
-    }
-    .students-section {
+    .login-container {
         padding: 8px 2px;
+        max-width: 100%;
     }
-    .table-container {
-        margin: 0 -8px;
-        padding: 0 8px;
+    .login-header h1 {
+        font-size: 1.5em;
     }
-}
-
-@media screen and (max-width: 768px) {
-    .mobile-hide {
-        display: none !important;
+    .login-header p {
+        font-size: 1em;
+    }
+    .login-options {
+        flex-direction: column;
+        gap: 10px;
+    }
+    .login-option {
+        width: 100%;
+        padding: 18px;
+        font-size: 1em;
+    }
+    .login-box {
+        padding: 18px;
+        max-width: 100%;
+    }
+    .login-box-header i {
+        font-size: 1.5em;
+    }
+    .form-group input {
+        font-size: 14px;
+        padding: 10px 12px;
+    }
+    .form-actions button {
+        font-size: 14px;
+        padding: 10px;
     }
 }

@@ -1108,6 +1108,45 @@ th {
     }
 }
 
+@media screen and (max-width: 600px) {
+    .main-container {
+        flex-direction: column;
+        height: auto;
+    }
+    .side-panel {
+        width: 100%;
+        padding: 10px 4px;
+        box-shadow: none;
+        border-radius: 0;
+    }
+    .content-panel {
+        padding: 10px 4px;
+    }
+    .card {
+        padding: 18px 8px;
+    }
+    .certificate-template, .certificate-theme-border, .certificate-layout {
+        padding: 8px 2px !important;
+        margin: 0 !important;
+        border-radius: 8px !important;
+    }
+    .certificate-header-professional h1,
+    .panel-title h2 {
+        font-size: 1.1em;
+    }
+    .certificate-body-professional, .certificate-footer-professional {
+        font-size: 0.95em;
+    }
+    .form-group input, .form-group select, .form-group textarea {
+        font-size: 14px;
+        padding: 8px 8px;
+    }
+    .form-actions button {
+        font-size: 14px;
+        padding: 10px;
+    }
+}
+
 /* Print Styles */
 @media print {
     .certificate-template {

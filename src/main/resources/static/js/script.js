@@ -920,7 +920,7 @@ function generateReceipt(payment) {
         <body>
             <div class="receipt">
                 <div class="header">
-                    <h1>Saha Computer Of Mgmt. & Tech</h1>
+                    <h1>Saha Institute of Management & Technology</h1>
                     <h2>Payment Receipt</h2>
                 </div>
                 <div class="details">

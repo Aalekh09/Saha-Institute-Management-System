@@ -23,7 +23,8 @@
                             <input type="text" id="searchInput" placeholder="Search by name, ID, course, phone...">
                         </div>
                         <div class="search-filters">
-                            <select id="searchFilter">
+                            <label for="searchFilter" class="visually-hidden">Search Filter</label>
+                            <select id="searchFilter" title="Search Filter">
                                 <option value="all">All Fields</option>
                                 <option value="name">Name</option>
                                 <option value="id">Student ID</option>
@@ -87,6 +88,12 @@
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
+    <div id="studentProfileModal" class="modal" style="display:none;">
+        <div class="modal-content id-card-modal-content">
+            <button class="close-btn" id="closeProfileModalBtn" title="Close Profile">&times;</button>
+            <div id="studentProfileContent"></div>
         </div>
     </div>
     <script src="../js/pages/student-list.js"></script>

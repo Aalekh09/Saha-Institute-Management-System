@@ -517,4 +517,247 @@
     .course-info {
         min-width: 120px;
     }
+}
+
+@media screen and (max-width: 600px) {
+    .list-stats {
+        grid-template-columns: 1fr;
+        gap: 10px;
+        padding: 10px;
+    }
+    .stat-card {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 12px;
+    }
+    .stat-icon {
+        width: 36px;
+        height: 36px;
+        font-size: 18px;
+    }
+    .stat-info h3 {
+        font-size: 18px;
+    }
+    .students-section {
+        padding: 8px 2px;
+    }
+    .table-container {
+        margin: 0;
+        padding: 0 2px;
+    }
+    .table-container table {
+        min-width: 480px;
+        font-size: 13px;
+    }
+    .table-container th, .table-container td {
+        font-size: 12px;
+        padding: 8px 4px;
+        white-space: normal;
+        word-break: break-word;
+        overflow-wrap: anywhere;
+    }
+}
+
+.modal {
+    display: flex;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100vw;
+    height: 100vh;
+    overflow: auto;
+    background: rgba(44, 62, 80, 0.45);
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.2s;
+    animation: modal-fade-in 0.25s cubic-bezier(0.4,0,0.2,1);
+}
+@keyframes modal-fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+.modal-content.id-card-modal-content {
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 4px 32px rgba(44,62,80,0.18);
+    padding: 2rem 1.5rem;
+    max-width: 350px;
+    width: 95vw;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border-top: 6px solid #1976d2;
+    animation: modal-scale-in 0.25s cubic-bezier(0.4,0,0.2,1);
+}
+@keyframes modal-scale-in {
+    from { transform: scale(0.95); opacity: 0.7; }
+    to { transform: scale(1); opacity: 1; }
+}
+.close-btn {
+    position: absolute;
+    top: 12px;
+    right: 16px;
+    background: #fff;
+    border: none;
+    font-size: 2rem;
+    color: #1976d2;
+    cursor: pointer;
+    z-index: 10;
+    transition: color 0.2s, box-shadow 0.2s;
+    box-shadow: 0 2px 8px rgba(25, 118, 210, 0.10);
+    border-radius: 50%;
+    width: 38px;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.close-btn:hover {
+    color: #fff;
+    background: #c0392b;
+    box-shadow: 0 4px 16px rgba(192,57,43,0.18);
+}
+#studentProfileContent {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+@media (max-width: 600px) {
+    .modal-content.id-card-modal-content {
+        padding: 1rem 0.5rem;
+        max-width: 98vw;
+    }
+    .close-btn {
+        top: 6px;
+        right: 8px;
+        font-size: 1.5rem;
+    }
+}
+
+.id-card-preview {
+    width: 100%;
+    max-width: 340px;
+    background: linear-gradient(135deg, #e3f2fd 60%, #bbdefb 100%), url('../uploads/institute/logo.png') no-repeat 95% 10%/60px 60px;
+    border-radius: 14px;
+    box-shadow: 0 4px 24px rgba(25, 118, 210, 0.13);
+    padding: 1.2rem 1rem 1.5rem 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0 auto;
+    border: 2.5px solid #1976d2;
+    position: relative;
+    overflow: hidden;
+}
+.id-card-logo {
+    width: 54px;
+    height: 54px;
+    border-radius: 8px;
+    background: #fff;
+    box-shadow: 0 2px 8px rgba(25, 118, 210, 0.10);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 0.7rem;
+    margin-top: 0.2rem;
+}
+.id-card-logo img {
+    width: 44px;
+    height: 44px;
+    object-fit: contain;
+    border-radius: 6px;
+}
+.id-card-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 0.7rem;
+}
+.id-card-avatar {
+    width: 54px;
+    height: 54px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #1976d2, #42a5f5);
+    color: #fff;
+    font-size: 2.1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 0.4rem;
+    box-shadow: 0 2px 8px rgba(25, 118, 210, 0.12);
+}
+.id-card-title {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #1976d2;
+    margin-bottom: 0.1rem;
+}
+.id-card-id {
+    font-size: 0.93rem;
+    color: #555;
+    margin-bottom: 0.3rem;
+}
+.id-card-body {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    font-size: 0.98rem;
+    color: #222;
+    background: #f8fafc;
+    border-radius: 7px;
+    padding: 0.7rem 0.6rem;
+    box-shadow: 0 1px 4px rgba(25, 118, 210, 0.04);
+    margin-bottom: 0.7rem;
+}
+.id-card-signature {
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    margin-top: 0.5rem;
+}
+.id-card-signature .sig-label {
+    font-size: 0.85rem;
+    color: #888;
+    margin-right: 0.5rem;
+}
+.id-card-signature img {
+    height: 28px;
+    object-fit: contain;
+    border-radius: 2px;
+    box-shadow: 0 1px 3px rgba(44,62,80,0.08);
+}
+@media (max-width: 600px) {
+    .id-card-preview {
+        padding: 0.7rem 0.2rem 1rem 0.2rem;
+        max-width: 98vw;
+    }
+    .id-card-logo {
+        width: 38px;
+        height: 38px;
+    }
+    .id-card-logo img {
+        width: 30px;
+        height: 30px;
+    }
+    .id-card-avatar {
+        width: 38px;
+        height: 38px;
+        font-size: 1.2rem;
+    }
+    .id-card-title {
+        font-size: 0.98rem;
+    }
+    .id-card-body {
+        font-size: 0.92rem;
+        padding: 0.4rem 0.2rem;
+    }
+    .id-card-signature img {
+        height: 18px;
+    }
 } 
