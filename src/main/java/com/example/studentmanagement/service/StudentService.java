@@ -12,6 +12,7 @@ import com.example.studentmanagement.repository.PaymentRepository;
 import com.example.studentmanagement.repository.CertificateRepository;
 import com.example.studentmanagement.repository.EnquiryRepository;
 import com.example.studentmanagement.model.Payment;
+import com.example.studentmanagement.repository.FeedbackRepository;
 
 @Service
 public class StudentService {
@@ -27,6 +28,9 @@ public class StudentService {
 
     @Autowired
     private EnquiryRepository enquiryRepository;
+
+    @Autowired
+    private FeedbackRepository feedbackRepository;
 
     public List<Student> getAllStudents() {
         return studentRepository.findAll();
@@ -72,10 +76,14 @@ public class StudentService {
                 certificateRepository.deleteById(certificate.getId());
             });
             
-            // Delete related enquiries
+            // Delete related enquiries and their feedback
             enquiryRepository.findAll().stream()
                 .filter(enquiry -> student.getPhoneNumber().equals(enquiry.getPhoneNumber()))
                 .forEach(enquiry -> {
+                    // Delete feedback entries for this enquiry
+                    feedbackRepository.findByEnquiryIdOrderByCreatedAtDesc(enquiry.getId())
+                        .forEach(feedback -> feedbackRepository.deleteById(feedback.getId()));
+                    // Delete the enquiry itself
                     enquiryRepository.deleteById(enquiry.getId());
                 });
             
