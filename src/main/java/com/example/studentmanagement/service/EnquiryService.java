@@ -69,6 +69,8 @@ public class EnquiryService {
             student.setPhoneNumber(enquiry.getPhoneNumber());
             student.setCourses(enquiry.getCourse());
             student.setCourseDuration(enquiry.getCourseDuration());
+            // Set the enquiryId to link this student to the enquiry
+            student.setEnquiryId(enquiry.getId());
             // Other fields can be set to null or default
             studentRepository.save(student);
 

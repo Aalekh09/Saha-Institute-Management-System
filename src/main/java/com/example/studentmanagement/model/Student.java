@@ -32,6 +32,9 @@ public class Student {
 
     private LocalDate admissionDate;
 
+    // Link to Enquiry if student was added from an enquiry
+    private Long enquiryId;
+
     // Getters and Setters
     public Long getId() {
         return id;
@@ -143,5 +146,13 @@ public class Student {
 
     public void setAdmissionDate(LocalDate admissionDate) {
         this.admissionDate = admissionDate;
+    }
+
+    public Long getEnquiryId() {
+        return enquiryId;
+    }
+
+    public void setEnquiryId(Long enquiryId) {
+        this.enquiryId = enquiryId;
     }
 } 

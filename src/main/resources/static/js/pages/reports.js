@@ -269,6 +269,12 @@ document.addEventListener('DOMContentLoaded', () => {
     loadMonthlyPayments();
     loadPendingFees();
     // loadEnquirySummary(); // Only if you add this table to the HTML
+    const monthPicker = document.getElementById('studentsMonthPicker');
+    if (monthPicker) {
+        monthPicker.value = getCurrentMonthString();
+        loadStudentsByMonth();
+        monthPicker.addEventListener('change', loadStudentsByMonth);
+    }
 });
 
 // Notification system
@@ -318,9 +324,16 @@ async function loadPendingFees() {
     const res = await fetch(`${API_BASE}/pending-fees`);
     const data = await res.json();
     const tbody = document.querySelector('#pendingFeesTable tbody');
-    tbody.innerHTML = data.length
-        ? data.map(row => `<tr><td>${row.studentName}</td><td>${row.course}</td><td>₹${row.pendingAmount}</td></tr>`).join('')
-        : '<tr><td colspan="3" style="text-align:center;color:#888;">No pending fees</td></tr>';
+    if (data.length) {
+        let total = 0;
+        tbody.innerHTML = data.map(row => {
+            total += Number(row.pendingAmount);
+            return `<tr><td>${row.studentName}</td><td>${row.course}</td><td>₹${row.pendingAmount}</td></tr>`;
+        }).join('');
+        tbody.innerHTML += `<tr style='font-weight:bold;background:#f9f9f9;'><td colspan='2' style='text-align:right;'>Total Pending Fees</td><td>₹${total.toLocaleString('en-IN', {minimumFractionDigits:2})}</td></tr>`;
+    } else {
+        tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;color:#888;">No pending fees</td></tr>';
+    }
 }
 
 // 4. Enquiry Summary
@@ -371,4 +384,34 @@ function exportTableToExcel(tableId) {
     if (!table) return;
     const wb = XLSX.utils.table_to_book(table, {sheet: "Report"});
     XLSX.writeFile(wb, `${tableId}_${new Date().toISOString().slice(0,10)}.xlsx`);
-} 
+}
+
+// === Students By Month Feature ===
+function getCurrentMonthString() {
+    const now = new Date();
+    return now.toISOString().slice(0, 7); // 'YYYY-MM'
+}
+
+async function loadStudentsByMonth() {
+    const month = document.getElementById('studentsMonthPicker').value;
+    const tableBody = document.querySelector('#studentsByMonthTable tbody');
+    tableBody.innerHTML = '<tr><td colspan="3">Loading...</td></tr>';
+    try {
+        const response = await fetch(`/api/reports/students-by-month?month=${month}`);
+        const students = await response.json();
+        if (students.length === 0) {
+            tableBody.innerHTML = '<tr><td colspan="3">No students found for this month.</td></tr>';
+            return;
+        }
+        tableBody.innerHTML = students.map(s => `
+            <tr>
+                <td>${s.name || ''}</td>
+                <td>${s.fatherName || ''}</td>
+                <td>${s.courses || ''}</td>
+            </tr>
+        `).join('');
+    } catch (err) {
+        tableBody.innerHTML = '<tr><td colspan="3">Error loading data.</td></tr>';
+    }
+}
+window.loadStudentsByMonth = loadStudentsByMonth; 

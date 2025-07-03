@@ -131,6 +131,25 @@
                         </table>
                     </div>
                 </div>
+                <!-- Students Added This Month -->
+                <div class="report-card">
+                    <div class="report-header">
+                        <h3>Students Added This Month</h3>
+                        <label for="studentsMonthPicker">Month:</label>
+                        <input type="month" id="studentsMonthPicker" name="studentsMonthPicker" style="margin-left:8px;">
+                        <button class="action-btn" onclick="loadStudentsByMonth()">
+                            <i class="fas fa-search"></i> Show
+                        </button>
+                    </div>
+                    <div class="report-body">
+                        <table class="report-table" id="studentsByMonthTable">
+                            <thead>
+                                <tr><th>Name</th><th>Father's Name</th><th>Course</th></tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

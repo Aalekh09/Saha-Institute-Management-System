@@ -123,4 +123,22 @@ public class ReportController {
         }
         return result;
     }
+
+    // 5. List students added in a given month with details
+    @GetMapping("/students-by-month")
+    public List<Map<String, Object>> getStudentsByMonth(String month) {
+        // month format: YYYY-MM
+        YearMonth yearMonth = YearMonth.parse(month);
+        List<Student> students = studentRepository.findAll();
+        return students.stream()
+                .filter(s -> s.getAdmissionDate() != null && YearMonth.from(s.getAdmissionDate()).equals(yearMonth))
+                .map(s -> {
+                    Map<String, Object> map = new HashMap<>();
+                    map.put("name", s.getName());
+                    map.put("fatherName", s.getFatherName());
+                    map.put("courses", s.getCourses());
+                    return map;
+                })
+                .collect(Collectors.toList());
+    }
 } 
