@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Attendance - Saha Institute of Management & Technology</title>
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <header>
+        <h1>Saha Institute of Management & Technology</h1>
+        <p>Welcome, <span id="username"></span></p>
+    </header>
+    <div class="main-container">
+        <div class="side-panel">
+            <!-- Copy side panel from reports.html for consistency -->
+            <div class="admin-section">
+                <div class="admin-header">
+                    <img src="../uploads/teachers/d.jpg" alt="Admin" class="admin-avatar">
+                    <div class="admin-info">
+                        <h3>Aalekh</h3>
+                        <span class="admin-role">Administrator</span>
+                    </div>
+                </div>
+                <div class="admin-menu">
+                    <button class="tab-btn" data-tab="teachers">
+                        <i class="fas fa-chalkboard-teacher"></i>
+                        <span>Teachers</span>
+                    </button>
+                </div>
+            </div>
+            <div class="student-section">
+                <h4>Student Management</h4>
+                <a href="../index.html" class="tab-btn">
+                    <i class="fas fa-list"></i>
+                    <span>List Students</span>
+                </a>
+                <a href="../index.html#add-panel" class="tab-btn">
+                    <i class="fas fa-user-plus"></i>
+                    <span>Add Student</span>
+                </a>
+                <a href="../index.html#payments-panel" class="tab-btn">
+                    <i class="fas fa-money-bill"></i>
+                    <span>Payments</span>
+                </a>
+                <a href="reports.html" class="tab-btn">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>Reports</span>
+                </a>
+                <a href="attendance.html" class="tab-btn active">
+                    <i class="fas fa-calendar-check"></i>
+                    <span>Attendance</span>
+                </a>
+                <a href="../enquiry.html" class="tab-btn">
+                    <i class="fas fa-question-circle"></i>
+                    <span>Enquiries</span>
+                </a>
+                <a href="#" class="tab-btn" id="certificatesMenuBtn">
+                    <i class="fas fa-certificate"></i>
+                    <span>Certificates</span>
+                    <i class="fas fa-chevron-down" style="margin-left:auto;"></i>
+                </a>
+                <div id="certificatesSubMenu" style="display:none;flex-direction:column;margin-left:32px;">
+                    <a href="../certificate.html" class="tab-btn" id="digitalCertBtn">
+                        <i class="fas fa-desktop"></i>
+                        <span>Digital Certificate</span>
+                    </a>
+                    <a href="../hardcopy-certificate.html" class="tab-btn" id="hardcopyCertBtn">
+                        <i class="fas fa-file-alt"></i>
+                        <span>Hardcopy Certificate</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="content-panel">
+            <div class="panel-header">
+                <div class="panel-title">
+                    <h2><i class="fas fa-calendar-check"></i> Attendance Panel</h2>
+                    <p class="subtitle">Mark and monitor student attendance</p>
+                </div>
+            </div>
+            <div class="attendance-controls" style="margin-bottom: 24px; display: flex; gap: 16px; align-items: center;">
+                <label for="batchSelect">Batch:</label>
+                <select id="batchSelect"></select>
+                <label for="attendanceDate">Date:</label>
+                <input type="date" id="attendanceDate">
+                <button class="action-btn" id="loadAttendanceBtn"><i class="fas fa-search"></i> Load</button>
+            </div>
+            <div class="attendance-table-container">
+                <table class="report-table" id="attendanceTable">
+                    <thead>
+                        <tr>
+                            <th>Student Name</th>
+                            <th>Present</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Filled by JS -->
+                    </tbody>
+                </table>
+            </div>
+            <button class="action-btn" id="submitAttendanceBtn" style="margin-top: 16px;"><i class="fas fa-save"></i> Submit Attendance</button>
+            <div id="attendanceMessage" style="margin-top: 12px;"></div>
+
+            <!-- Attendance History/Filter Section -->
+            <div class="attendance-history-panel" style="margin-top: 40px;">
+                <button class="action-btn" type="button" onclick="toggleHistoryPanel()" style="margin-bottom: 12px;">
+                    <i class="fas fa-filter"></i> Attendance History / Filter
+                </button>
+                <div id="historyPanel" style="display:none; border:1px solid #eee; padding:16px; border-radius:8px; background:#fafbfc;">
+                    <div style="display:flex; gap:16px; align-items:center; flex-wrap:wrap; margin-bottom:16px;">
+                        <label for="historyBatchSelect">Batch:</label>
+                        <select id="historyBatchSelect"></select>
+                        <label for="historyStudentSelect">Student:</label>
+                        <select id="historyStudentSelect"><option value="">All</option></select>
+                        <label for="historyStartDate">From:</label>
+                        <input type="date" id="historyStartDate">
+                        <label for="historyEndDate">To:</label>
+                        <input type="date" id="historyEndDate">
+                        <button class="action-btn" id="showHistoryBtn"><i class="fas fa-search"></i> Show History</button>
+                    </div>
+                    <div class="attendance-table-container">
+                        <table class="report-table" id="attendanceHistoryTable">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Batch</th>
+                                    <th>Student</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- All Students Assignment Section -->
+            <div class="all-students-panel" style="margin-bottom: 32px;">
+                <h3>All Students</h3>
+                <div style="display:flex; gap:16px; align-items:center; margin-bottom:8px;">
+                    <label for="assignBatchSelect">Batch:</label>
+                    <select id="assignBatchSelect">
+                        <option value="">Select Batch</option>
+                    </select>
+                    <button class="action-btn" id="assignToBatchBtn" disabled><i class="fas fa-user-plus"></i> Assign to Batch</button>
+                    <span id="noBatchesMsg" style="color:#c00;display:none;">No batches available. Please contact admin.</span>
+                </div>
+                <div id="assignMsg" style="margin-bottom:8px;"></div>
+                <div class="attendance-table-container zebra-table">
+                    <table class="report-table" id="allStudentsTable">
+                        <thead>
+                            <tr>
+                                <th><input type="checkbox" id="selectAllStudents"></th>
+                                <th>Name</th>
+                                <th>Father's Name</th>
+                                <th>Admission Date</th>
+                                <th>Batches</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="../js/pages/attendance.js"></script>
+</body>
+</html> 

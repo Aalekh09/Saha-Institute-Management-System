@@ -49,6 +49,10 @@
                     <i class="fas fa-chart-bar"></i>
                     <span>Reports</span>
                 </a>
+                <a href="attendance.html" class="tab-btn">
+                    <i class="fas fa-calendar-check"></i>
+                    <span>Attendance</span>
+                </a>
                 <a href="../enquiry.html" class="tab-btn">
                     <i class="fas fa-question-circle"></i>
                     <span>Enquiries</span>
@@ -87,13 +91,14 @@
                         </button>
                     </div>
                     <div class="report-body">
-                        <canvas id="studentAdmissionsChart" height="120"></canvas>
-                        <table class="report-table" id="studentAdmissionsTable">
-                            <thead>
-                                <tr><th>Month</th><th>New Students</th></tr>
-                            </thead>
-                            <tbody></tbody>
-                        </table>
+                        <div style="max-height: 300px; overflow-y: auto; border: 1px solid #eee; border-radius: 6px;">
+                            <table class="report-table" id="studentAdmissionsTable">
+                                <thead>
+                                    <tr><th>Month</th><th>New Students</th></tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
                 <!-- Monthly Payments Collected -->
@@ -105,13 +110,14 @@
                         </button>
                     </div>
                     <div class="report-body">
-                        <canvas id="monthlyPaymentsChart" height="120"></canvas>
-                        <table class="report-table" id="monthlyPaymentsTable">
-                            <thead>
-                                <tr><th>Month</th><th>Total Payments</th></tr>
-                            </thead>
-                            <tbody></tbody>
-                        </table>
+                        <div style="max-height: 300px; overflow-y: auto; border: 1px solid #eee; border-radius: 6px;">
+                            <table class="report-table" id="monthlyPaymentsTable">
+                                <thead>
+                                    <tr><th>Month</th><th>Total Payments</th></tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
                 <!-- Pending Fees -->
@@ -123,12 +129,14 @@
                         </button>
                     </div>
                     <div class="report-body">
-                        <table class="report-table" id="pendingFeesTable">
-                            <thead>
-                                <tr><th>Student Name</th><th>Course</th><th>Pending Amount</th></tr>
-                            </thead>
-                            <tbody></tbody>
-                        </table>
+                        <div style="max-height: 300px; overflow-y: auto; border: 1px solid #eee; border-radius: 6px;">
+                            <table class="report-table" id="pendingFeesTable">
+                                <thead>
+                                    <tr><th>Student Name</th><th>Course</th><th>Pending Amount</th></tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
                 <!-- Students Added This Month -->
@@ -142,12 +150,15 @@
                         </button>
                     </div>
                     <div class="report-body">
-                        <table class="report-table" id="studentsByMonthTable">
-                            <thead>
-                                <tr><th>Name</th><th>Father's Name</th><th>Course</th></tr>
-                            </thead>
-                            <tbody></tbody>
-                        </table>
+                        <div id="studentsByMonthCount" style="font-weight:bold; margin-bottom:8px;"></div>
+                        <div style="max-height: 300px; overflow-y: auto; border: 1px solid #eee; border-radius: 6px;">
+                            <table class="report-table" id="studentsByMonthTable">
+                                <thead>
+                                    <tr><th>S.No</th><th>Name</th><th>Father's Name</th><th>Course</th></tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>

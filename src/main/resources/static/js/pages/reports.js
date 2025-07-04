@@ -303,7 +303,9 @@ async function loadStudentAdmissions() {
     renderBarChart('studentAdmissionsChart', labels, counts, 'New Students');
     // Table
     const tbody = document.querySelector('#studentAdmissionsTable tbody');
+    let total = counts.reduce((sum, val) => sum + val, 0);
     tbody.innerHTML = data.map(row => `<tr><td>${row.month}</td><td>${row.count}</td></tr>`).join('');
+    tbody.innerHTML += `<tr style='font-weight:bold;background:#f9f9f9;'><td style='text-align:right;'>Total</td><td>${total}</td></tr>`;
 }
 
 // 2. Monthly Payments Collected
@@ -395,23 +397,29 @@ function getCurrentMonthString() {
 async function loadStudentsByMonth() {
     const month = document.getElementById('studentsMonthPicker').value;
     const tableBody = document.querySelector('#studentsByMonthTable tbody');
-    tableBody.innerHTML = '<tr><td colspan="3">Loading...</td></tr>';
+    const countDiv = document.getElementById('studentsByMonthCount');
+    tableBody.innerHTML = '<tr><td colspan="4">Loading...</td></tr>';
+    countDiv.textContent = '';
     try {
         const response = await fetch(`/api/reports/students-by-month?month=${month}`);
         const students = await response.json();
         if (students.length === 0) {
-            tableBody.innerHTML = '<tr><td colspan="3">No students found for this month.</td></tr>';
+            tableBody.innerHTML = '<tr><td colspan="4">No students found for this month.</td></tr>';
+            countDiv.textContent = 'Total Students: 0';
             return;
         }
-        tableBody.innerHTML = students.map(s => `
+        countDiv.textContent = `Total Students: ${students.length}`;
+        tableBody.innerHTML = students.map((s, idx) => `
             <tr>
+                <td>${idx + 1}</td>
                 <td>${s.name || ''}</td>
                 <td>${s.fatherName || ''}</td>
                 <td>${s.courses || ''}</td>
             </tr>
         `).join('');
     } catch (err) {
-        tableBody.innerHTML = '<tr><td colspan="3">Error loading data.</td></tr>';
+        tableBody.innerHTML = '<tr><td colspan="4">Error loading data.</td></tr>';
+        countDiv.textContent = '';
     }
 }
 window.loadStudentsByMonth = loadStudentsByMonth; 
