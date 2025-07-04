@@ -133,6 +133,7 @@ public class StudentService {
         student.setTotalCourseFee(studentDetails.getTotalCourseFee());
         student.setPaidAmount(studentDetails.getPaidAmount());
         student.setRemainingAmount(studentDetails.getRemainingAmount());
+        student.setAdmissionDate(studentDetails.getAdmissionDate());
         return saveStudent(student);
     }
 

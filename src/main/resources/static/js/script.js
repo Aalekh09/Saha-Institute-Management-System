@@ -191,6 +191,9 @@ function displayStudents(students) {
                 </div>
             </td>
             <td>
+                <div class="date-of-joining">${student.admissionDate ? student.admissionDate : 'N/A'}</div>
+            </td>
+            <td>
                 <div class="contact-info">
                     <div class="contact-item">
                         <i class="fas fa-phone"></i>
@@ -383,6 +386,12 @@ function resetForm() {
     editingStudentId = null;
     submitBtn.textContent = 'Add Student';
     cancelEditBtn.style.display = 'none';
+    // Set default value for admissionDate to today
+    const admissionDateInput = document.getElementById('admissionDate');
+    if (admissionDateInput) {
+        const today = new Date().toISOString().split('T')[0];
+        admissionDateInput.value = today;
+    }
 }
 
 // Handle form submit
@@ -401,7 +410,8 @@ studentForm.addEventListener('submit', async (e) => {
         courseDuration: document.getElementById('courseDuration').value,
         totalCourseFee: parseFloat(document.getElementById('totalCourseFee').value) || 0,
         paidAmount: 0,
-        remainingAmount: parseFloat(document.getElementById('totalCourseFee').value) || 0
+        remainingAmount: parseFloat(document.getElementById('totalCourseFee').value) || 0,
+        admissionDate: document.getElementById('admissionDate').value
     };
 
     try {
