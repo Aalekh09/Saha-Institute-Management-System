@@ -269,11 +269,20 @@ document.addEventListener('DOMContentLoaded', () => {
     loadMonthlyPayments();
     loadPendingFees();
     // loadEnquirySummary(); // Only if you add this table to the HTML
+    
+    // Students by month picker
     const monthPicker = document.getElementById('studentsMonthPicker');
     if (monthPicker) {
         monthPicker.value = getCurrentMonthString();
         loadStudentsByMonth();
         monthPicker.addEventListener('change', loadStudentsByMonth);
+    }
+    
+    // Pending fees month picker
+    const pendingFeesMonthPicker = document.getElementById('pendingFeesMonthPicker');
+    if (pendingFeesMonthPicker) {
+        pendingFeesMonthPicker.value = getCurrentMonthString();
+        pendingFeesMonthPicker.addEventListener('change', loadPendingFeesByMonth);
     }
 });
 
@@ -326,15 +335,57 @@ async function loadPendingFees() {
     const res = await fetch(`${API_BASE}/pending-fees`);
     const data = await res.json();
     const tbody = document.querySelector('#pendingFeesTable tbody');
+    const countDiv = document.getElementById('pendingFeesCount');
+    
     if (data.length) {
         let total = 0;
         tbody.innerHTML = data.map(row => {
             total += Number(row.pendingAmount);
-            return `<tr><td>${row.studentName}</td><td>${row.course}</td><td>₹${row.pendingAmount}</td></tr>`;
+            const admissionDate = row.admissionDate ? new Date(row.admissionDate).toLocaleDateString('en-IN') : 'N/A';
+            return `<tr><td>${row.studentName}</td><td>${row.course}</td><td>₹${row.pendingAmount}</td><td>${admissionDate}</td></tr>`;
         }).join('');
-        tbody.innerHTML += `<tr style='font-weight:bold;background:#f9f9f9;'><td colspan='2' style='text-align:right;'>Total Pending Fees</td><td>₹${total.toLocaleString('en-IN', {minimumFractionDigits:2})}</td></tr>`;
+        tbody.innerHTML += `<tr style='font-weight:bold;background:#f9f9f9;'><td colspan='3' style='text-align:right;'>Total Pending Fees</td><td>₹${total.toLocaleString('en-IN', {minimumFractionDigits:2})}</td></tr>`;
+        countDiv.textContent = `Total Students with Pending Fees: ${data.length}`;
     } else {
-        tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;color:#888;">No pending fees</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:#888;">No pending fees</td></tr>';
+        countDiv.textContent = 'Total Students with Pending Fees: 0';
+    }
+}
+
+// 3.1. Pending Fees by Month
+async function loadPendingFeesByMonth() {
+    const month = document.getElementById('pendingFeesMonthPicker').value;
+    const tbody = document.querySelector('#pendingFeesTable tbody');
+    const countDiv = document.getElementById('pendingFeesCount');
+    
+    if (!month) {
+        await loadPendingFees();
+        return;
+    }
+    
+    tbody.innerHTML = '<tr><td colspan="4">Loading...</td></tr>';
+    countDiv.textContent = '';
+    
+    try {
+        const response = await fetch(`${API_BASE}/pending-fees-by-month?month=${month}`);
+        const data = await response.json();
+        
+        if (data.length) {
+            let total = 0;
+            tbody.innerHTML = data.map(row => {
+                total += Number(row.pendingAmount);
+                const admissionDate = row.admissionDate ? new Date(row.admissionDate).toLocaleDateString('en-IN') : 'N/A';
+                return `<tr><td>${row.studentName}</td><td>${row.course}</td><td>₹${row.pendingAmount}</td><td>${admissionDate}</td></tr>`;
+            }).join('');
+            tbody.innerHTML += `<tr style='font-weight:bold;background:#f9f9f9;'><td colspan='3' style='text-align:right;'>Total Pending Fees</td><td>₹${total.toLocaleString('en-IN', {minimumFractionDigits:2})}</td></tr>`;
+            countDiv.textContent = `Students with Pending Fees (${month}): ${data.length}`;
+        } else {
+            tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:#888;">No pending fees found for this month.</td></tr>';
+            countDiv.textContent = `Students with Pending Fees (${month}): 0`;
+        }
+    } catch (err) {
+        tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:#888;">Error loading data.</td></tr>';
+        countDiv.textContent = '';
     }
 }
 
@@ -422,4 +473,5 @@ async function loadStudentsByMonth() {
         countDiv.textContent = '';
     }
 }
-window.loadStudentsByMonth = loadStudentsByMonth; 
+window.loadStudentsByMonth = loadStudentsByMonth;
+window.loadPendingFeesByMonth = loadPendingFeesByMonth; 

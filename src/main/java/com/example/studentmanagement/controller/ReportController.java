@@ -92,7 +92,35 @@ public class ReportController {
                 row.put("studentName", s.getName());
                 row.put("course", s.getCourses());
                 row.put("pendingAmount", s.getRemainingAmount());
+                row.put("admissionDate", s.getAdmissionDate());
                 result.add(row);
+            }
+        }
+        return result;
+    }
+
+    // 3.1. Pending Fees by Month
+    @GetMapping("/pending-fees-by-month")
+    public List<Map<String, Object>> getPendingFeesByMonth(String month) {
+        if (month == null || month.isEmpty()) {
+            return getPendingFees();
+        }
+        
+        YearMonth yearMonth = YearMonth.parse(month);
+        List<Student> students = studentRepository.findAll();
+        List<Map<String, Object>> result = new ArrayList<>();
+        
+        for (Student s : students) {
+            if (s.getRemainingAmount() != null && s.getRemainingAmount().compareTo(BigDecimal.ZERO) > 0) {
+                // Check if student was admitted in the specified month
+                if (s.getAdmissionDate() != null && YearMonth.from(s.getAdmissionDate()).equals(yearMonth)) {
+                    Map<String, Object> row = new HashMap<>();
+                    row.put("studentName", s.getName());
+                    row.put("course", s.getCourses());
+                    row.put("pendingAmount", s.getRemainingAmount());
+                    row.put("admissionDate", s.getAdmissionDate());
+                    result.add(row);
+                }
             }
         }
         return result;

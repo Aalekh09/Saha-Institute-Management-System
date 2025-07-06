@@ -124,15 +124,26 @@
                 <div class="report-card">
                     <div class="report-header">
                         <h3>Pending Fees</h3>
-                        <button class="action-btn" onclick="exportTableToExcel('pendingFeesTable')">
-                            <i class="fas fa-file-excel"></i> Excel
-                        </button>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <label for="pendingFeesMonthPicker" style="font-size: 14px; color: #2c3e50;">Month:</label>
+                            <input type="month" id="pendingFeesMonthPicker" name="pendingFeesMonthPicker" style="padding: 6px 8px; border: 1px solid #dcdde1; border-radius: 4px; font-size: 14px;">
+                            <button class="action-btn" onclick="loadPendingFeesByMonth()">
+                                <i class="fas fa-search"></i> Filter
+                            </button>
+                            <button class="action-btn" onclick="loadPendingFees()">
+                                <i class="fas fa-refresh"></i> All
+                            </button>
+                            <button class="action-btn" onclick="exportTableToExcel('pendingFeesTable')">
+                                <i class="fas fa-file-excel"></i> Excel
+                            </button>
+                        </div>
                     </div>
                     <div class="report-body">
+                        <div id="pendingFeesCount" style="font-weight:bold; margin-bottom:8px; color: #2c3e50;"></div>
                         <div style="max-height: 300px; overflow-y: auto; border: 1px solid #eee; border-radius: 6px;">
                             <table class="report-table" id="pendingFeesTable">
                                 <thead>
-                                    <tr><th>Student Name</th><th>Course</th><th>Pending Amount</th></tr>
+                                    <tr><th>Student Name</th><th>Course</th><th>Pending Amount</th><th>Admission Date</th></tr>
                                 </thead>
                                 <tbody></tbody>
                             </table>
