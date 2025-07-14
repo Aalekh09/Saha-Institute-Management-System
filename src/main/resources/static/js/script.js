@@ -221,8 +221,8 @@ function displayStudents(students) {
             </td>
             <td>
                 <div class="action-buttons">
-                    <button class="action-btn view-profile-btn" data-id="${student.id}" title="View Profile">
-                        <i class="fas fa-user"></i> View Profile
+                    <button class="action-btn view-profile-btn primary" data-id="${student.id}" title="View Profile">
+                        <i class="fas fa-user"></i> <span>View Profile</span>
                     </button>
                     <button class="action-btn edit-btn" data-id="${student.id}" title="Edit Student">
                         <i class="fas fa-edit"></i>
@@ -1539,53 +1539,70 @@ document.head.appendChild(chartScript);
 
 // Function to display student profile in a modal
 async function showStudentProfile(studentId) {
-    console.log('Showing profile for student ID:', studentId);
-    const student = allStudents.find(s => s.id === studentId);
+    // Debug: log the studentId and allStudents
+    console.log('Looking for studentId:', studentId, 'in', allStudents);
+
+    const student = allStudents.find(s => String(s.id) === String(studentId));
     const modal = document.getElementById('studentProfileModal');
     const profileContent = document.getElementById('studentProfileContent');
 
-    if (!student || !modal || !profileContent) {
-        console.error('Could not find student data or modal elements');
-        showNotification('Error loading student profile', true);
+    if (!student) {
+        if (profileContent) {
+            profileContent.innerHTML = '<div style="padding:2rem;text-align:center;color:#c00;">Student not found.</div>';
+        }
+        if (modal) modal.style.display = 'flex';
         return;
     }
 
-    // Format student details for display
     profileContent.innerHTML = `
-        <div class="profile-section">
-            <h3><i class="fas fa-user"></i> Personal Information</h3>
-            <p><strong>Name:</strong> ${toUpperCase(student.name) || 'N/A'}</p>
-            <p><strong>Student ID:</strong> STU${String(student.id).padStart(4, '0')}</p>
-            <p><strong>Father's Name:</strong> ${toUpperCase(student.fatherName) || 'N/A'}</p>
-            <p><strong>Mother's Name:</strong> ${toUpperCase(student.motherName) || 'N/A'}</p>
-            <p><strong>Date of Birth:</strong> ${student.dob || 'N/A'}</p>
-        </div>
-
-        <div class="profile-section">
-            <h3><i class="fas fa-address-card"></i> Contact Information</h3>
-            <p><strong>Phone Number:</strong> ${student.phoneNumber || 'N/A'}</p>
-            <p><strong>Email Address:</strong> ${toUpperCase(student.email) || 'N/A'}</p>
-            <p><strong>Address:</strong> ${student.address || 'N/A'}</p>
-        </div>
-
-        <div class="profile-section">
-            <h3><i class="fas fa-graduation-cap"></i> Course Information</h3>
-            <p><strong>Course(s):</strong> ${toUpperCase(student.courses) || 'N/A'}</p>
-            <p><strong>Course Duration:</strong> ${student.courseDuration || 'N/A'}</p>
-            <p><strong>Total Course Fee:</strong> ₹${formatCurrency(student.totalCourseFee) || 'N/A'}</p>
-        </div>
-
-        <div class="profile-section">
-            <h3><i class="fas fa-money-bill-wave"></i> Fee Status</h3>
-            <p><strong>Paid Amount:</strong> ₹${formatCurrency(student.paidAmount) || 'N/A'}</p>
-            <p><strong>Remaining Amount:</strong> ₹${formatCurrency(student.remainingAmount) || 'N/A'}</p>
-            <div class="fee-progress" style="width: 100%; height: 10px; margin-top: 10px;">
-                 <div class="fee-progress-bar" style="width: ${(parseFloat(student.paidAmount) / parseFloat(student.totalCourseFee)) * 100 || 0}%"></div>
+        <div class="profile-modal-card">
+            <div class="profile-header">
+                <div class="profile-avatar">${student.name ? student.name.charAt(0).toUpperCase() : '?'}</div>
+                <div class="profile-main-info">
+                    <div class="profile-name">${student.name || '-'}</div>
+                    <div class="profile-id-status">
+                        <span class="profile-id">ID: STU${String(student.id).padStart(4, '0')}</span>
+                        <span class="profile-status ${student.status === 'active' ? 'active' : 'inactive'}">
+                            <i class="fas fa-circle"></i> ${student.status ? student.status.charAt(0).toUpperCase() + student.status.slice(1) : '-'}
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <span class="close-btn" id="closeStudentProfileModal">&times;</span>
+            <hr class="profile-divider" />
+            <div class="profile-section">
+                <h4><i class="fas fa-user"></i> Personal</h4>
+                <div class="profile-row"><b>Father's Name:</b> ${student.fatherName || '-'}</div>
+                <div class="profile-row"><b>Mother's Name:</b> ${student.motherName || '-'}</div>
+                <div class="profile-row"><b>Date of Birth:</b> ${student.dob || '-'}</div>
+            </div>
+            <div class="profile-section">
+                <h4><i class="fas fa-address-book"></i> Contact</h4>
+                <div class="profile-row"><b>Phone Number:</b> ${student.phoneNumber || '-'}</div>
+                <div class="profile-row"><b>Email Address:</b> ${student.email || '-'}</div>
+                <div class="profile-row"><b>Address:</b> ${student.address || '-'}</div>
+            </div>
+            <div class="profile-section">
+                <h4><i class="fas fa-graduation-cap"></i> Course</h4>
+                <div class="profile-row"><b>Course(s):</b> ${student.courses || '-'}</div>
+                <div class="profile-row"><b>Course Duration:</b> ${student.courseDuration || '-'}</div>
+                <div class="profile-row"><b>Total Course Fee:</b> ₹${formatCurrency(student.totalCourseFee) || 'N/A'}</div>
+            </div>
+            <div class="profile-section">
+                <h4><i class="fas fa-rupee-sign"></i> Fee Status</h4>
+                <div class="profile-row"><b>Paid Amount:</b> ₹${formatCurrency(student.paidAmount) || '0.00'}</div>
+                <div class="profile-row"><b>Remaining Amount:</b> ₹${formatCurrency((student.totalCourseFee || 0) - (student.paidAmount || 0))}</div>
             </div>
         </div>
     `;
-
-    modal.style.display = 'block';
+    modal.style.display = 'flex';
+    // Ensure close button works
+    const closeBtn = document.getElementById('closeStudentProfileModal');
+    if (closeBtn) {
+        closeBtn.onclick = function() {
+            modal.style.display = 'none';
+        };
+    }
 }
 
 // Event listener for closing the student profile modal

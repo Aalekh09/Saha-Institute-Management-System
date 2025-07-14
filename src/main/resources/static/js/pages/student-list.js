@@ -86,9 +86,8 @@ function updateTable() {
         const actionsCell = document.createElement('td');
         actionsCell.innerHTML = `
             <div class="action-buttons">
-                <button class="action-btn view-profile-btn" onclick="viewStudentProfile(${student.id})">
-                    <i class="fas fa-user"></i>
-                    View Profile
+                <button class="action-btn view-profile-btn primary" onclick="viewStudentProfile(${student.id})">
+                    <i class="fas fa-user"></i> <span>View Profile</span>
                 </button>
                 <button class="action-btn edit-btn" onclick="editStudent(${student.id})">
                     <i class="fas fa-edit"></i>
@@ -236,24 +235,42 @@ window.viewStudentProfile = function(id) {
     const student = students.find(s => s.id === id);
     if (!student) return;
     const content = `
-        <div class="id-card-preview">
-            <div class="id-card-logo">
-                <img src="../uploads/institute/logo.png" alt="Institute Logo" />
+        <div class="profile-modal-card">
+            <div class="profile-header">
+                <div class="profile-avatar">${student.name.charAt(0).toUpperCase()}</div>
+                <div class="profile-main-info">
+                    <div class="profile-name">${student.name}</div>
+                    <div class="profile-id-status">
+                        <span class="profile-id">ID: ${student.id}</span>
+                        <span class="profile-status ${student.status === 'active' ? 'active' : 'inactive'}">
+                            <i class="fas fa-circle"></i> ${student.status.charAt(0).toUpperCase() + student.status.slice(1)}
+                        </span>
+                    </div>
+                </div>
             </div>
-            <div class="id-card-header">
-                <div class="id-card-avatar">${student.name.charAt(0).toUpperCase()}</div>
-                <div class="id-card-title">${student.name}</div>
-                <div class="id-card-id">ID: ${student.id}</div>
+            <hr class="profile-divider" />
+            <div class="profile-section">
+                <h4><i class="fas fa-user"></i> Personal</h4>
+                <div class="profile-row"><b>Father's Name:</b> ${student.fatherName || '-'}</div>
+                <div class="profile-row"><b>Mother's Name:</b> ${student.motherName || '-'}</div>
+                <div class="profile-row"><b>Date of Birth:</b> ${student.dob || '-'}</div>
             </div>
-            <div class="id-card-body">
-                <div><b>Course:</b> ${student.course}</div>
-                <div><b>Duration:</b> ${student.duration}</div>
-                <div><b>Phone:</b> ${student.phone}</div>
-                <div><b>Email:</b> ${student.email}</div>
-                <div><b>Status:</b> ${student.status}</div>
-                <div><b>Paid:</b> ₹${student.paidAmount} / ₹${student.totalFee}</div>
+            <div class="profile-section">
+                <h4><i class="fas fa-address-book"></i> Contact</h4>
+                <div class="profile-row"><b>Phone:</b> ${student.phone}</div>
+                <div class="profile-row"><b>Email:</b> ${student.email}</div>
+                <div class="profile-row"><b>Address:</b> ${student.address || '-'}</div>
             </div>
-            <div class="id-card-signature">
+            <div class="profile-section">
+                <h4><i class="fas fa-graduation-cap"></i> Course</h4>
+                <div class="profile-row"><b>Course:</b> ${student.course}</div>
+                <div class="profile-row"><b>Duration:</b> ${student.duration}</div>
+            </div>
+            <div class="profile-section">
+                <h4><i class="fas fa-rupee-sign"></i> Financial</h4>
+                <div class="profile-row"><b>Paid:</b> ₹${student.paidAmount} / ₹${student.totalFee}</div>
+            </div>
+            <div class="profile-signature">
                 <span class="sig-label">Signature</span>
                 <img src="../uploads/signatures/director.png" alt="Director Signature" />
             </div>
@@ -261,6 +278,13 @@ window.viewStudentProfile = function(id) {
     `;
     document.getElementById('studentProfileContent').innerHTML = content;
     document.getElementById('studentProfileModal').style.display = 'flex';
+    // Ensure close button works
+    const closeBtn = document.getElementById('closeProfileModalBtn');
+    if (closeBtn) {
+        closeBtn.onclick = function() {
+            document.getElementById('studentProfileModal').style.display = 'none';
+        };
+    }
 }
 
 // Initialize
